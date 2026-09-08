@@ -13,6 +13,8 @@ export interface GujiToggles {
   bz?: boolean
   /** 删字 `{{…}}` → `:sz[…]` */
   sz?: boolean
+  /** 改字 `[…]` → `:gz[…]` */
+  gz?: boolean
   /** 抬头 行首 `^` → `:tt{n}` */
   tt?: boolean
   /** 空格 行首 `.` → `:kg{n}` */
@@ -36,6 +38,12 @@ export interface GujiSyntaxOptions extends GujiToggles {
    */
   maxLevel?: number
   /**
+   * 改字内容必须至少含一个 CJK 字符。
+   * 关闭后 `[x]`、`[TODO]` 之类会被误判为改字，务必谨慎。
+   * @default true
+   */
+  gzRequireCjk?: boolean
+  /**
    * 专名号内容必须至少含一个 CJK 字符。
    * 关闭后 `/path/like/this` 会被误判为专名，仅在纯中文语料中才建议关闭。
    * @default true
@@ -55,12 +63,14 @@ export const DEFAULT_SYNTAX_OPTIONS: ResolvedSyntaxOptions = {
   jz: true,
   bz: true,
   sz: true,
+  gz: true,
   tt: true,
   kg: true,
   zm: true,
   sm: true,
   maxSpanLength: 64,
   maxLevel: 9,
+  gzRequireCjk: true,
   zmRequireCjk: true,
   indentedCode: true
 }

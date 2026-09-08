@@ -160,6 +160,56 @@ function canOpenJz(mask: string, i: number, end: number): boolean {
   return !/[A-Za-z/!?>\s]/.test(next)
 }
 
+/**
+ * 改字 `[…]` 的起始条件。方括号在 Markdown 里用得很多，
+ * 这里逐项排除：指令 label（`:jz[`）、图片（`![`）、引用式链接（`][`）、
+ * 脚注（`[^`）、任务列表（`[ ]`）、以及预留给阙文的 `[[…]]`。
+ */
+function canOpenGz(src: string, mask: string, i: number, end: number): boolean {
+  const prev = i > 0 ? src[i - 1] : undefined
+  if (prev !== undefined && (isAsciiAlnum(prev) || prev === '!' || prev === '[' || prev === ']')) {
+    return false
+  }
+  if (i + 1 >= end) return false
+  const next = mask[i + 1]
+  if (next === undefined || next === NUL) return false
+  return !isSpace(next) && next !== ']' && next !== '[' && next !== '^'
+}
+
+/**
+ * 改字的结束条件：内容不得含 `[`，且结束的 `]` 之后不能是
+ * `(`（行内链接）、`[`（引用式链接）或 `:`（链接定义）。
+ */
+function findGzClose(
+  src: string,
+  mask: string,
+  from: number,
+  end: number,
+  o: ResolvedSyntaxOptions
+): number {
+  let i = from
+  while (i < end && i - from <= o.maxSpanLength) {
+    if (mask[i] === NUL) {
+      i++
+      continue
+    }
+    if (mask[i] === '[') return -1
+    if (mask[i] !== ']') {
+      i++
+      continue
+    }
+    const prev = src[i - 1]
+    const next = src[i + 1]
+    if (isSpace(prev)) return -1
+    if (next === '(' || next === '[' || next === ':') return -1
+    const content = src.slice(from, i)
+    if (content.length === 0) return -1
+    if (o.gzRequireCjk && !hasCjk(content)) return -1
+    return i
+  }
+  return -1
+}
+
 function canOpenZm(src: string, mask: string, i: number, end: number): boolean {
   const prev = i > 0 ? src[i - 1] : undefined
   if (prev !== undefined && (isAsciiAlnum(prev) || prev === ':' || prev === '/')) return false
@@ -281,7 +331,7 @@ function emit(name: string, label: string): string {
 
 /**
  * 在 [start, end) 范围内扫描行内记号，递归处理内容。
- * 起始记号的优先级：`((` > `{{` > `《` > `<` > `/`（见 spec/syntax.md §9.1）。
+ * 起始记号的优先级：`((` > `{{` > `《` > `[` > `<` > `/`（见 spec/syntax.md §11.1）。
  */
 function transformRange(
   src: string,
@@ -323,6 +373,15 @@ function transformRange(
       const close = findPair(mask, i + 1, end, '《', '》')
       if (close > i + 1 && close - (i + 1) <= o.maxSpanLength) {
         out += emit('sm', transformRange(src, mask, i + 1, close, o))
+        i = close + 1
+        continue
+      }
+    }
+
+    if (o.gz && c === '[' && canOpenGz(src, mask, i, end)) {
+      const close = findGzClose(src, mask, i + 1, end, o)
+      if (close > i + 1) {
+        out += emit('gz', transformRange(src, mask, i + 1, close, o))
         i = close + 1
         continue
       }

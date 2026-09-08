@@ -23,9 +23,10 @@
   --guji-jz-size: 0.78em;
   --guji-jz-color: #55524c;
 
-  /* 校勘 */
+  /* 校勘三式：补（绿）、删（红加删除线）、改（灰） */
   --guji-bz-color: #1d7a4c;
-  --guji-sz-color: #a8332a;
+  --guji-sz-color: #b3261e;
+  --guji-gz-color: #6f6f6f;
 
   /* 专名号 / 书名号 */
   --guji-line-color: currentColor;
@@ -56,29 +57,53 @@
   content: "）";
 }
 
-/* ------------------------------------------------------- 补字 / 删字 */
+/* ------------------------------------------- 校勘：补字 / 删字 / 改字 */
+
+/*
+ * 三种记号必须一眼可分（见 spec/syntax.md §5）：
+ *   ((甲))   补字   绿          底本无、定本有，凭空新增
+ *   {{甲}}   删字   红 + 删除线  底本有、定本无
+ *   [甲]{{乙}} 改字  灰 + 红删除线  以甲改乙，一次操作的两面
+ *
+ * <ins> 在浏览器里默认带下划线，这里必须显式清掉，
+ * 否则补字、改字会与专名号的线混淆。
+ */
+
+.guji-bz,
+.guji-gz {
+  text-decoration: none;
+}
 
 .guji-bz {
   color: var(--guji-bz-color);
-  text-decoration: underline dotted;
+  text-decoration: var(--guji-bz-decoration, none);
   text-underline-offset: var(--guji-line-offset);
 }
 
 .guji-sz {
   color: var(--guji-sz-color);
-  text-decoration: line-through;
-  opacity: 0.75;
+  text-decoration-line: line-through;
+  text-decoration-color: currentColor;
 }
 
-/* 可选：改用点校本的括号体例，〔補〕（刪） */
-.guji-doc--jiaokan-marks .guji-bz {
-  text-decoration: none;
+.guji-gz {
+  color: var(--guji-gz-color);
 }
-.guji-doc--jiaokan-marks .guji-bz::before {
+
+/*
+ * 可选：改用点校本的括号体例，〔補〕〔改〕（刪）。
+ * 只靠颜色区分对色觉障碍读者不友好，需要无障碍时打开这一条。
+ */
+.guji-doc--jiaokan-marks .guji-bz::before,
+.guji-doc--jiaokan-marks .guji-gz::before {
   content: "〔";
 }
-.guji-doc--jiaokan-marks .guji-bz::after {
+.guji-doc--jiaokan-marks .guji-bz::after,
+.guji-doc--jiaokan-marks .guji-gz::after {
   content: "〕";
+}
+.guji-doc--jiaokan-marks .guji-bz {
+  text-decoration: none;
 }
 .guji-doc--jiaokan-marks .guji-sz {
   text-decoration: none;

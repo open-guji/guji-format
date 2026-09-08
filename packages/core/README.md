@@ -22,8 +22,8 @@ npm i @open-guji/markdown-core
 ```js
 import { gujiToDirective } from '@open-guji/markdown-core'
 
-gujiToDirective('^惟我\n.皇上<聖躬>')
-// ':tt{n=1}惟我\n:kg{n=1}皇上:jz[聖躬]'
+gujiToDirective('^惟我\n.皇上<聖躬>，本作[甲]{{乙}}')
+// ':tt{n=1}惟我\n:kg{n=1}皇上:jz[聖躬]，本作:gz[甲]:sz[乙]'
 ```
 
 纯字符串到字符串，无副作用，**逐行处理且不改变行数**——
@@ -72,11 +72,12 @@ unified().use(remarkParse).use(remarkGuji).use(remarkRehype)
 ```ts
 interface GujiOptions {
   // 各记号开关，默认全开
-  jz?: boolean; bz?: boolean; sz?: boolean
+  jz?: boolean; bz?: boolean; sz?: boolean; gz?: boolean
   tt?: boolean; kg?: boolean; zm?: boolean; sm?: boolean
 
   maxSpanLength?: number   // 行内记号内容上限，默认 64
   maxLevel?: number        // n 属性上限，默认 9
+  gzRequireCjk?: boolean   // 改字内容须含 CJK，默认 true
   zmRequireCjk?: boolean   // 专名号内容须含 CJK，默认 true
   indentedCode?: boolean   // 识别缩进代码块，默认 true
 
@@ -94,6 +95,9 @@ interface GujiOptions {
   `column` 指向的是规范化之后的文本。行号是准的。
   路线图里有一版基于 micromark 词法扩展的实现，会解决这一点。
 * **记号不跨行内结构**。像 `/孔**子/**` 这种跨越强调边界的写法属未定义行为。
+* **简写式引用链接与改字冲突**。`[說文]`（配合别处的 `[說文]: url` 定义）会被
+  识别为改字；行内链接 `[說文](url)` 不受影响。见
+  [`spec/syntax.md` §4](../../spec/syntax.md#4-改字-)。
 
 ## 许可证
 

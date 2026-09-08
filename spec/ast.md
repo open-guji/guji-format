@@ -54,6 +54,7 @@
 | `jz` | `<span>` | `guji-jz` | `data-guji-type`（有 `type` 时） |
 | `bz` | `<ins>` | `guji-bz` | `data-guji-src`（有 `src` 时） |
 | `sz` | `<del>` | `guji-sz` | `data-guji-src`（有 `src` 时） |
+| `gz` | `<ins>` | `guji-gz` | `data-guji-src`（有 `src` 时） |
 | `tt`（行内） | `<span>` | `guji-tt` | `data-guji-n` |
 | `tt`（容器） | `<div>` | `guji-tt guji-tt-block` | `data-guji-n` |
 | `kg` | `<span>` | `guji-kg` | `data-guji-n` |
@@ -61,8 +62,22 @@
 | `sm` | `<span>` | `guji-sm` | `data-guji-part`（有 `part` 时） |
 | 未知 | `<span>` | `guji-unknown` | `data-guji-directive` |
 
-选用 `<ins>` / `<del>` 而不是 `<span>`，是因为补字与删字在语义上正是
-HTML 的"插入 / 删除"，屏幕阅读器与纯文本提取工具都能正确理解。
+补字、改字用 `<ins>`，删字用 `<del>`，是因为它们在语义上正是 HTML 的
+"插入 / 删除"，屏幕阅读器与纯文本提取工具都能正确理解。
+补字与改字同为 `<ins>`、靠 class 区分：两者都是定本有而底本无的文字，
+差别在于改字替换掉了紧随其后的删字，见
+[syntax.md §5](./syntax.md#5-校勘三式)。
+
+三者的默认配色（可用自定义属性覆盖）：
+
+| 指令 | 颜色 | 装饰 |
+| --- | --- | --- |
+| `bz` 补字 | 绿 | 无 |
+| `sz` 删字 | 红 | 删除线 |
+| `gz` 改字 | 灰 | 无 |
+
+`<ins>` 在浏览器里默认带下划线，样式表必须显式清掉，
+否则补字与改字会和专名号的线混淆。
 
 ### 2.2 空格的文本内容
 
@@ -111,10 +126,13 @@ mdast → hast 阶段被丢弃（`allowDangerousHtml: false`）。
 | `jz` | `（` + 内容 + `）` |
 | `bz` | 内容（保留） |
 | `sz` | 空（丢弃） |
+| `gz` | 内容（保留） |
 | `tt` | 换行 + 内容 |
 | `kg` | `n` 个 U+3000 |
 | `zm` | 内容 |
 | `sm` | `《` + 内容 + `》` |
 
-`bz` 保留、`sz` 丢弃，得到的正是"整理者认定的定本"。
-反过来（`bz` 丢弃、`sz` 保留）则还原为底本。
+保留 `bz`、`gz` 而丢弃 `sz`，得到的正是"整理者认定的**定本**"；
+反过来保留 `sz`、丢弃 `bz` 与 `gz`，则还原为**底本**。
+这两条互逆的规则是校勘三式（[syntax.md §5](./syntax.md#5-校勘三式)）的直接推论，
+实现应当保证它们成立。

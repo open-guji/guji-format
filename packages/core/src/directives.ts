@@ -52,6 +52,15 @@ export const DIRECTIVES: readonly DirectiveSpec[] = [
     shorthand: { open: '{{', close: '}}' }
   },
   {
+    name: 'gz',
+    cn: '改字',
+    aliases: ['sub', 'amend', 'gaizi'],
+    shapes: ['text'],
+    attributes: ['src'],
+    tagName: 'ins',
+    shorthand: { open: '[', close: ']' }
+  },
+  {
     name: 'tt',
     cn: '抬头',
     aliases: ['raise', 'taitou'],

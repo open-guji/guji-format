@@ -91,6 +91,16 @@ export function gujiHandlers(options: ResolvedHtmlOptions): Record<string, Handl
           children
         )
 
+      // 改字与补字同为 <ins>：都是定本有而底本无的字，靠 class 区分
+      case 'gz':
+        return element(
+          state,
+          node,
+          'ins',
+          { className: [cls('gz')], 'data-guji-src': attributes.src },
+          children
+        )
+
       case 'tt': {
         const n = parseLevel(attributes.n, options.maxLevel)
         return element(

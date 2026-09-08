@@ -83,13 +83,15 @@
       "name": "bz/basic",
       "guji": "帝曰((朕))知之矣。",
       "directive": "帝曰:bz[朕]知之矣。",
-      "html": "<p>帝曰<ins class=\"guji-bz\">朕</ins>知之矣。</p>"
+      "html": "<p>帝曰<ins class=\"guji-bz\">朕</ins>知之矣。</p>",
+      "note": "单纯添甲：底本无、定本有"
     },
     {
       "name": "sz/basic",
       "guji": "帝曰知{{之}}之矣。",
       "directive": "帝曰知:sz[之]之矣。",
-      "html": "<p>帝曰知<del class=\"guji-sz\">之</del>之矣。</p>"
+      "html": "<p>帝曰知<del class=\"guji-sz\">之</del>之矣。</p>",
+      "note": "单纯删甲：底本有、定本无"
     },
     {
       "name": "bz/single-paren",
@@ -121,6 +123,127 @@
       "guji": "((未閉合",
       "directive": "((未閉合",
       "html": "<p>((未閉合</p>"
+    },
+    {
+      "name": "gz/basic",
+      "note": "以甲改乙：改字 + 紧随其后的删字",
+      "guji": "原作[甲]{{乙}}。",
+      "directive": "原作:gz[甲]:sz[乙]。",
+      "html": "<p>原作<ins class=\"guji-gz\">甲</ins><del class=\"guji-sz\">乙</del>。</p>"
+    },
+    {
+      "name": "gz/standalone",
+      "note": "改字本身是独立记号，不要求相邻删字",
+      "guji": "[甲]",
+      "directive": ":gz[甲]",
+      "html": "<p><ins class=\"guji-gz\">甲</ins></p>"
+    },
+    {
+      "name": "gz/nested",
+      "note": "内容递归解析",
+      "guji": "[《論語》]{{《論语》}}",
+      "directive": ":gz[:sm[論語]]:sz[:sm[論语]]",
+      "html": "<p><ins class=\"guji-gz\"><span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>論語<span class=\"guji-sm-mark\">》</span></span></ins><del class=\"guji-sz\"><span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>論语<span class=\"guji-sm-mark\">》</span></span></del></p>"
+    },
+    {
+      "name": "gz/in-jz",
+      "guji": "正文<[甲]{{乙}}>",
+      "directive": "正文:jz[:gz[甲]:sz[乙]]",
+      "html": "<p>正文<span class=\"guji-jz\"><ins class=\"guji-gz\">甲</ins><del class=\"guji-sz\">乙</del></span></p>"
+    },
+    {
+      "name": "gz/with-src",
+      "note": "校勘依据用 src 属性",
+      "guji": ":gz[甲]{src=據宋本}:sz[乙]",
+      "directive": ":gz[甲]{src=據宋本}:sz[乙]",
+      "html": "<p><ins class=\"guji-gz\" data-guji-src=\"據宋本\">甲</ins><del class=\"guji-sz\">乙</del></p>"
+    },
+    {
+      "name": "gz/inline-link",
+      "note": "`]` 后为 `(`，是行内链接",
+      "guji": "[說文](s.html)",
+      "directive": "[說文](s.html)",
+      "html": "<p><a href=\"s.html\">說文</a></p>"
+    },
+    {
+      "name": "gz/ref-link",
+      "note": "`]` 后为 `[`，是引用式链接",
+      "guji": "[說文][1]",
+      "directive": "[說文][1]",
+      "html": "<p>[說文][1]</p>"
+    },
+    {
+      "name": "gz/link-definition",
+      "note": "`]` 后为 `:`，是链接定义",
+      "guji": "[說文]: https://example.org",
+      "directive": "[說文]: https://example.org",
+      "html": ""
+    },
+    {
+      "name": "gz/footnote",
+      "note": "`[` 后为 `^`，是脚注",
+      "guji": "腳註[^1]",
+      "directive": "腳註[^1]",
+      "html": "<p>腳註[^1]</p>"
+    },
+    {
+      "name": "gz/task-list-open",
+      "note": "内容紧邻空白",
+      "guji": "- [ ] 未完成",
+      "directive": "- [ ] 未完成",
+      "html": "<ul>\n<li>[ ] 未完成</li>\n</ul>"
+    },
+    {
+      "name": "gz/task-list-done",
+      "note": "内容无 CJK",
+      "guji": "- [x] 已完成",
+      "directive": "- [x] 已完成",
+      "html": "<ul>\n<li>[x] 已完成</li>\n</ul>"
+    },
+    {
+      "name": "gz/reserved-double",
+      "note": "`[[…]]` 预留给阙文",
+      "guji": "[[闕文]]",
+      "directive": "[[闕文]]",
+      "html": "<p>[[闕文]]</p>"
+    },
+    {
+      "name": "gz/directive-label",
+      "note": "`[` 前为 ASCII 字母，是指令 label",
+      "guji": ":jz[孔子也]",
+      "directive": ":jz[孔子也]",
+      "html": "<p><span class=\"guji-jz\">孔子也</span></p>"
+    },
+    {
+      "name": "gz/no-cjk",
+      "guji": "見 [abc] 者",
+      "directive": "見 [abc] 者",
+      "html": "<p>見 [abc] 者</p>"
+    },
+    {
+      "name": "gz/spaced",
+      "guji": "[ 甲 ]",
+      "directive": "[ 甲 ]",
+      "html": "<p>[ 甲 ]</p>"
+    },
+    {
+      "name": "gz/unclosed",
+      "guji": "[甲",
+      "directive": "[甲",
+      "html": "<p>[甲</p>"
+    },
+    {
+      "name": "gz/escape",
+      "guji": "\\[甲\\]",
+      "directive": "\\[甲\\]",
+      "html": "<p>[甲]</p>"
+    },
+    {
+      "name": "mixed/jiaokan-three",
+      "note": "校勘三式各有各的记号与颜色",
+      "guji": "改：[甲]{{乙}}；刪：{{丙}}；補：((丁))。",
+      "directive": "改：:gz[甲]:sz[乙]；刪：:sz[丙]；補：:bz[丁]。",
+      "html": "<p>改：<ins class=\"guji-gz\">甲</ins><del class=\"guji-sz\">乙</del>；刪：<del class=\"guji-sz\">丙</del>；補：<ins class=\"guji-bz\">丁</ins>。</p>"
     },
     {
       "name": "tt/basic",

@@ -78,15 +78,18 @@ interface GujiHtmlOptions extends GujiOptions {
 | 指令 | HTML |
 | --- | --- |
 | `jz` 夹注 | `<span class="guji-jz">` |
-| `bz` 补字 | `<ins class="guji-bz">` |
-| `sz` 删字 | `<del class="guji-sz">` |
+| `bz` 补字 | `<ins class="guji-bz">`（绿） |
+| `sz` 删字 | `<del class="guji-sz">`（红加删除线） |
+| `gz` 改字 | `<ins class="guji-gz">`（灰） |
 | `tt` 抬头 | `<span class="guji-tt" data-guji-n="1">`（容器形态为 `<div>`） |
 | `kg` 空格 | `<span class="guji-kg" data-guji-n="1">　</span>` |
 | `zm` 专名号 | `<span class="guji-zm">` |
 | `sm` 书名号 | `<span class="guji-sm">`，`《》` 包在 `<span class="guji-sm-mark">` 里 |
 
-补字用 `<ins>`、删字用 `<del>`，是因为它们在语义上正是 HTML 的插入与删除，
-屏幕阅读器与纯文本提取工具都能正确理解。
+补字、改字用 `<ins>`，删字用 `<del>`，是因为它们在语义上正是 HTML 的插入与删除，
+屏幕阅读器与纯文本提取工具都能正确理解；补字与改字靠 class 区分，
+因为「改」是一次操作而非「添 + 删」，见
+[`spec/syntax.md` §5 校勘三式](../../spec/syntax.md#5-校勘三式)。
 空格里放的是真的表意空格（U+3000）而不是靠 CSS 撑宽度，复制粘贴不会丢。
 
 完整约定见 [`spec/ast.md`](../../spec/ast.md)。
@@ -106,15 +109,17 @@ interface GujiHtmlOptions extends GujiOptions {
   --guji-line-height: 2.1;
   --guji-max-raise: 3;      /* 为抬头预留的最大格数 */
   --guji-jz-size: 0.72em;
-  --guji-bz-color: #1d7a4c;
-  --guji-sz-color: #a8332a;
+  --guji-bz-color: #1d7a4c;   /* 补字：绿 */
+  --guji-sz-color: #b3261e;   /* 删字：红 */
+  --guji-gz-color: #6f6f6f;   /* 改字：灰 */
 }
 ```
 
 两个可选体例类：
 
 * `.guji-doc--jz-parens` —— 夹注加圆括号
-* `.guji-doc--jiaokan-marks` —— 补字、删字改用点校本的〔〕（）体例
+* `.guji-doc--jiaokan-marks` —— 补字、改字加〔〕，删字加（），
+  即点校本体例。只靠颜色区分对色觉障碍读者不友好，需要无障碍时打开这一条。
 
 ## 已知限制
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { gujiToDocument, gujiToHtml, SPEC_VERSION } from '../src/index.js'
+import { gujiCss, gujiToDocument, gujiToHtml, SPEC_VERSION } from '../src/index.js'
 import { cases, SPEC_FIXTURE_VERSION } from './fixtures.js'
 
 describe('渲染语料', () => {
@@ -54,11 +54,42 @@ describe('选项', () => {
   })
 })
 
+describe('校勘三式互相区分', () => {
+  const html = gujiToHtml('改：[甲]{{乙}}；刪：{{丙}}；補：((丁))。')
+
+  it('改字是 ins.guji-gz，删字是 del.guji-sz', () => {
+    expect(html).toContain('<ins class="guji-gz">甲</ins><del class="guji-sz">乙</del>')
+  })
+
+  it('单纯删字只出 del', () => {
+    expect(html).toContain('刪：<del class="guji-sz">丙</del>')
+  })
+
+  it('单纯补字是 ins.guji-bz，与改字的 class 不同', () => {
+    expect(html).toContain('補：<ins class="guji-bz">丁</ins>')
+  })
+
+  it('三种记号各出现一次，互不混淆', () => {
+    expect(html.match(/guji-gz/g)).toHaveLength(1)
+    expect(html.match(/guji-bz/g)).toHaveLength(1)
+    expect(html.match(/guji-sz/g)).toHaveLength(2)
+  })
+
+  it('样式表给三者不同的颜色，且清掉了 ins 的默认下划线', () => {
+    expect(gujiCss).toContain('--guji-bz-color')
+    expect(gujiCss).toContain('--guji-sz-color')
+    expect(gujiCss).toContain('--guji-gz-color')
+    expect(/\.guji-bz,\s*\n\.guji-gz \{\s*\n\s*text-decoration: none;/.test(gujiCss)).toBe(true)
+  })
+})
+
 describe('指令别名', () => {
   it.each([
     [':note[注]', 'guji-jz'],
     [':add[補]', 'guji-bz'],
     [':del[刪]', 'guji-sz'],
+    [':sub[改]', 'guji-gz'],
+    [':amend[改]', 'guji-gz'],
     [':name[孔子]', 'guji-zm'],
     [':book[論語]', 'guji-sm'],
     [':space{n=1}', 'guji-kg'],
