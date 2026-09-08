@@ -1,0 +1,80 @@
+/*!
+ * print.css — 古籍 Markdown 的分页排版样式
+ * @open-guji/markdown-pdf · Apache-2.0
+ *
+ * 与 guji.css / guji-vertical.css 叠加使用。这里只管"页"的事：
+ * 页面尺寸、页边距、版心、书口与分页控制。
+ */
+
+@page {
+  size: var(--guji-page-size, A5);
+  margin: var(--guji-page-margin, 20mm 18mm);
+
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--guji-font);
+    font-size: 9pt;
+    color: #666;
+  }
+}
+
+@page :first {
+  @bottom-center {
+    content: none;
+  }
+}
+
+.guji-doc {
+  /* 打印时抬头留白按实际字号折算，不再依赖视口 */
+  --guji-raise-unit: 1em;
+  font-size: var(--guji-print-font-size, 11pt);
+  line-height: var(--guji-print-line-height, 1.85);
+}
+
+/* 标题不落在页末 */
+.guji-doc h1,
+.guji-doc h2,
+.guji-doc h3 {
+  break-after: avoid-page;
+  break-inside: avoid;
+}
+
+/* 抬头行不被切开 */
+.guji-tt,
+.guji-tt-block {
+  break-inside: avoid;
+}
+
+/* 夹注跟随正文，不单独成页 */
+.guji-jz {
+  break-inside: avoid;
+}
+
+.guji-doc p {
+  orphans: 2;
+  widows: 2;
+}
+
+/* ------------------------------------------------------ 线装书版式 */
+
+/*
+ * 可选：加边框与界行，接近雕版的版框。
+ * 用法：<article class="guji-doc guji-vertical guji-banks">
+ */
+.guji-banks {
+  --guji-frame-color: #3a3a3a;
+  --guji-frame-width: 0.6pt;
+  padding: 4mm;
+  border: calc(var(--guji-frame-width) * 3) double var(--guji-frame-color);
+}
+
+/* 界行：用重复线性渐变画出每列之间的细线 */
+.guji-banks.guji-vertical {
+  background-image: repeating-linear-gradient(
+    to left,
+    transparent,
+    transparent calc(var(--guji-print-line-height, 1.85) * 1em - var(--guji-frame-width)),
+    var(--guji-frame-color) calc(var(--guji-print-line-height, 1.85) * 1em - var(--guji-frame-width)),
+    var(--guji-frame-color) calc(var(--guji-print-line-height, 1.85) * 1em)
+  );
+}

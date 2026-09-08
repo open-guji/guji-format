@@ -1,0 +1,72 @@
+{
+  "name": "@open-guji/markdown-pdf",
+  "version": "0.1.0",
+  "description": "古籍 Markdown 的 PDF 生成器：可打印 HTML 与 Chromium 排版后端",
+  "keywords": [
+    "markdown",
+    "pdf",
+    "古籍",
+    "guji",
+    "chinese",
+    "classics",
+    "typesetting",
+    "pagedjs"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-guji/guji-markdown.git",
+    "directory": "packages/pdf"
+  },
+  "homepage": "https://github.com/open-guji/guji-markdown/tree/main/packages/pdf",
+  "bugs": "https://github.com/open-guji/guji-markdown/issues",
+  "type": "module",
+  "engines": {
+    "node": ">=18.18"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./styles/print.css": "./styles/print.css",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "guji-pdf": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "styles",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build:styles": "node scripts/build-styles.mjs",
+    "build": "npm run build:styles && tsc -p tsconfig.json",
+    "typecheck": "npm run build:styles && tsc -p tsconfig.json --noEmit",
+    "test": "npm run build:styles && vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@open-guji/markdown-core": "workspace:^",
+    "@open-guji/markdown-web": "workspace:^"
+  },
+  "peerDependencies": {
+    "pagedjs": "^0.4.3",
+    "playwright": "^1.49.0"
+  },
+  "peerDependenciesMeta": {
+    "playwright": {
+      "optional": true
+    },
+    "pagedjs": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4",
+    "@types/node": "^22.10.0"
+  }
+}

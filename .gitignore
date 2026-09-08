@@ -1,0 +1,15 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+coverage/
+out/
+*.log
+.pnpm-store/
+
+# examples/build-demo.mjs 的产物
+examples/web-demo/*.html
+!examples/web-demo/template.html
+
+# scripts/build-styles.mjs 的产物
+packages/*/src/styles.generated.ts

@@ -1,0 +1,160 @@
+/*!
+ * guji.css — 古籍 Markdown 基础样式（横排）
+ * @open-guji/markdown-web · Apache-2.0
+ *
+ * 渲染结果本身只是一段 HTML 片段，请把它放进一个带 .guji-doc 的容器里：
+ *
+ *   <article class="guji-doc">…渲染结果…</article>
+ *
+ * 所有可调项都是自定义属性，覆盖 .guji-doc 上的变量即可换主题。
+ */
+
+.guji-doc {
+  /* 字体与行距 */
+  --guji-font: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "STSong",
+    "SimSun", "Nimbus Roman", serif;
+  --guji-line-height: 1.95;
+
+  /* 抬头：一格的尺寸，以及为抬头预留的最大格数 */
+  --guji-raise-unit: 1em;
+  --guji-max-raise: 2;
+
+  /* 夹注 */
+  --guji-jz-size: 0.78em;
+  --guji-jz-color: #55524c;
+
+  /* 校勘 */
+  --guji-bz-color: #1d7a4c;
+  --guji-sz-color: #a8332a;
+
+  /* 专名号 / 书名号 */
+  --guji-line-color: currentColor;
+  --guji-line-thickness: 0.06em;
+  --guji-line-offset: 0.18em;
+
+  font-family: var(--guji-font);
+  line-height: var(--guji-line-height);
+  text-align: justify;
+
+  /* 抬头是向行首方向外移的，容器要先让出这些空间 */
+  padding-inline-start: calc(var(--guji-max-raise) * var(--guji-raise-unit));
+}
+
+/* ------------------------------------------------------------------ 夹注 */
+
+.guji-jz {
+  font-size: var(--guji-jz-size);
+  color: var(--guji-jz-color);
+  line-height: 1.4;
+}
+
+/* 可选：加圆括号，便于无样式降级与纯文本复制之外的场合区分正文与注 */
+.guji-doc--jz-parens .guji-jz::before {
+  content: "（";
+}
+.guji-doc--jz-parens .guji-jz::after {
+  content: "）";
+}
+
+/* ------------------------------------------------------- 补字 / 删字 */
+
+.guji-bz {
+  color: var(--guji-bz-color);
+  text-decoration: underline dotted;
+  text-underline-offset: var(--guji-line-offset);
+}
+
+.guji-sz {
+  color: var(--guji-sz-color);
+  text-decoration: line-through;
+  opacity: 0.75;
+}
+
+/* 可选：改用点校本的括号体例，〔補〕（刪） */
+.guji-doc--jiaokan-marks .guji-bz {
+  text-decoration: none;
+}
+.guji-doc--jiaokan-marks .guji-bz::before {
+  content: "〔";
+}
+.guji-doc--jiaokan-marks .guji-bz::after {
+  content: "〕";
+}
+.guji-doc--jiaokan-marks .guji-sz {
+  text-decoration: none;
+}
+.guji-doc--jiaokan-marks .guji-sz::before {
+  content: "（";
+}
+.guji-doc--jiaokan-marks .guji-sz::after {
+  content: "）";
+}
+
+/* ------------------------------------------------------- 抬头 / 空格 */
+
+/*
+ * 抬头是一整行的事，所以行盒必须是块级的；
+ * data-guji-n 只在这里翻译成数值，其余规则统一用 --guji-n。
+ */
+.guji-tt {
+  display: block;
+  margin-inline-start: calc(var(--guji-n, 1) * var(--guji-raise-unit) * -1);
+}
+
+.guji-tt[data-guji-n="1"] { --guji-n: 1; }
+.guji-tt[data-guji-n="2"] { --guji-n: 2; }
+.guji-tt[data-guji-n="3"] { --guji-n: 3; }
+.guji-tt[data-guji-n="4"] { --guji-n: 4; }
+.guji-tt[data-guji-n="5"] { --guji-n: 5; }
+.guji-tt[data-guji-n="6"] { --guji-n: 6; }
+.guji-tt[data-guji-n="7"] { --guji-n: 7; }
+.guji-tt[data-guji-n="8"] { --guji-n: 8; }
+.guji-tt[data-guji-n="9"] { --guji-n: 9; }
+
+/* 容器形态：多行同时抬头。抬头是逐行的事，所以块内保留源文的换行 */
+.guji-tt-block > :first-child { margin-block-start: 0; }
+.guji-tt-block > :last-child { margin-block-end: 0; }
+.guji-tt-block p { white-space: pre-line; }
+
+/*
+ * 空格里放的是真的表意空格（U+3000），复制粘贴与纯文本提取都能保留，
+ * 所以这里只要保证它不被折叠掉。
+ */
+.guji-kg {
+  white-space: pre;
+}
+
+/* -------------------------------------------------- 专名号 / 书名号 */
+
+.guji-zm {
+  text-decoration-line: underline;
+  text-decoration-color: var(--guji-line-color);
+  text-decoration-thickness: var(--guji-line-thickness);
+  text-underline-offset: var(--guji-line-offset);
+}
+
+.guji-sm {
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: var(--guji-line-color);
+  text-decoration-thickness: var(--guji-line-thickness);
+  text-underline-offset: var(--guji-line-offset);
+}
+
+/* 《》本身不参与画线，只是可选的可见标点 */
+.guji-sm-mark {
+  text-decoration: none;
+}
+
+/* -------------------------------------------------------------- 其他 */
+
+.guji-unknown {
+  border-block-end: 1px dashed rgba(128, 128, 128, 0.6);
+}
+
+@media print {
+  .guji-doc {
+    orphans: 2;
+    widows: 2;
+  }
+}

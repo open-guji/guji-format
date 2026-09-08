@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}} · guji-markdown</title>
+<style>
+{{css}}
+
+body { margin: 0; background: #f6f3ec; color: #241f1a; font-family: system-ui, sans-serif; }
+header { padding: 1rem 1.5rem; border-bottom: 1px solid #ddd6c7; display: flex; gap: 1rem; align-items: baseline; }
+header h1 { font-size: 1rem; margin: 0; font-weight: 600; }
+header nav { margin-inline-start: auto; font-size: .85rem; }
+main { max-width: 46rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.pane { background: #fffdf8; border: 1px solid #e3dccc; border-radius: .4rem; padding: 1.5rem 2rem; margin-block-end: 1.5rem; }
+.pane.vertical { height: 30rem; overflow-x: auto; }
+.pane.vertical .guji-doc { height: 100%; }
+details { margin-block-end: 1.5rem; }
+summary { cursor: pointer; font-size: .9rem; color: #5b5347; }
+pre { overflow-x: auto; background: #fffdf8; border: 1px solid #e3dccc; border-radius: .4rem; padding: 1rem; font-size: .8rem; line-height: 1.6; }
+.toggle { font-size: .85rem; color: #5b5347; }
+</style>
+</head>
+<body>
+<header>
+  <h1>{{title}}</h1>
+  <label class="toggle"><input type="checkbox" id="vertical"> 竖排</label>
+  <nav>{{nav}}</nav>
+</header>
+<main>
+  <div class="pane" id="pane">
+    <article class="guji-doc" id="doc">
+{{content}}
+    </article>
+  </div>
+
+  <details>
+    <summary>源文（古籍 Markdown）</summary>
+    <pre>{{source}}</pre>
+  </details>
+
+  <details>
+    <summary>中间表示（Directive Markdown）</summary>
+    <pre>{{directive}}</pre>
+  </details>
+</main>
+<script>
+const box = document.getElementById('vertical')
+if (box) {
+  box.addEventListener('change', () => {
+    document.getElementById('doc').classList.toggle('guji-vertical', box.checked)
+    document.getElementById('pane').classList.toggle('vertical', box.checked)
+  })
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "@open-guji/markdown-examples",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build-demo.mjs"
+  },
+  "dependencies": {
+    "@open-guji/markdown-core": "workspace:^",
+    "@open-guji/markdown-web": "workspace:^"
+  }
+}

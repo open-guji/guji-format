@@ -1,0 +1,362 @@
+{
+  "$schema": "./cases.schema.json",
+  "version": "0.1.0",
+  "note": "guji-markdown 一致性测试语料。任何平台的实现都应通过这里的全部用例，见 ../conformance.md。",
+  "cases": [
+    {
+      "name": "jz/basic",
+      "note": "夹注基本用法",
+      "guji": "子曰<孔子也>：學而時習之。",
+      "directive": "子曰:jz[孔子也]：學而時習之。",
+      "html": "<p>子曰<span class=\"guji-jz\">孔子也</span>：學而時習之。</p>"
+    },
+    {
+      "name": "jz/multiple",
+      "guji": "不亦說乎<悅也>，不亦樂乎<音洛>。",
+      "directive": "不亦說乎:jz[悅也]，不亦樂乎:jz[音洛]。",
+      "html": "<p>不亦說乎<span class=\"guji-jz\">悅也</span>，不亦樂乎<span class=\"guji-jz\">音洛</span>。</p>"
+    },
+    {
+      "name": "jz/nested",
+      "note": "夹注可嵌套",
+      "guji": "正文<注文<再注>>",
+      "directive": "正文:jz[注文:jz[再注]]",
+      "html": "<p>正文<span class=\"guji-jz\">注文<span class=\"guji-jz\">再注</span></span></p>"
+    },
+    {
+      "name": "jz/html-tag",
+      "note": "`<` 后为 ASCII 字母，仍是原始 HTML",
+      "guji": "甲<span>乙</span>丙",
+      "directive": "甲<span>乙</span>丙",
+      "html": "<p>甲乙丙</p>"
+    },
+    {
+      "name": "jz/autolink",
+      "note": "自动链接不受影响",
+      "guji": "見<https://example.com/a/b>。",
+      "directive": "見<https://example.com/a/b>。",
+      "html": "<p>見<a href=\"https://example.com/a/b\">https://example.com/a/b</a>。</p>"
+    },
+    {
+      "name": "jz/comparison",
+      "note": "`<` 后为空白，按字面",
+      "guji": "a < b 且 b > c",
+      "directive": "a < b 且 b > c",
+      "html": "<p>a &#x3C; b 且 b > c</p>"
+    },
+    {
+      "name": "jz/unclosed",
+      "note": "未闭合即字面",
+      "guji": "子曰<孔子也",
+      "directive": "子曰<孔子也",
+      "html": "<p>子曰&#x3C;孔子也</p>"
+    },
+    {
+      "name": "jz/cross-line",
+      "note": "记号不跨行",
+      "guji": "子曰<孔子\n也>",
+      "directive": "子曰<孔子\n也>",
+      "html": "<p>子曰&#x3C;孔子\n也></p>"
+    },
+    {
+      "name": "jz/escape",
+      "note": "反斜杠转义",
+      "guji": "此處用 \\<尖括號\\>",
+      "directive": "此處用 \\<尖括號\\>",
+      "html": "<p>此處用 &#x3C;尖括號></p>"
+    },
+    {
+      "name": "jz/label-bracket",
+      "note": "不配对的方括号必须转义",
+      "guji": "正文<注[未閉合>",
+      "directive": "正文:jz[注\\[未閉合]",
+      "html": "<p>正文<span class=\"guji-jz\">注[未閉合</span></p>"
+    },
+    {
+      "name": "jz/label-link",
+      "note": "配对的方括号保持原样",
+      "guji": "正文<見[說文](s.html)>",
+      "directive": "正文:jz[見[說文](s.html)]",
+      "html": "<p>正文<span class=\"guji-jz\">見<a href=\"s.html\">說文</a></span></p>"
+    },
+    {
+      "name": "bz/basic",
+      "guji": "帝曰((朕))知之矣。",
+      "directive": "帝曰:bz[朕]知之矣。",
+      "html": "<p>帝曰<ins class=\"guji-bz\">朕</ins>知之矣。</p>"
+    },
+    {
+      "name": "sz/basic",
+      "guji": "帝曰知{{之}}之矣。",
+      "directive": "帝曰知:sz[之]之矣。",
+      "html": "<p>帝曰知<del class=\"guji-sz\">之</del>之矣。</p>"
+    },
+    {
+      "name": "bz/single-paren",
+      "note": "单层括号无特殊含义",
+      "guji": "此(非補字)也",
+      "directive": "此(非補字)也",
+      "html": "<p>此(非補字)也</p>"
+    },
+    {
+      "name": "sz/single-brace",
+      "guji": "此{非刪字}也",
+      "directive": "此{非刪字}也",
+      "html": "<p>此{非刪字}也</p>"
+    },
+    {
+      "name": "bz/sz/adjacent",
+      "guji": "本作((甲)){{乙}}",
+      "directive": "本作:bz[甲]:sz[乙]",
+      "html": "<p>本作<ins class=\"guji-bz\">甲</ins><del class=\"guji-sz\">乙</del></p>"
+    },
+    {
+      "name": "bz/nested",
+      "guji": "((補((再補))))",
+      "directive": ":bz[補:bz[再補]]",
+      "html": "<p><ins class=\"guji-bz\">補<ins class=\"guji-bz\">再補</ins></ins></p>"
+    },
+    {
+      "name": "bz/unclosed",
+      "guji": "((未閉合",
+      "directive": "((未閉合",
+      "html": "<p>((未閉合</p>"
+    },
+    {
+      "name": "tt/basic",
+      "guji": "^陛下嗣位以來",
+      "directive": ":tt{n=1}陛下嗣位以來",
+      "html": "<p><span class=\"guji-tt\" data-guji-n=\"1\">陛下嗣位以來</span></p>"
+    },
+    {
+      "name": "tt/level2",
+      "guji": "^^太祖高皇帝之法",
+      "directive": ":tt{n=2}太祖高皇帝之法",
+      "html": "<p><span class=\"guji-tt\" data-guji-n=\"2\">太祖高皇帝之法</span></p>"
+    },
+    {
+      "name": "tt/after-text",
+      "note": "抬头作用域到行尾",
+      "guji": "臣某言。\n^陛下嗣位以來",
+      "directive": "臣某言。\n:tt{n=1}陛下嗣位以來",
+      "html": "<p>臣某言。\n<span class=\"guji-tt\" data-guji-n=\"1\">陛下嗣位以來</span></p>"
+    },
+    {
+      "name": "tt/in-blockquote",
+      "note": "块引用内的行首标记",
+      "guji": "> ^陛下",
+      "directive": "> :tt{n=1}陛下",
+      "html": "<blockquote>\n<p><span class=\"guji-tt\" data-guji-n=\"1\">陛下</span></p>\n</blockquote>"
+    },
+    {
+      "name": "tt/in-list",
+      "guji": "- ^陛下",
+      "directive": "- :tt{n=1}陛下",
+      "html": "<ul>\n<li><span class=\"guji-tt\" data-guji-n=\"1\">陛下</span></li>\n</ul>"
+    },
+    {
+      "name": "tt/heading",
+      "guji": "# ^陛下",
+      "directive": "# :tt{n=1}陛下",
+      "html": "<h1><span class=\"guji-tt\" data-guji-n=\"1\">陛下</span></h1>"
+    },
+    {
+      "name": "tt/not-line-start",
+      "guji": "甲 ^ 乙",
+      "directive": "甲 ^ 乙",
+      "html": "<p>甲 ^ 乙</p>"
+    },
+    {
+      "name": "tt/escape",
+      "guji": "\\^不抬頭",
+      "directive": "\\^不抬頭",
+      "html": "<p>^不抬頭</p>"
+    },
+    {
+      "name": "kg/basic",
+      "guji": ".皇上聖明",
+      "directive": ":kg{n=1}皇上聖明",
+      "html": "<p><span class=\"guji-kg\" data-guji-n=\"1\">　</span>皇上聖明</p>"
+    },
+    {
+      "name": "kg/level2",
+      "guji": "..列祖列宗",
+      "directive": ":kg{n=2}列祖列宗",
+      "html": "<p><span class=\"guji-kg\" data-guji-n=\"2\">　　</span>列祖列宗</p>"
+    },
+    {
+      "name": "kg/escape",
+      "guji": "\\.不空格",
+      "directive": "\\.不空格",
+      "html": "<p>.不空格</p>"
+    },
+    {
+      "name": "tt/kg/combined",
+      "note": "`^` 在前，`.` 在后",
+      "guji": "^.文",
+      "directive": ":tt{n=1}:kg{n=1}文",
+      "html": "<p><span class=\"guji-tt\" data-guji-n=\"1\"><span class=\"guji-kg\" data-guji-n=\"1\">　</span>文</span></p>"
+    },
+    {
+      "name": "kg/mid-line",
+      "note": "行中的点号按字面",
+      "guji": "甲.乙",
+      "directive": "甲.乙",
+      "html": "<p>甲.乙</p>"
+    },
+    {
+      "name": "zm/basic",
+      "guji": "/孔子/適/周/，問禮於/老聃/。",
+      "directive": ":zm[孔子]適:zm[周]，問禮於:zm[老聃]。",
+      "html": "<p><span class=\"guji-zm\">孔子</span>適<span class=\"guji-zm\">周</span>，問禮於<span class=\"guji-zm\">老聃</span>。</p>"
+    },
+    {
+      "name": "zm/line-start",
+      "guji": "/司馬遷/撰",
+      "directive": ":zm[司馬遷]撰",
+      "html": "<p><span class=\"guji-zm\">司馬遷</span>撰</p>"
+    },
+    {
+      "name": "zm/url",
+      "note": "URL 中的斜杠不匹配",
+      "guji": "見 https://example.com/a/b 可知",
+      "directive": "見 https://example.com/a/b 可知",
+      "html": "<p>見 https://example.com/a/b 可知</p>"
+    },
+    {
+      "name": "zm/bare-path",
+      "guji": "見 src/main/java 目錄",
+      "directive": "見 src/main/java 目錄",
+      "html": "<p>見 src/main/java 目錄</p>"
+    },
+    {
+      "name": "zm/date",
+      "guji": "民國 24/5/1 事",
+      "directive": "民國 24/5/1 事",
+      "html": "<p>民國 24/5/1 事</p>"
+    },
+    {
+      "name": "zm/no-cjk",
+      "note": "内容须含 CJK",
+      "guji": "甲 /abc/ 乙",
+      "directive": "甲 /abc/ 乙",
+      "html": "<p>甲 /abc/ 乙</p>"
+    },
+    {
+      "name": "zm/spaced",
+      "note": "紧邻空白不成立",
+      "guji": "甲 / 孔子 / 乙",
+      "directive": "甲 / 孔子 / 乙",
+      "html": "<p>甲 / 孔子 / 乙</p>"
+    },
+    {
+      "name": "zm/unclosed",
+      "guji": "甲 /孔子 乙",
+      "directive": "甲 /孔子 乙",
+      "html": "<p>甲 /孔子 乙</p>"
+    },
+    {
+      "name": "sm/basic",
+      "guji": "《春秋左氏傳》成公十三年",
+      "directive": ":sm[春秋左氏傳]成公十三年",
+      "html": "<p><span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>春秋左氏傳<span class=\"guji-sm-mark\">》</span></span>成公十三年</p>"
+    },
+    {
+      "name": "sm/with-part",
+      "guji": "《漢書·藝文志》著錄",
+      "directive": ":sm[漢書·藝文志]著錄",
+      "html": "<p><span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>漢書·藝文志<span class=\"guji-sm-mark\">》</span></span>著錄</p>"
+    },
+    {
+      "name": "sm/nested",
+      "guji": "《漢書《藝文志》》",
+      "directive": ":sm[漢書:sm[藝文志]]",
+      "html": "<p><span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>漢書<span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>藝文志<span class=\"guji-sm-mark\">》</span></span><span class=\"guji-sm-mark\">》</span></span></p>"
+    },
+    {
+      "name": "sm/unclosed",
+      "guji": "《春秋",
+      "directive": "《春秋",
+      "html": "<p>《春秋</p>"
+    },
+    {
+      "name": "inert/code-span",
+      "guji": "行內代碼 `<注>` 與 `((補))`",
+      "directive": "行內代碼 `<注>` 與 `((補))`",
+      "html": "<p>行內代碼 <code>&#x3C;注></code> 與 <code>((補))</code></p>"
+    },
+    {
+      "name": "inert/fence",
+      "guji": "```\n<注>\n((補))\n^抬頭\n```",
+      "directive": "```\n<注>\n((補))\n^抬頭\n```",
+      "html": "<pre><code>&#x3C;注>\n((補))\n^抬頭\n</code></pre>"
+    },
+    {
+      "name": "inert/fence-tilde",
+      "guji": "~~~text\n/孔子/\n~~~",
+      "directive": "~~~text\n/孔子/\n~~~",
+      "html": "<pre><code class=\"language-text\">/孔子/\n</code></pre>"
+    },
+    {
+      "name": "inert/indented-code",
+      "guji": "段落\n\n    <注>\n    ^抬頭\n\n段落",
+      "directive": "段落\n\n    <注>\n    ^抬頭\n\n段落",
+      "html": "<p>段落</p>\n<pre><code>&#x3C;注>\n^抬頭\n</code></pre>\n<p>段落</p>"
+    },
+    {
+      "name": "inert/link-destination",
+      "guji": "[說文](https://x.com/a/b)",
+      "directive": "[說文](https://x.com/a/b)",
+      "html": "<p><a href=\"https://x.com/a/b\">說文</a></p>"
+    },
+    {
+      "name": "inert/link-text",
+      "note": "链接文字内的记号照常生效",
+      "guji": "[《論語》](x.html)",
+      "directive": "[:sm[論語]](x.html)",
+      "html": "<p><a href=\"x.html\"><span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>論語<span class=\"guji-sm-mark\">》</span></span></a></p>"
+    },
+    {
+      "name": "inert/image",
+      "guji": "![圖](a/b/c.png)",
+      "directive": "![圖](a/b/c.png)",
+      "html": "<p><img src=\"a/b/c.png\" alt=\"圖\"></p>"
+    },
+    {
+      "name": "nest/jz-contains-all",
+      "guji": "子曰<《論語》/顏淵/篇>",
+      "directive": "子曰:jz[:sm[論語]:zm[顏淵]篇]",
+      "html": "<p>子曰<span class=\"guji-jz\"><span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>論語<span class=\"guji-sm-mark\">》</span></span><span class=\"guji-zm\">顏淵</span>篇</span></p>"
+    },
+    {
+      "name": "nest/emphasis",
+      "guji": "**/孔子/**",
+      "directive": "**:zm[孔子]**",
+      "html": "<p><strong><span class=\"guji-zm\">孔子</span></strong></p>"
+    },
+    {
+      "name": "nest/bz-contains-zm",
+      "guji": "((/孔子/))",
+      "directive": ":bz[:zm[孔子]]",
+      "html": "<p><ins class=\"guji-bz\"><span class=\"guji-zm\">孔子</span></ins></p>"
+    },
+    {
+      "name": "nest/sm-in-jz",
+      "guji": "正文<見《爾雅》>",
+      "directive": "正文:jz[見:sm[爾雅]]",
+      "html": "<p>正文<span class=\"guji-jz\">見<span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>爾雅<span class=\"guji-sm-mark\">》</span></span></span></p>"
+    },
+    {
+      "name": "mixed/edict",
+      "guji": "^惟我\n.太祖高皇帝，起自布衣。/朱元璋/克/金陵/，遂有天下。",
+      "directive": ":tt{n=1}惟我\n:kg{n=1}太祖高皇帝，起自布衣。:zm[朱元璋]克:zm[金陵]，遂有天下。",
+      "html": "<p><span class=\"guji-tt\" data-guji-n=\"1\">惟我</span>\n<span class=\"guji-kg\" data-guji-n=\"1\">　</span>太祖高皇帝，起自布衣。<span class=\"guji-zm\">朱元璋</span>克<span class=\"guji-zm\">金陵</span>，遂有天下。</p>"
+    },
+    {
+      "name": "mixed/annotated",
+      "guji": "《明太祖實錄》卷一<太祖，諱元璋，字國瑞>載其事((甚詳)){{未詳}}。",
+      "directive": ":sm[明太祖實錄]卷一:jz[太祖，諱元璋，字國瑞]載其事:bz[甚詳]:sz[未詳]。",
+      "html": "<p><span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>明太祖實錄<span class=\"guji-sm-mark\">》</span></span>卷一<span class=\"guji-jz\">太祖，諱元璋，字國瑞</span>載其事<ins class=\"guji-bz\">甚詳</ins><del class=\"guji-sz\">未詳</del>。</p>"
+    }
+  ]
+}

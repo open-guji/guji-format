@@ -1,0 +1,63 @@
+/*!
+ * guji-vertical.css — 竖排（右起直行）主题
+ * 依赖 guji.css，需在其后引入。
+ *
+ *   <article class="guji-doc guji-vertical">…</article>
+ *
+ * 重要：竖排下"一行有多长"由容器的**高度**决定——vertical-rl 的行内轴是竖直的，
+ * 所以对这个元素来说 height 才是 inline-size，block-size 反而是宽度。
+ * 本文件刻意不设定尺寸，请在宿主页面给容器一个确定的高度，用物理的 height 最不容易搞混：
+ *
+ *   .reader        { height: 30rem; overflow-x: auto; }
+ *   .guji-vertical { height: 100%; }
+ *
+ * 没有确定高度时，一列会无限长，整篇挤成一条。
+ */
+
+.guji-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  --guji-line-offset: 0.22em;
+}
+
+/* 竖排的专名线、书名线画在字的左侧 */
+.guji-vertical .guji-zm,
+.guji-vertical .guji-sm {
+  text-underline-position: left;
+}
+
+/* 竖排通常以波浪线代替《》 */
+.guji-vertical .guji-sm-mark {
+  display: none;
+}
+
+/* 竖排下夹注仍是小字，跟随正文流 */
+.guji-vertical .guji-jz {
+  font-size: 0.62em;
+  line-height: 1.25;
+}
+
+/*
+ * 双行夹注（opt-in）：把注文塞进与正文等宽的两个短列。
+ * 这是纯 CSS 能做到的最接近效果；注文超过 --guji-jz-rows 行会溢出，
+ * 需要精确断行请用 pdf 包的排版后端。
+ *
+ *   <article class="guji-doc guji-vertical guji-doc--jz-double">
+ */
+.guji-doc--jz-double.guji-vertical .guji-jz {
+  display: inline-block;
+  writing-mode: vertical-rl;
+  font-size: 0.5em;
+  line-height: 1.05;
+  column-count: 2;
+  column-fill: auto;
+  column-gap: 0;
+  /* 行内轴是竖直的，所以"每列多长"用 inline-size 表达 */
+  inline-size: calc(var(--guji-jz-rows, 12) * 1em);
+  vertical-align: top;
+}
+
+/* 竖排下段落之间留一列的空隙更接近雕版 */
+.guji-vertical > * + * {
+  margin-block-start: 0.6em;
+}

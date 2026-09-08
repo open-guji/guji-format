@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "guji-markdown 一致性测试语料",
+  "type": "object",
+  "required": ["version", "cases"],
+  "properties": {
+    "version": { "type": "string", "description": "语料对应的规范版本" },
+    "note": { "type": "string" },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "guji", "directive"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z]+(/[a-z0-9-]+)+$" },
+          "note": { "type": "string" },
+          "guji": { "type": "string", "description": "源文" },
+          "directive": { "type": "string", "description": "规范化后的中间表示" },
+          "html": { "type": "string", "description": "渲染结果；省略则不测 HTML" },
+          "options": { "type": "object", "description": "覆盖默认选项" }
+        }
+      }
+    }
+  }
+}

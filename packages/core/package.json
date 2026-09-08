@@ -1,0 +1,58 @@
+{
+  "name": "@open-guji/markdown-core",
+  "version": "0.1.0",
+  "description": "古籍 Markdown 扩展的核心：短记号 → Directive 规范化器与 remark 插件",
+  "keywords": [
+    "markdown",
+    "remark",
+    "directive",
+    "古籍",
+    "guji",
+    "chinese",
+    "classics"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-guji/guji-markdown.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/open-guji/guji-markdown/tree/main/packages/core",
+  "bugs": "https://github.com/open-guji/guji-markdown/issues",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18.18"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@types/mdast": "^4.0.4",
+    "mdast-util-directive": "^3.1.0",
+    "micromark-extension-directive": "^4.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
