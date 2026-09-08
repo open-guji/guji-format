@@ -48,7 +48,7 @@
     "build": "npm run build:styles && tsc -p tsconfig.json",
     "typecheck": "npm run build:styles && tsc -p tsconfig.json --noEmit",
     "test": "npm run build:styles && vitest run",
-    "prepublishOnly": "npm run build"
+    "prepack": "npm run build"
   },
   "dependencies": {
     "@open-guji/markdown-core": "workspace:^",
@@ -63,5 +63,8 @@
   "devDependencies": {
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

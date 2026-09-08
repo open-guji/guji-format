@@ -129,6 +129,8 @@ gujiToDirective('^惟我\n.皇上')
 各包的详细 API 见对应目录下的 README：
 [core](./packages/core/README.md) · [web](./packages/web/README.md) · [pdf](./packages/pdf/README.md)。
 
+参与开发见 [CONTRIBUTING.md](./CONTRIBUTING.md)，发布见 [RELEASING.md](./RELEASING.md)。
+
 ## 设计原则
 
 1. **源文可读**：不加工具也能通读，记号取自古籍整理的习惯符号。

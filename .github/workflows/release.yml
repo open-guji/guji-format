@@ -1,0 +1,81 @@
+name: Release
+
+# 打 v* 标签即发布；也可以在 Actions 页面手动触发做一次 dry run。
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: '只走流程不真的发布'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  id-token: write # npm 出处证明（provenance）需要
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: 构建与测试
+        run: |
+          pnpm build
+          pnpm test
+
+      - name: 发布前自检
+        run: node scripts/release-check.mjs
+
+      - name: 核对标签与包版本
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(node -p "require('./packages/core/package.json').version")
+          if [ "$tag" != "$pkg" ]; then
+            echo "标签 v$tag 与包版本 $pkg 不一致" >&2
+            exit 1
+          fi
+
+      # pnpm pack 负责把 workspace:^ 换成真实版本号；
+      # 再交给 npm publish，是因为 pnpm publish 没有 --provenance。
+      - name: 打包
+        run: |
+          mkdir -p "$RUNNER_TEMP/tarballs"
+          for p in core web pdf; do
+            (cd "packages/$p" && pnpm pack --pack-destination "$RUNNER_TEMP/tarballs")
+          done
+          ls -la "$RUNNER_TEMP/tarballs"
+
+      - name: 发布
+        # 顺序要紧：web 与 pdf 依赖 core
+        run: |
+          dry=""
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry-run }}" = "true" ]; then
+            dry="--dry-run"
+            echo "::notice::dry run，不会真的发布"
+          fi
+          for name in core web pdf; do
+            tarball=$(ls "$RUNNER_TEMP"/tarballs/*markdown-"$name"-*.tgz)
+            echo "::group::$name"
+            npm publish "$tarball" --access public --provenance $dry
+            echo "::endgroup::"
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
