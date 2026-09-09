@@ -43,20 +43,42 @@ pnpm release:check          # 构建 + 测试 + 对产物本身做发布前自�
 pnpm publish -r --dry-run
 ```
 
-然后正式发布：
+然后登录、打包、发布：
 
 ```bash
-npm login
-pnpm publish -r --access public --otp=123456   # 换成你的一次性验证码
+npm login                       # 走网页登录，2FA 在浏览器里过
+
+# pnpm pack 负责把 workspace:^ 换成真实版本号
+mkdir -p /tmp/guji-pub
+for p in core web pdf; do
+  (cd "packages/$p" && pnpm pack --pack-destination /tmp/guji-pub)
+done
+
+# 顺序要紧：web 与 pdf 依赖 core
+for name in core web pdf; do
+  npm publish /tmp/guji-pub/*markdown-"$name"-*.tgz --access public
+done
 ```
 
-`pnpm publish -r` 会按依赖拓扑排序，先 `core` 再 `web`、`pdf`，
-并在打包时把 `workspace:^` 换成 `^0.1.0`。
+> **发布这一步要用 `npm publish` 而不是 `pnpm publish`。**
+> 开了 2FA 之后，registry 会对每次发布要一个一次性验证码。
+> `npm publish` 支持网页版二次验证——它打印一个
+> `https://www.npmjs.com/auth/cli/…` 链接，在浏览器里点一下即可，
+> 一次授权在短时间内对后续几个包都有效。
+> `pnpm publish` 没有实现这个流程，只会直接报 `EOTP`，
+> 逼你手输 `--otp=`，而验证码 30 秒一换，三个包很容易发到一半超时。
+>
+> **但打包必须用 `pnpm pack`。** npm 不认识 `workspace:` 协议，
+> 直接 `npm publish` 一个工作区目录会把它原样写进发布出去的
+> `package.json`，装的人必然失败。先 pack 再 publish 就两头都对。
+> CI 里也是这么做的，顺带还能加上 `--provenance`（`pnpm publish` 同样没有）。
 
-> **不要用 `npm publish`。** npm 不认识 `workspace:` 协议，
-> 会把它原样写进发布出去的 `package.json`，装的人必然失败。
-> 要用 npm 的话，得先 `pnpm pack` 再 `npm publish <tarball>`——
-> CI 里正是这么做的，因为 `pnpm publish` 没有 `--provenance`。
+发布后 registry 的读路径可能有几分钟缓存，`npm view` 报 404 不代表没发成功。
+以 `npm publish` 打印的 `+ 包名@版本` 为准，或者绕开缓存直查：
+
+```bash
+curl -s "https://registry.npmjs.org/@open-guji%2Fmarkdown-core?cb=$RANDOM" | head -c 200
+```
 
 发完打标签：
 
