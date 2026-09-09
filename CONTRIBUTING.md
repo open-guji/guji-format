@@ -8,6 +8,7 @@ pnpm build      # 各包依次构建（web / pdf 的样式会先编译成 TS 模
 pnpm test       # 跑一致性测试
 pnpm typecheck
 pnpm demo       # 生成 examples/web-demo/*.html
+pnpm docs:sample # 重新生成 README 里的渲染样张
 ```
 
 Node ≥ 18.18，包管理器用 pnpm。
@@ -31,6 +32,13 @@ Node ≥ 18.18，包管理器用 pnpm。
 读取 `spec/fixtures/cases.json` 并通过
 [`spec/conformance.md`](./spec/conformance.md) 列出的三类断言。
 不要复制 `packages/core` 的代码——规范才是唯一真相源。
+
+## 改样式之后
+
+`packages/web/styles/*.css` 一动，README 里的渲染样张
+（`docs/images/sample-render.png`）就可能过期，跑一次 `pnpm docs:sample` 重新生成。
+这一步需要 playwright 和 CJK 衬线字体（`apt-get install -y fonts-noto-cjk`），
+缺了脚本会明确报出来。
 
 ## 代码风格
 

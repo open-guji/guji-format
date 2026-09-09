@@ -16,7 +16,8 @@
     "clean": "pnpm -r exec rm -rf dist *.tsbuildinfo",
     "demo": "pnpm --filter @open-guji/markdown-web run build && node examples/build-demo.mjs",
     "release:check": "pnpm build && pnpm test && node scripts/release-check.mjs",
-    "release": "pnpm publish -r --access public"
+    "release": "pnpm publish -r --access public",
+    "docs:sample": "node scripts/render-sample.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

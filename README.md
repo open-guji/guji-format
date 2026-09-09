@@ -44,6 +44,14 @@
 <span class="guji-kg" data-guji-n="1">　</span>太祖高皇帝，起自布衣。<span class="guji-zm">朱元璋</span>克<span class="guji-zm">金陵</span>，遂有天下。</p>
 ```
 
+配上 `guji.css` 之后，这段在浏览器里是这样：
+
+![古籍 Markdown 的渲染样张：「惟我」一行抬头外移一格；下一行「太祖高皇帝」前空一格；「朱元璋」「金陵」下加专名线；「明太祖實錄」下加书名波浪线，两侧带《》；「太祖，諱元璋，字國瑞」作小字夹注；校勘三式分色——改字「甚詳」灰、删字「未詳」红加删除线、补字「今」绿。](./docs/images/sample-render.png)
+
+抬头向行首方向外移一格，空格是真的表意空格（U+3000，复制粘贴不会丢），
+专名号作直线、书名号作波浪线，夹注缩为小字；
+校勘三式各有各的颜色——**改字灰、删字红加删除线、补字绿**，不看上下文也能分辨。
+
 ## 扩展一览
 
 | 记号 | 名称 | 指令 | HTML |
@@ -86,6 +94,7 @@ guji-markdown/
 │  ├─ web/               @open-guji/markdown-web   网页解析器：HTML + CSS
 │  └─ pdf/               @open-guji/markdown-pdf   PDF 生成器
 ├─ examples/             示例文本与 demo
+├─ docs/                 图片等文档资源
 └─ .github/workflows/    CI
 ```
 
