@@ -1,6 +1,10 @@
 name: Release
 
 # 打 v* 标签即发布；也可以在 Actions 页面手动触发做一次 dry run。
+#
+# 用可信发布（Trusted Publishing / OIDC），不存任何 npm 令牌：
+# npm 会用 GitHub 签发的短时 OIDC 凭据换取一次性发布权限。
+# 详见 RELEASING.md「之后的发布（CI）」。
 on:
   push:
     tags: ['v*']
@@ -13,12 +17,11 @@ on:
 
 permissions:
   contents: read
-  id-token: write # npm 出处证明（provenance）需要
+  id-token: write # 可信发布靠它换取 OIDC 凭据，缺了会以误导性的 404 失败
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    environment: npm
 
     steps:
       - uses: actions/checkout@v4
@@ -27,11 +30,18 @@ jobs:
         with:
           version: 9
 
+      # 注意：这里刻意不设 registry-url。设了会写出一份带
+      # _authToken=${NODE_AUTH_TOKEN} 的 .npmrc，令牌为空时 OIDC 反而被顶掉。
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '22.14.0'
           cache: pnpm
-          registry-url: https://registry.npmjs.org
+
+      # 可信发布要求 npm >= 11.5.1，setup-node 自带的是 10.x
+      - name: 升级 npm
+        run: |
+          npm install -g npm@latest
+          npm --version
 
       - run: pnpm install --frozen-lockfile
 
@@ -53,29 +63,36 @@ jobs:
             exit 1
           fi
 
-      # pnpm pack 负责把 workspace:^ 换成真实版本号；
-      # 再交给 npm publish，是因为 pnpm publish 没有 --provenance。
-      - name: 打包
+      # 分两步是为了各司其职：
+      #   pnpm pack —— 只有它认识 workspace:^，负责换成真实版本号；
+      #   npm publish —— 只有它认识 OIDC，而且从一个普通目录发布是它
+      #                  支持得最好的形态（避开了在 monorepo 子目录里
+      #                  直接发布时那个众所周知的 404 坑）。
+      - name: 打包并展开
         run: |
-          mkdir -p "$RUNNER_TEMP/tarballs"
+          mkdir -p "$RUNNER_TEMP/tarballs" "$RUNNER_TEMP/stage"
           for p in core web pdf; do
             (cd "packages/$p" && pnpm pack --pack-destination "$RUNNER_TEMP/tarballs")
+            mkdir -p "$RUNNER_TEMP/stage/$p"
+            tar xzf "$RUNNER_TEMP"/tarballs/*markdown-"$p"-*.tgz \
+                -C "$RUNNER_TEMP/stage/$p" --strip-components=1
           done
-          ls -la "$RUNNER_TEMP/tarballs"
+          grep -l 'workspace:' "$RUNNER_TEMP"/stage/*/package.json && {
+            echo "展开后的 package.json 里还有 workspace: 协议" >&2; exit 1; } || true
 
       - name: 发布
-        # 顺序要紧：web 与 pdf 依赖 core
+        # 顺序要紧：web 与 pdf 依赖 core。
+        # --ignore-scripts：产物已经构建好了，展开出来的目录里没有 src 与 tsconfig，
+        # 再跑一次 prepack 只会失败。
+        # 不传 --provenance：可信发布会自动生成出处证明。
         run: |
           dry=""
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry-run }}" = "true" ]; then
             dry="--dry-run"
             echo "::notice::dry run，不会真的发布"
           fi
-          for name in core web pdf; do
-            tarball=$(ls "$RUNNER_TEMP"/tarballs/*markdown-"$name"-*.tgz)
-            echo "::group::$name"
-            npm publish "$tarball" --access public --provenance $dry
+          for p in core web pdf; do
+            echo "::group::$p"
+            (cd "$RUNNER_TEMP/stage/$p" && npm publish --access public --ignore-scripts $dry)
             echo "::endgroup::"
           done
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

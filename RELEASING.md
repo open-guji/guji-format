@@ -109,15 +109,57 @@ node -e "console.log(require.resolve('@open-guji/markdown-web/styles/guji.css'))
 
 ## 3. 之后的发布（CI）
 
-首发之后，把 `.github/workflows/release.yml` 接上就不用再手动发了。
+**不要再用 npm 令牌。** npm 正在把发布权限从长期令牌迁走：
 
-需要在仓库里配置：
+| 时间 | 变化 |
+| --- | --- |
+| 2025-12-09 | **Classic 令牌**（含旧的 Automation 令牌）永久废止，开始吊销 |
+| 2026-07-31 | 绕过 2FA 的**细粒度令牌**不能再改令牌、包权限、组织成员与可信发布配置 |
+| 2027-01（预告） | 绕过 2FA 的令牌**失去直接发布能力**，只剩下读私有包和「暂存一次发布、由维护者用 2FA 批准」 |
 
-* Settings → Environments 建一个名为 `npm` 的环境（可加人工审批）；
-* 该环境里加 secret `NPM_TOKEN`，值是 npm 的 **Automation** 类型令牌
-  （Automation 令牌不受 2FA 拦截，适合 CI）。
+新建的细粒度令牌最长 90 天有效期，且默认要求 2FA。
+换句话说，往 CI 里塞一个能长期直接发布的令牌，这条路已经走到头了。
 
-流程：
+替代方案是**可信发布（Trusted Publishing / OIDC）**：
+在 npmjs.com 上把「哪个仓库的哪个工作流可以发这个包」登记下来，
+CI 里不存任何密钥，npm 用 GitHub 签发的短时 OIDC 凭据换取一次性发布权限。
+本仓库的 `.github/workflows/release.yml` 已经是这个形态。
+
+### 配置
+
+**每个包都要单独登记一次**（三个包各做一遍）：
+npmjs.com → 包页面 → Settings → Trusted Publisher → GitHub Actions，填：
+
+| 字段 | 值 |
+| --- | --- |
+| Organization or user | `open-guji` |
+| Repository | `guji-markdown` |
+| Workflow filename | `release.yml` ← **只填文件名，不要写路径** |
+| Environment | 留空（工作流里没有用 GitHub Environment） |
+
+工作流这边有三处容易踩的地方，都已经写进去了：
+
+* `permissions.id-token: write` —— 缺了会以 `E404 Not Found - PUT …` 失败，
+  这个 404 是在说「OIDC 没认过」，不是「包不存在」；
+* Node 22.14.0 起步，并且开头就 `npm install -g npm@latest`——
+  可信发布要求 npm ≥ 11.5.1，而 setup-node 自带的是 10.x；
+* `actions/setup-node` **不要**设 `registry-url`。设了会写出一份带
+  `_authToken=${NODE_AUTH_TOKEN}` 的 `.npmrc`，令牌为空时反而把 OIDC 顶掉。
+
+### 发布顺序与 workspace 协议
+
+工作流里发布分两步，各司其职：
+
+1. `pnpm pack` —— 只有它认识 `workspace:^`，负责换成真实版本号；
+2. 展开 tarball，再从那个普通目录 `npm publish` —— 只有 npm 认识 OIDC，
+   而从一个普通目录发布是它支持得最好的形态，也避开了在 monorepo
+   子目录里直接发布时那个众所周知的 404 坑。
+
+发布时带 `--ignore-scripts`（产物已经构建好，展开出来的目录里没有 `src`
+与 `tsconfig`，再跑一次 `prepack` 只会失败），不带 `--provenance`
+（可信发布会自动生成出处证明）。
+
+### 流程
 
 ```bash
 # 改版本号（三个包一起）
@@ -129,11 +171,16 @@ git tag v0.2.0
 git push && git push origin v0.2.0     # 推标签即触发发布
 ```
 
-工作流会核对标签与包版本是否一致，跑完构建、测试与自检，
-再用 `pnpm pack` + `npm publish --provenance` 逐个发布，
-产物带上可验证的构建出处。
+工作流会核对标签与包版本是否一致，跑完构建、测试与自检，再逐个发布，
+产物自动带上可验证的构建出处。
 
-想先看流程能不能跑通，去 Actions 页面手动触发一次，把 `dry-run` 留成 true。
+**第一次务必先空跑。** 去 Actions 页面手动触发一次，`dry-run` 留成 true，
+确认三个包都走到了 `npm publish --dry-run` 且没有 401/404，再去推标签。
+可信发布的错误信息普遍很误导（认证问题一律报成 404），空跑一次能省掉很多猜。
+
+需要人工审批的话，在 workflow 的 `publish` job 上加 `environment: npm`，
+同时把三个包的 Trusted Publisher 配置里的 Environment 也填成 `npm`——
+两边必须一致，否则同样是那个误导性的 404。
 
 ## 4. 版本策略
 
