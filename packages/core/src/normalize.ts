@@ -11,7 +11,9 @@
 import {
   resolveSyntaxOptions,
   type GujiSyntaxOptions,
-  type ResolvedSyntaxOptions
+  type OverflowEvent,
+  type ResolvedSyntaxOptions,
+  type SpanMarkName
 } from './options.js'
 
 /** 掩码串中代表「此字符不参与记号识别」的哨兵。 */
@@ -32,6 +34,46 @@ const BLOCK_PREFIX_RE = /^([ \t]*(?:>[ \t]?)*[ \t]*(?:(?:[-*+]|\d{1,9}[.)])[ \t]
 interface Fence {
   char: string
   len: number
+}
+
+/**
+ * 一行的扫描上下文：用来把超限事件定位回源文，并把它报出去。
+ *
+ * `colBase` 是本次扫描的 `src` 在原行中的起始列（0 起）——行首的块结构前缀
+ * 与抬头／空格标记会先被剥掉，剥掉多少就记在这里，否则报出的列号是错的。
+ */
+interface ScanContext {
+  line: number
+  colBase: number
+  onOverflow?: (event: OverflowEvent) => void
+}
+
+/**
+ * 记一次「因超长而被降级为普通文本」。
+ *
+ * 这是长度上限唯一的可观测出口：spec §0.3 规定未闭合不报错，
+ * 所以降级本身必须是静默的——但**降级发生了几次不能也是静默的**。
+ */
+function reportOverflow(
+  ctx: ScanContext,
+  mark: SpanMarkName,
+  src: string,
+  open: number,
+  from: number,
+  to: number,
+  limit: number
+): void {
+  if (!ctx.onOverflow) return
+  const content = src.slice(from, to)
+  ctx.onOverflow({
+    mark,
+    line: ctx.line,
+    // 报起始记号本身的位置，不是内容起点——这样才指得回源文
+    column: ctx.colBase + open + 1,
+    length: content.length,
+    limit,
+    preview: content.slice(0, 40)
+  })
 }
 
 function isAsciiAlnum(c: string | undefined): boolean {
@@ -185,10 +227,13 @@ function findGzClose(
   mask: string,
   from: number,
   end: number,
-  o: ResolvedSyntaxOptions
+  o: ResolvedSyntaxOptions,
+  ctx: ScanContext
 ): number {
   let i = from
-  while (i < end && i - from <= o.maxSpanLength) {
+  // 先不管长度找配对，找到之后再判长度——否则「超限」与「本来就没有配对」
+  // 会混成同一个 -1，降级就数不出来了。
+  while (i < end) {
     if (mask[i] === NUL) {
       i++
       continue
@@ -205,6 +250,11 @@ function findGzClose(
     const content = src.slice(from, i)
     if (content.length === 0) return -1
     if (o.gzRequireCjk && !hasCjk(content)) return -1
+    const limit = o.maxSpanLength.gz
+    if (content.length > limit) {
+      reportOverflow(ctx, 'gz', src, from - 1, from, i, limit)
+      return -1
+    }
     return i
   }
   return -1
@@ -272,10 +322,12 @@ function findZmClose(
   mask: string,
   from: number,
   end: number,
-  o: ResolvedSyntaxOptions
+  o: ResolvedSyntaxOptions,
+  ctx: ScanContext
 ): number {
   let i = from
-  while (i < end && i - from <= o.maxSpanLength) {
+  // 同 findGzClose：长度判在最后，好把「超限」单独数出来
+  while (i < end) {
     if (mask[i] === NUL) {
       i++
       continue
@@ -291,6 +343,11 @@ function findZmClose(
     const content = src.slice(from, i)
     if (content.length === 0) return -1
     if (o.zmRequireCjk && !hasCjk(content)) return -1
+    const limit = o.maxSpanLength.zm
+    if (content.length > limit) {
+      reportOverflow(ctx, 'zm', src, from - 1, from, i, limit)
+      return -1
+    }
     return i
   }
   return -1
@@ -338,7 +395,8 @@ function transformRange(
   mask: string,
   start: number,
   end: number,
-  o: ResolvedSyntaxOptions
+  o: ResolvedSyntaxOptions,
+  ctx: ScanContext
 ): string {
   let out = ''
   let i = start
@@ -353,35 +411,44 @@ function transformRange(
 
     if (o.bz && c === '(' && mask[i + 1] === '(') {
       const close = findPair(mask, i + 2, end, '((', '))')
-      if (close > i + 2 && close - (i + 2) <= o.maxSpanLength) {
-        out += emit('bz', transformRange(src, mask, i + 2, close, o))
-        i = close + 2
-        continue
+      if (close > i + 2) {
+        if (close - (i + 2) <= o.maxSpanLength.bz) {
+          out += emit('bz', transformRange(src, mask, i + 2, close, o, ctx))
+          i = close + 2
+          continue
+        }
+        reportOverflow(ctx, 'bz', src, i, i + 2, close, o.maxSpanLength.bz)
       }
     }
 
     if (o.sz && c === '{' && mask[i + 1] === '{') {
       const close = findPair(mask, i + 2, end, '{{', '}}')
-      if (close > i + 2 && close - (i + 2) <= o.maxSpanLength) {
-        out += emit('sz', transformRange(src, mask, i + 2, close, o))
-        i = close + 2
-        continue
+      if (close > i + 2) {
+        if (close - (i + 2) <= o.maxSpanLength.sz) {
+          out += emit('sz', transformRange(src, mask, i + 2, close, o, ctx))
+          i = close + 2
+          continue
+        }
+        reportOverflow(ctx, 'sz', src, i, i + 2, close, o.maxSpanLength.sz)
       }
     }
 
     if (o.sm && c === '《') {
       const close = findPair(mask, i + 1, end, '《', '》')
-      if (close > i + 1 && close - (i + 1) <= o.maxSpanLength) {
-        out += emit('sm', transformRange(src, mask, i + 1, close, o))
-        i = close + 1
-        continue
+      if (close > i + 1) {
+        if (close - (i + 1) <= o.maxSpanLength.sm) {
+          out += emit('sm', transformRange(src, mask, i + 1, close, o, ctx))
+          i = close + 1
+          continue
+        }
+        reportOverflow(ctx, 'sm', src, i, i + 1, close, o.maxSpanLength.sm)
       }
     }
 
     if (o.gz && c === '[' && canOpenGz(src, mask, i, end)) {
-      const close = findGzClose(src, mask, i + 1, end, o)
+      const close = findGzClose(src, mask, i + 1, end, o, ctx)
       if (close > i + 1) {
-        out += emit('gz', transformRange(src, mask, i + 1, close, o))
+        out += emit('gz', transformRange(src, mask, i + 1, close, o, ctx))
         i = close + 1
         continue
       }
@@ -389,17 +456,20 @@ function transformRange(
 
     if (o.jz && c === '<' && canOpenJz(mask, i, end)) {
       const close = findJzClose(mask, i + 1, end)
-      if (close > i + 1 && close - (i + 1) <= o.maxSpanLength) {
-        out += emit('jz', transformRange(src, mask, i + 1, close, o))
-        i = close + 1
-        continue
+      if (close > i + 1) {
+        if (close - (i + 1) <= o.maxSpanLength.jz) {
+          out += emit('jz', transformRange(src, mask, i + 1, close, o, ctx))
+          i = close + 1
+          continue
+        }
+        reportOverflow(ctx, 'jz', src, i, i + 1, close, o.maxSpanLength.jz)
       }
     }
 
     if (o.zm && c === '/' && canOpenZm(src, mask, i, end)) {
-      const close = findZmClose(src, mask, i + 1, end, o)
+      const close = findZmClose(src, mask, i + 1, end, o, ctx)
       if (close > i + 1) {
-        out += emit('zm', transformRange(src, mask, i + 1, close, o))
+        out += emit('zm', transformRange(src, mask, i + 1, close, o, ctx))
         i = close + 1
         continue
       }
@@ -416,7 +486,8 @@ function transformRange(
 export function transformInline(text: string, options?: GujiSyntaxOptions): string {
   if (text === '') return text
   const o = resolveSyntaxOptions(options)
-  return transformRange(text, buildMask(text), 0, text.length, o)
+  const ctx: ScanContext = { line: 1, colBase: 0, onOverflow: o.onOverflow }
+  return transformRange(text, buildMask(text), 0, text.length, o, ctx)
 }
 
 /**
@@ -504,8 +575,62 @@ export function gujiToDirective(source: string, options?: GujiSyntaxOptions): st
     rest = rest.slice(k)
 
     // 5. 行内记号
-    out[li] = prefix + markers + transformInline(rest, o)
+    const ctx: ScanContext = {
+      line: li + 1,
+      // 前缀与行首标记已被剥掉，列号要把它们加回去
+      colBase: prefix.length + k,
+      onOverflow: o.onOverflow
+    }
+    out[li] =
+      prefix +
+      markers +
+      (rest === '' ? rest : transformRange(rest, buildMask(rest), 0, rest.length, o, ctx))
   }
 
   return out.join('\n')
+}
+
+/** {@link gujiToDirectiveWithReport} 的结果。 */
+export interface NormalizeReport {
+  /** 规范化之后的 Directive Markdown，与 {@link gujiToDirective} 的输出一字不差。 */
+  text: string
+  /**
+   * 因超过长度上限而被降级为普通文本的记号，按出现顺序。
+   *
+   * **这个数组不空就意味着有内容悄悄变成了正文。**批量转换应当把它当作
+   * 失败条件，或至少逐条核对——spec §0.3 规定超限不报错，
+   * 所以除了这里，别处再也看不出来。
+   */
+  overflows: OverflowEvent[]
+  /** 各记号的降级处数，`overflows` 的计数视图。 */
+  overflowCounts: Record<SpanMarkName, number>
+}
+
+/**
+ * 与 {@link gujiToDirective} 做同一件事，另外报告有多少记号因超长被降级。
+ *
+ * 长度上限是本规范里唯一「静默改变输出」的机制（§0.4 视为未闭合、
+ * §0.3 未闭合不报错）。凡是批量转换存量文本的，都该走这个函数：
+ *
+ * ```ts
+ * const { text, overflows } = gujiToDirectiveWithReport(src)
+ * if (overflows.length) throw new Error(`有 ${overflows.length} 处记号被降级为正文`)
+ * ```
+ */
+export function gujiToDirectiveWithReport(
+  source: string,
+  options?: GujiSyntaxOptions
+): NormalizeReport {
+  const overflows: OverflowEvent[] = []
+  const 外部回调 = options?.onOverflow
+  const text = gujiToDirective(source, {
+    ...options,
+    onOverflow: (ev) => {
+      overflows.push(ev)
+      外部回调?.(ev)
+    }
+  })
+  const overflowCounts = { jz: 0, bz: 0, sz: 0, gz: 0, zm: 0, sm: 0 }
+  for (const ev of overflows) overflowCounts[ev.mark]++
+  return { text, overflows, overflowCounts }
 }

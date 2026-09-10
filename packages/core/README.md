@@ -75,7 +75,12 @@ interface GujiOptions {
   jz?: boolean; bz?: boolean; sz?: boolean; gz?: boolean
   tt?: boolean; kg?: boolean; zm?: boolean; sm?: boolean
 
-  maxSpanLength?: number   // 行内记号内容上限，默认 64
+  // 行内记号内容上限。给一个数则六种记号一律用它；给一个表则按记号分设。
+  // 默认 { default: 64, jz: 4096 }——夹注天然长，其余天然短，见 spec §0.4
+  maxSpanLength?: number | { default?: number; jz?: number; bz?: number
+                             sz?: number; gz?: number; zm?: number; sm?: number }
+  // 每有一个记号因超长被降级为正文时回调。批量转换务必接上，见 spec §0.5
+  onOverflow?: (event: OverflowEvent) => void
   maxLevel?: number        // n 属性上限，默认 9
   gzRequireCjk?: boolean   // 改字内容须含 CJK，默认 true
   zmRequireCjk?: boolean   // 专名号内容须含 CJK，默认 true

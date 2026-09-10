@@ -11,9 +11,11 @@ export { default as remarkGuji, default } from './plugin.js'
 
 export {
   gujiToDirective,
+  gujiToDirectiveWithReport,
   transformInline,
   buildMask,
-  escapeDirectiveLabel
+  escapeDirectiveLabel,
+  type NormalizeReport
 } from './normalize.js'
 
 export { gujiProcessor, parseGuji, formatDirective } from './parse.js'
@@ -32,8 +34,15 @@ export {
 
 export {
   DEFAULT_SYNTAX_OPTIONS,
+  DEFAULT_MAX_SPAN_LENGTH,
+  SPAN_MARKS,
   resolveSyntaxOptions,
+  resolveMaxSpanLength,
   resolveOptions,
+  type SpanMarkName,
+  type MaxSpanLengthByMark,
+  type MaxSpanLengthOption,
+  type OverflowEvent,
   type GujiToggles,
   type GujiSyntaxOptions,
   type ResolvedSyntaxOptions,
