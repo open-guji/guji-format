@@ -49,6 +49,19 @@
   line-height: 1.4;
 }
 
+/*
+ * 分行 `|`（spec/syntax.md §1「分行」）：横排默认忽略，两半连排成一段，
+ * `.guji-jz-break` 不占位；需要还原原书分行（或竖排双行小注）时，
+ * 把它切成 `display: block`（或专门主题接管），见 guji-vertical.css。
+ */
+.guji-jz-line {
+  display: inline;
+}
+
+.guji-jz-break {
+  display: none;
+}
+
 /* 可选：加圆括号，便于无样式降级与纯文本复制之外的场合区分正文与注 */
 .guji-doc--jz-parens .guji-jz::before {
   content: "（";
@@ -169,6 +182,47 @@
 /* 《》本身不参与画线，只是可选的可见标点 */
 .guji-sm-mark {
   text-decoration: none;
+}
+
+/* -------------------------------------------------------- 阙文 / 缺字猜测 */
+
+/*
+ * 默认只显示 `□`，说明/猜测字藏起来；`.guji-doc--proofing` 反过来，
+ * 见 spec/ast.md §2.6。
+ */
+.guji-qw-label,
+.guji-qz-guess {
+  display: none;
+}
+
+.guji-doc--proofing .guji-qw-box,
+.guji-doc--proofing .guji-qz-box {
+  display: none;
+}
+
+.guji-doc--proofing .guji-qw-label,
+.guji-doc--proofing .guji-qz-guess {
+  display: inline;
+  color: var(--guji-gz-color);
+}
+
+/* ------------------------------------------------------------ 表格 */
+
+.guji-table {
+  border-collapse: collapse;
+  margin-block: 1em;
+}
+
+.guji-table th,
+.guji-table td {
+  border: 1px solid rgba(128, 128, 128, 0.4);
+  padding: 0.2em 0.6em;
+  vertical-align: top;
+}
+
+.guji-table th {
+  font-weight: 700;
+  background: rgba(128, 128, 128, 0.08);
 }
 
 /* -------------------------------------------------------------- 其他 */

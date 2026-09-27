@@ -31,6 +31,21 @@ const RAW_ANGLE_RE =
 /** 行首块结构前缀：缩进、块引用、列表标记、ATX 标题标记。 */
 const BLOCK_PREFIX_RE = /^([ \t]*(?:>[ \t]?)*[ \t]*(?:(?:[-*+]|\d{1,9}[.)])[ \t]+|#{1,6}[ \t]+)?[ \t]*)/
 
+/** `:::table` 容器块的开闭行（见 spec/syntax.md §15）。 */
+const TABLE_OPEN_RE = /^ {0,3}:::table(?:\{[^\n]*\})?[ \t]*$/
+const TABLE_CLOSE_RE = /^ {0,3}:::[ \t]*$/
+
+/** `□{guess=…}`：只认紧接在 □ 后面的、不含空白与花括号的取值。 */
+const QZ_GUESS_RE = /^\{guess=([^\s{}]+)\}/
+
+/**
+ * `render_notation()` 单元格结尾后缀：可选 `{colspan}` 再可选 `^rowspan`；
+ * 裸续格标记 `^`（无数字）落进 body 分支，colspan 按默认值 1 处理——
+ * 与 book-text `validate_text_format.py` 的 `_TABLE_TOKEN_SUFFIX_RE`
+ * 同一条正则、同一个语义（T22，见 2026-09-表格记法方案.md §二）。
+ */
+const TABLE_CELL_SUFFIX_RE = /^(.*?)(?:\{(\d+)\})?(?:\^(\d+))?$/
+
 interface Fence {
   char: string
   len: number
@@ -445,6 +460,31 @@ function transformRange(
       }
     }
 
+    // 阙文 `[[…]]`：先于改字 `[…]` 判定，避免被单个 `[` 抢先打开（spec §11.1）。
+    // 与 bz/sz 不同，内容允许为空——`[[]]` 是"阙文说明未知"的合法写法。
+    if (o.qw && c === '[' && mask[i + 1] === '[') {
+      const close = findPair(mask, i + 2, end, '[[', ']]')
+      if (close >= i + 2) {
+        if (close - (i + 2) <= o.maxSpanLength.qw) {
+          out += emit('qw', transformRange(src, mask, i + 2, close, o, ctx))
+          i = close + 2
+          continue
+        }
+        reportOverflow(ctx, 'qw', src, i, i + 2, close, o.maxSpanLength.qw)
+      }
+    }
+
+    // 缺字猜测 `□{guess=X}`：只认紧接在 □ 后面的这一种写法，不开放通用属性后缀
+    // （任务书 T26 §3）。裸 □（后面不跟 `{guess=…}`）按字面处理，落到本函数末尾的默认分支。
+    if (o.qz && c === '□') {
+      const m = QZ_GUESS_RE.exec(src.slice(i + 1, end))
+      if (m) {
+        out += ':qz{guess=' + m[1] + '}'
+        i += 1 + m[0].length
+        continue
+      }
+    }
+
     if (o.gz && c === '[' && canOpenGz(src, mask, i, end)) {
       const close = findGzClose(src, mask, i + 1, end, o, ctx)
       if (close > i + 1) {
@@ -490,6 +530,139 @@ export function transformInline(text: string, options?: GujiSyntaxOptions): stri
   return transformRange(text, buildMask(text), 0, text.length, o, ctx)
 }
 
+/** `:::table` 行内一个单元格的原始记号，附带它在本行内的起始偏移（供超限定位）。 */
+interface TableCellToken {
+  text: string
+  start: number
+}
+
+/**
+ * 按字面 ` | `（空格-竖线-空格）切分一行的单元格，`\|` 视为转义、不切分。
+ *
+ * 与 book-text `validate_text_format.py` 的 `_table_row_cols` 同一条规则：
+ * 这一步在任何行内记号转换**之前**做，纯粹是原始文本切分——所以格内如果
+ * 要写夹注的分行 `<a|b>`，其中的 `|` 必须转义成 `<a\|b>`，否则会被这一步
+ * 误判成分格符，把一格拆成两格（任务书 T26 §1，CV 对照单已订正为此写法）。
+ */
+function splitTableCells(content: string): TableCellToken[] {
+  const tokens: TableCellToken[] = []
+  let buf = ''
+  let start = 0
+  let i = 0
+  while (i < content.length) {
+    if (content[i] === '\\' && content[i + 1] === '|') {
+      buf += '\\|'
+      i += 2
+      continue
+    }
+    if (content.startsWith(' | ', i)) {
+      tokens.push({ text: buf, start })
+      buf = ''
+      i += 3
+      start = i
+      continue
+    }
+    buf += content[i]
+    i++
+  }
+  tokens.push({ text: buf, start })
+  return tokens
+}
+
+/** 单元格解析结果：内容、跨列、跨行，以及两种特殊格（空格 `_`、续格 `^`）。 */
+interface TableCell {
+  body: string
+  colspan: number
+  rowspan: number
+  empty: boolean
+  continuation: boolean
+}
+
+function parseTableCell(token: string): TableCell {
+  const m = TABLE_CELL_SUFFIX_RE.exec(token)!
+  const body = m[1]
+  const colspan = m[2] ? Number.parseInt(m[2], 10) : 1
+  const rowspan = m[3] ? Number.parseInt(m[3], 10) : 1
+  return {
+    body,
+    colspan,
+    rowspan,
+    empty: body === '_',
+    continuation: body === '^'
+  }
+}
+
+const TABLE_DIRECTIVE_START_RE = /^:(?:td|th)\[/
+
+/**
+ * 一行是否已经是规范化之后的 `:td[…]{…}`/`:th[…]{…}` 序列——
+ * `gujiToDirective` 必须幂等（spec/directives.md「规范化的保证」），
+ * 而表格行的规范化结果不再含字面 ` | `，没法复用 {@link splitTableCells}
+ * 来判断"已经转过"，所以单独扫一遍：整行必须是零个以上首尾相接的
+ * `:td[…]`/`:th[…]`（可选跟 `{…}`），`[…]` 允许嵌套（格内可能嵌 `:jz[…]` 等）。
+ */
+function isNormalizedTableRow(line: string): boolean {
+  if (line === '') return true
+  const mask = buildMask(line)
+  const end = line.length
+  let i = 0
+  let matchedAny = false
+  while (i < end) {
+    const m = TABLE_DIRECTIVE_START_RE.exec(line.slice(i))
+    if (!m) return false
+    i += m[0].length
+    let depth = 1
+    while (i < end && depth > 0) {
+      if (mask[i] === '[') depth++
+      else if (mask[i] === ']') depth--
+      i++
+    }
+    if (depth !== 0) return false
+    if (line[i] === '{') {
+      const close = line.indexOf('}', i + 1)
+      if (close === -1) return false
+      i = close + 1
+    }
+    matchedAny = true
+  }
+  return matchedAny
+}
+
+/**
+ * 把一行 `:::table` 数据规范化为一串 `:th[…]{…}` / `:td[…]{…}`
+ * （表头行整行用 `!` 前缀，见 spec/syntax.md §15）。
+ *
+ * 每个格各自独立跑一遍行内记号扫描（jz/bz/sz/gz/zm/sm 等在格内原样嵌套），
+ * 续格标记 `^`（本格被上方跨行格占住）不产生任何指令——HTML 表格里被
+ * rowspan 占住的格本来就不需要单元格，少写的这一个 `<td>` 就是正确表达。
+ */
+function transformTableRow(line: string, lineNo: number, o: ResolvedSyntaxOptions): string {
+  if (isNormalizedTableRow(line)) return line
+
+  const isHeader = line.startsWith('!')
+  const content = isHeader ? line.slice(1) : line
+  const colOffset = isHeader ? 1 : 0
+  const name = isHeader ? 'th' : 'td'
+
+  let out = ''
+  for (const token of splitTableCells(content)) {
+    const cell = parseTableCell(token.text)
+    if (cell.continuation) continue
+
+    const ctx: ScanContext = { line: lineNo, colBase: colOffset + token.start, onOverflow: o.onOverflow }
+    const label = cell.empty
+      ? ''
+      : transformRange(cell.body, buildMask(cell.body), 0, cell.body.length, o, ctx)
+
+    let attrs = ''
+    if (cell.colspan > 1) attrs += ' colspan=' + cell.colspan
+    if (cell.rowspan > 1) attrs += ' rowspan=' + cell.rowspan
+
+    out += ':' + name + '[' + escapeDirectiveLabel(label) + ']' + (attrs ? '{' + attrs.trim() + '}' : '')
+  }
+  return out
+}
+
 /**
  * 古籍 Markdown → Directive Markdown。
  *
@@ -504,10 +677,37 @@ export function gujiToDirective(source: string, options?: GujiSyntaxOptions): st
 
   let fence: Fence | undefined
   let inIndentedCode = false
+  let inTable = false
   let prevBlank = true
 
   for (let li = 0; li < lines.length; li++) {
     const line = lines[li]
+
+    // 0. :::table 容器块：开闭行原样输出，块内的每一行都是数据行，
+    //    格式是行列小语法而不是普通段落文本——必须在缩进代码块／行首标记
+    //    （抬头 `^`、空格 `.`）判定之前拦下来，否则续格标记 `^` 落在行首时
+    //    会被误当成抬头指令，见 spec/syntax.md §15。
+    if (!fence && o.table) {
+      if (!inTable && TABLE_OPEN_RE.test(line)) {
+        inTable = true
+        out[li] = line
+        prevBlank = false
+        continue
+      }
+      if (inTable) {
+        if (TABLE_CLOSE_RE.test(line)) {
+          inTable = false
+          out[li] = line
+          prevBlank = false
+          continue
+        }
+        // 空行：原样保留，不当成一格（校验器 check_table_block_cols 同样先滤掉空行）
+        const rowBlank = line.trim() === ''
+        out[li] = rowBlank ? line : transformTableRow(line, li + 1, o)
+        prevBlank = rowBlank
+        continue
+      }
+    }
 
     // 1. 围栏代码块
     if (fence) {
@@ -630,7 +830,7 @@ export function gujiToDirectiveWithReport(
       外部回调?.(ev)
     }
   })
-  const overflowCounts = { jz: 0, bz: 0, sz: 0, gz: 0, zm: 0, sm: 0 }
+  const overflowCounts = { jz: 0, bz: 0, sz: 0, gz: 0, zm: 0, sm: 0, qw: 0 }
   for (const ev of overflows) overflowCounts[ev.mark]++
   return { text, overflows, overflowCounts }
 }

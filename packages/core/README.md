@@ -64,6 +64,7 @@ unified().use(remarkParse).use(remarkGuji).use(remarkRehype)
 | `formatDirective(tree, options?)` | mdast → Directive Markdown |
 | `applyLineScope(tree)` | 抬头的行作用域归并 |
 | `normalizeDirectiveNames(tree)` | 指令别名归一 |
+| `groupTableRows(tree)` | `:::table` 容器段落重组成 `table > gujiTableRow > td/th` |
 | `DIRECTIVES` / `lookupDirective` / `resolveDirectiveName` / `parseLevel` | 指令注册表 |
 | `buildMask` / `escapeDirectiveLabel` | 规范化用到的底层工具，写别的实现时可参考 |
 
@@ -74,11 +75,13 @@ interface GujiOptions {
   // 各记号开关，默认全开
   jz?: boolean; bz?: boolean; sz?: boolean; gz?: boolean
   tt?: boolean; kg?: boolean; zm?: boolean; sm?: boolean
+  qw?: boolean; qz?: boolean; table?: boolean
 
-  // 行内记号内容上限。给一个数则六种记号一律用它；给一个表则按记号分设。
+  // 行内记号内容上限。给一个数则七种记号一律用它；给一个表则按记号分设。
   // 默认 { default: 64, jz: 4096 }——夹注天然长，其余天然短，见 spec §0.4
   maxSpanLength?: number | { default?: number; jz?: number; bz?: number
-                             sz?: number; gz?: number; zm?: number; sm?: number }
+                             sz?: number; gz?: number; zm?: number; sm?: number
+                             qw?: number }
   // 每有一个记号因超长被降级为正文时回调。批量转换务必接上，见 spec §0.5
   onOverflow?: (event: OverflowEvent) => void
   maxLevel?: number        // n 属性上限，默认 9
@@ -103,6 +106,11 @@ interface GujiOptions {
 * **简写式引用链接与改字冲突**。`[說文]`（配合别处的 `[說文]: url` 定义）会被
   识别为改字；行内链接 `[說文](url)` 不受影响。见
   [`spec/syntax.md` §4](../../spec/syntax.md#4-改字-)。
+* **夹注内写不出字面 `|`**。分行点 `|`（[`spec/syntax.md` §1](../../spec/syntax.md#分行-)）
+  一律生效，没有转义成"字面竖线"的办法——CommonMark 的反斜杠转义在解析阶段
+  就把 `\|` 变成普通的 `|`，规范化之后已经分不出哪个是转义来的。
+* **`:::table` 一行全是续格 `^` 时整行消失**。见
+  [`spec/syntax.md` §15「已知局限」](../../spec/syntax.md#15-表格容器-table)。
 
 ## 许可证
 

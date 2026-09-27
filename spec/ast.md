@@ -60,6 +60,12 @@
 | `kg` | `<span>` | `guji-kg` | `data-guji-n` |
 | `zm` | `<span>` | `guji-zm` | `data-guji-type`（有 `type` 时） |
 | `sm` | `<span>` | `guji-sm` | `data-guji-part`（有 `part` 时） |
+| `qw` | `<span>` | `guji-qw` | 内含 `.guji-qw-box`（固定文本 `□`）与 `.guji-qw-label`（阙文说明，默认隐藏） |
+| `qz` | `<span>` | `guji-qz` | `data-guji-guess`；内含 `.guji-qz-box`（`□`）与 `.guji-qz-guess`（猜测字，默认隐藏） |
+| `zi` | `<span>` | `guji-zi` | 无，内容原样（IDS 或方位描述） |
+| `table` | `<table>` | `guji-table` | 无 |
+| 表格行（合成，非指令） | `<tr>` | 无 | 由 `groupTableRows` 变换产生，见 [transform.ts](../packages/core/src/transform.ts) |
+| `th`／`td` | `<th>`／`<td>` | 无 | `colspan`／`rowspan`（对应属性 > 1 时） |
 | 未知 | `<span>` | `guji-unknown` | `data-guji-directive` |
 
 补字、改字用 `<ins>`，删字用 `<del>`，是因为它们在语义上正是 HTML 的
@@ -117,13 +123,24 @@ CSS 自定义属性 `--guji-n`：
 mdast → hast 阶段被丢弃（`allowDangerousHtml: false`）。
 需要时可显式开启，但此时输出不再可信，须自行消毒。
 
+### 2.6 校对模式
+
+`qw`（阙文说明）与 `qz`（缺字猜测）默认只显示 `□`，真正的说明/猜测字
+藏在 `.guji-qw-label`／`.guji-qz-guess` 里（`display: none`）。
+容器加上修饰类 `guji-doc--proofing` 后反过来：`□` 隐藏，说明/猜测字显示——
+供校对场景切换查看，不需要重新渲染。
+
+```html
+<article class="guji-doc guji-doc--proofing">…</article>
+```
+
 ## 3. 纯文本输出
 
 供检索与全文比对使用，约定：
 
 | 指令 | 纯文本 |
 | --- | --- |
-| `jz` | `（` + 内容 + `）` |
+| `jz` | `（` + 内容 + `）`，内容里的分行 `\|` 去掉（连排，不出现在纯文本里） |
 | `bz` | 内容（保留） |
 | `sz` | 空（丢弃） |
 | `gz` | 内容（保留） |
@@ -131,6 +148,10 @@ mdast → hast 阶段被丢弃（`allowDangerousHtml: false`）。
 | `kg` | `n` 个 U+3000 |
 | `zm` | 内容 |
 | `sm` | `《` + 内容 + `》` |
+| `qw` | `□`（不管 label 有没有内容，检索时统一算一个缺字符号） |
+| `qz` | `□`（猜测字不进入纯文本，只在校对模式的显示里出现） |
+| `zi` | 内容原样（IDS 或方位描述），检索时当作这个字的占位文本 |
+| `table`／`th`／`td` | 逐格内容以空格连接，行之间换行；不体现 `colspan`/`rowspan` |
 
 保留 `bz`、`gz` 而丢弃 `sz`，得到的正是"整理者认定的**定本**"；
 反过来保留 `sz`、丢弃 `bz` 与 `gz`，则还原为**底本**。

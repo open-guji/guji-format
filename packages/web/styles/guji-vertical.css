@@ -38,6 +38,15 @@
 }
 
 /*
+ * 分行 `|`（spec/syntax.md §1「分行」）：竖排下按原书分行显示——
+ * `display: block` 在 vertical-rl 里的效果是"另起一列"，与横排的行首
+ * 换行是同一个 `display` 值、不同书写模式下的不同视觉结果。
+ */
+.guji-vertical .guji-jz-break {
+  display: block;
+}
+
+/*
  * 双行夹注（opt-in）：把注文塞进与正文等宽的两个短列。
  * 这是纯 CSS 能做到的最接近效果；注文超过 --guji-jz-rows 行会溢出，
  * 需要精确断行请用 pdf 包的排版后端。

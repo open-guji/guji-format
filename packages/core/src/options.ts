@@ -23,12 +23,18 @@ export interface GujiToggles {
   zm?: boolean
   /** 书名号 `《…》` → `:sm[…]` */
   sm?: boolean
+  /** 阙文 `[[…]]` → `:qw[…]` */
+  qw?: boolean
+  /** 缺字猜测 `□{guess=…}` → `:qz{guess=…}` */
+  qz?: boolean
+  /** 表格容器 `:::table` 内的行列小语法 → `:th[…]`/`:td[…]` */
+  table?: boolean
 }
 
-/** 六种成对行内记号的名字。抬头 `tt`、空格 `kg` 是行首标记，不受长度上限约束。 */
-export type SpanMarkName = 'jz' | 'bz' | 'sz' | 'gz' | 'zm' | 'sm'
+/** 七种成对行内记号的名字。抬头 `tt`、空格 `kg` 是行首标记，不受长度上限约束。 */
+export type SpanMarkName = 'jz' | 'bz' | 'sz' | 'gz' | 'zm' | 'sm' | 'qw'
 
-export const SPAN_MARKS: readonly SpanMarkName[] = ['jz', 'bz', 'sz', 'gz', 'zm', 'sm']
+export const SPAN_MARKS: readonly SpanMarkName[] = ['jz', 'bz', 'sz', 'gz', 'zm', 'sm', 'qw']
 
 /**
  * 按记号分设的长度上限。缺项落到 `default`。
@@ -50,7 +56,7 @@ export interface MaxSpanLengthByMark extends Partial<Record<SpanMarkName, number
 }
 
 /**
- * 长度上限：给一个数则**六种记号一律用它**（不留隐藏例外）；
+ * 长度上限：给一个数则**七种记号一律用它**（不留隐藏例外）；
  * 给一个表则按记号分设，缺项落到 `default`。
  */
 export type MaxSpanLengthOption = number | MaxSpanLengthByMark
@@ -79,7 +85,8 @@ export const DEFAULT_MAX_SPAN_LENGTH: Required<MaxSpanLengthByMark> = {
   sz: 64,
   gz: 64,
   zm: 64,
-  sm: 64
+  sm: 64,
+  qw: 64
 }
 
 export interface GujiSyntaxOptions extends GujiToggles {
@@ -87,7 +94,7 @@ export interface GujiSyntaxOptions extends GujiToggles {
    * 行内记号内容的长度上限，超出即视为未闭合（按字面输出）。
    * 用来避免误匹配把整行吞掉。
    *
-   * 给一个数则六种记号一律用它；给一个表则按记号分设。
+   * 给一个数则七种记号一律用它；给一个表则按记号分设。
    * 默认 `{ default: 64, jz: 4096 }`——夹注放宽的理由见
    * {@link MaxSpanLengthByMark}。
    *
@@ -148,6 +155,9 @@ export const DEFAULT_SYNTAX_OPTIONS: ResolvedSyntaxOptions = {
   kg: true,
   zm: true,
   sm: true,
+  qw: true,
+  qz: true,
+  table: true,
   maxSpanLength: DEFAULT_MAX_SPAN_LENGTH,
   maxLevel: 9,
   gzRequireCjk: true,
@@ -160,17 +170,11 @@ export function resolveMaxSpanLength(
   option: MaxSpanLengthOption | undefined
 ): Required<MaxSpanLengthByMark> {
   if (option === undefined) return DEFAULT_MAX_SPAN_LENGTH
-  // 给一个数就是「六种记号一律用它」——不留隐藏例外，调用方说了算
+  // 给一个数就是「每种成对记号一律用它」——不留隐藏例外，调用方说了算
   if (typeof option === 'number') {
-    return {
-      default: option,
-      jz: option,
-      bz: option,
-      sz: option,
-      gz: option,
-      zm: option,
-      sm: option
-    }
+    const out = { default: option } as Required<MaxSpanLengthByMark>
+    for (const m of SPAN_MARKS) out[m] = option
+    return out
   }
   const fallback = option.default ?? DEFAULT_MAX_SPAN_LENGTH.default
   const out = { default: fallback } as Required<MaxSpanLengthByMark>
@@ -204,10 +208,16 @@ export interface GujiOptions extends GujiSyntaxOptions {
    * @default true
    */
   normalizeNames?: boolean
+  /**
+   * 把 `:::table` 容器的段落内容重组成 `table > gujiTableRow > td/th`。
+   * 见 spec/syntax.md §15。
+   * @default true
+   */
+  tableRows?: boolean
 }
 
 export type ResolvedGujiOptions = ResolvedSyntaxOptions &
-  Required<Pick<GujiOptions, 'shorthand' | 'lineScope' | 'normalizeNames'>>
+  Required<Pick<GujiOptions, 'shorthand' | 'lineScope' | 'normalizeNames' | 'tableRows'>>
 
 export function resolveOptions(options?: GujiOptions): ResolvedGujiOptions {
   return {
@@ -215,6 +225,7 @@ export function resolveOptions(options?: GujiOptions): ResolvedGujiOptions {
     shorthand: true,
     lineScope: true,
     normalizeNames: true,
+    tableRows: true,
     ...options,
     maxSpanLength: resolveMaxSpanLength(options?.maxSpanLength)
   }
