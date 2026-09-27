@@ -31,6 +31,16 @@
 | `kg` | 空格 | `space` | text（标记） | `n` | 行首 `.` |
 | `zm` | 专名号 | `name` | text | `type` | `/…/` |
 | `sm` | 书名号 | `book` | text | `part` | `《…》` |
+| `qw` | 阙文 | `missing` | text | 无 | `[[…]]` |
+| `qz` | 缺字猜测 | `guess` | marker | `guess` | 无独立短记号，见 [syntax.md §14](./syntax.md#14-缺字猜测guess) |
+| `zi` | 组字 | `compose` | text | 无 | 无短记号，直接写 `:zi[…]` |
+| `table` | 表格 | 无 | container | 无 | `:::table` … `:::`，见 [syntax.md §15](./syntax.md#15-表格容器-table) |
+| `th`\* | 表格表头格 | 无 | text | `colspan`、`rowspan` | 内部表示，见下 |
+| `td`\* | 表格数据格 | 无 | text | `colspan`、`rowspan` | 内部表示，见下 |
+
+\* `th`／`td` 由 `gujiToDirective` 规范化 `:::table` 的行列小语法时产生，
+不是给人直接书写的短记号——文档里列出是为了让 `unknown` 选项与调试工具
+认得这两个名字，直接手写 `:th[…]`/`:td[…]` 也能被解析，但不建议这样做。
 
 ### 属性
 
@@ -41,6 +51,8 @@
 | `type` | `jz` | `双行` `单行` `尾注` | `双行` | 夹注排印方式 |
 | `src` | `bz`、`sz`、`gz` | 自由文本 | 无 | 校勘依据，如 `据宋本` |
 | `part` | `sm` | 自由文本 | 无 | 篇名，如 `藝文志` |
+| `guess` | `qz` | 自由文本，不含空白与花括号 | 无 | OCR／整理者对缺字的猜测 |
+| `colspan`、`rowspan` | `th`、`td` | 正整数字符串 | `1` | 跨列／跨行格数，`:::table` 规范化产生 |
 
 指令属性值在指令语法中一律是**字符串**；`n` 需由渲染器转成整数，
 非法或缺省时按 `1` 处理，超过上限时钳制到上限。

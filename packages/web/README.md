@@ -85,6 +85,10 @@ interface GujiHtmlOptions extends GujiOptions {
 | `kg` 空格 | `<span class="guji-kg" data-guji-n="1">　</span>` |
 | `zm` 专名号 | `<span class="guji-zm">` |
 | `sm` 书名号 | `<span class="guji-sm">`，`《》` 包在 `<span class="guji-sm-mark">` 里 |
+| `qw` 阙文 | `<span class="guji-qw">`，`□` 与说明分别包在 `.guji-qw-box`／`.guji-qw-label` 里 |
+| `qz` 缺字猜测 | `<span class="guji-qz" data-guji-guess="…">`，`□` 与猜测字分别包在 `.guji-qz-box`／`.guji-qz-guess` 里 |
+| `zi` 组字 | `<span class="guji-zi">`，内容原样（IDS 或方位描述） |
+| `table` 表格 | `<table class="guji-table">`，行渲染为 `<tr>`，表头行的格是 `<th>`，其余 `<td>` |
 
 补字、改字用 `<ins>`，删字用 `<del>`，是因为它们在语义上正是 HTML 的插入与删除，
 屏幕阅读器与纯文本提取工具都能正确理解；补字与改字靠 class 区分，
@@ -115,16 +119,21 @@ interface GujiHtmlOptions extends GujiOptions {
 }
 ```
 
-两个可选体例类：
+三个可选体例类：
 
 * `.guji-doc--jz-parens` —— 夹注加圆括号
 * `.guji-doc--jiaokan-marks` —— 补字、改字加〔〕，删字加（），
   即点校本体例。只靠颜色区分对色觉障碍读者不友好，需要无障碍时打开这一条。
+* `.guji-doc--proofing` —— 校对模式：阙文／缺字猜测默认显示的 `□`
+  换成显示说明/猜测字，见 [`spec/ast.md` §2.6](../../spec/ast.md#26-校对模式)。
 
 ## 已知限制
 
 * **双行夹注**在横排下只能做到"小字"，竖排下用 `column-count: 2` 近似，
   注文很长时会溢出。需要精确断行请用 [pdf 包](../pdf) 的排版后端。
+* **分行 `|` 与双行夹注的自动分栏是两套机制**，两者同时使用时
+  （竖排 `.guji-doc--jz-double` + 分行标记）不保证正好在 `|` 处分栏，
+  见 [core 的说明](../core/README.md#已知限制)。
 * 位置信息的列号不精确，见 [core 的说明](../core/README.md#已知限制)。
 
 ## 许可证

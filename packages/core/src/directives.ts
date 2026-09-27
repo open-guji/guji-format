@@ -96,6 +96,62 @@ export const DIRECTIVES: readonly DirectiveSpec[] = [
     attributes: ['part'],
     tagName: 'span',
     shorthand: { open: '《', close: '》' }
+  },
+  {
+    name: 'qw',
+    cn: '阙文',
+    aliases: ['missing', 'quewen'],
+    shapes: ['text'],
+    attributes: [],
+    tagName: 'span',
+    shorthand: { open: '[[', close: ']]' }
+  },
+  {
+    name: 'qz',
+    cn: '缺字猜测',
+    aliases: ['guess', 'quezi'],
+    shapes: ['marker'],
+    attributes: ['guess'],
+    tagName: 'span'
+    // 无独立短记号：只认紧接在 □ 后面的 `{guess=…}`，见 spec/syntax.md。
+  },
+  {
+    name: 'zi',
+    cn: '组字',
+    aliases: ['compose', 'zuzi'],
+    shapes: ['text'],
+    attributes: [],
+    tagName: 'span'
+    // 无短记号：直接写 `:zi[…]`，内容是 IDS 或部件方位描述，见 spec/syntax.md。
+  },
+  {
+    name: 'table',
+    cn: '表格',
+    aliases: [],
+    shapes: ['container'],
+    attributes: [],
+    tagName: 'span',
+    blockTagName: 'table'
+    // 容器内容是行列小语法（`!`/`_`/`{n}`/`^n`/`^`），由 gujiToDirective
+    // 规范化为下面的 th/td，不是用户直接书写的短记号。
+  },
+  {
+    name: 'th',
+    cn: '表格表头格',
+    aliases: [],
+    shapes: ['text'],
+    attributes: ['colspan', 'rowspan'],
+    tagName: 'th'
+    // 内部表示：仅由 `:::table` 规范化产生，不建议直接书写。
+  },
+  {
+    name: 'td',
+    cn: '表格数据格',
+    aliases: [],
+    shapes: ['text'],
+    attributes: ['colspan', 'rowspan'],
+    tagName: 'td'
+    // 内部表示：仅由 `:::table` 规范化产生，不建议直接书写。
   }
 ]
 

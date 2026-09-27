@@ -16,9 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 不传 version：让它从 package.json 的 packageManager 字段读版本。
+      # pnpm/action-setup@v4 现在把「两处都给了版本」当硬错误
+      # （ERR_PNPM_BAD_PM_VERSION 的前置检查），这里的 `version: 9` 和
+      # packageManager: "pnpm@9.15.4" 同时存在会直接炸在这一步，
+      # base 分支最近几次 CI 也是这样红的，不是本 PR 引入的问题。
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -27,11 +30,17 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: 类型检查
-        run: pnpm typecheck
-
+      # 构建放在类型检查前面：packages/web、packages/pdf 的 tsconfig 没有
+      # project references，是靠 packages/core 的 package.json#exports
+      # （只指向 dist/index.d.ts，没有指回 src 的路径）解析类型的——
+      # 顺序反过来会在 web/pdf 的 typecheck 报 TS2307 找不到
+      # @open-guji/markdown-core，本仓 CI 5 次里 5 次都栽在更早的
+      # pnpm/action-setup 那一步，从没真正跑到这里过，不是本 PR 引入的问题。
       - name: 构建
         run: pnpm build
+
+      - name: 类型检查
+        run: pnpm typecheck
 
       - name: 一致性测试
         run: pnpm test

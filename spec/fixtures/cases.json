@@ -1,6 +1,6 @@
 {
   "$schema": "./cases.schema.json",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "note": "guji-markdown 一致性测试语料。任何平台的实现都应通过这里的全部用例，见 ../conformance.md。",
   "cases": [
     {
@@ -201,11 +201,11 @@
       "html": "<ul>\n<li>[x] 已完成</li>\n</ul>"
     },
     {
-      "name": "gz/reserved-double",
-      "note": "`[[…]]` 预留给阙文",
+      "name": "qw/basic",
+      "note": "阙文 `[[…]]`，T26 起从\"保留\"改为生效",
       "guji": "[[闕文]]",
-      "directive": "[[闕文]]",
-      "html": "<p>[[闕文]]</p>"
+      "directive": ":qw[闕文]",
+      "html": "<p><span class=\"guji-qw\"><span class=\"guji-qw-box\">□</span><span class=\"guji-qw-label\">闕文</span></span></p>"
     },
     {
       "name": "gz/directive-label",
@@ -549,6 +549,188 @@
       "guji": "/嗣」形，字書多作「德嗣」，暫從。2. 第411頁「《廣韵》三十九過注引並同」——「過」爲韻目名（《廣韻》去聲三十九過），影像清晰，惟體例罕見，特此標記。3. 第413頁「郭璞　玉照定真經一卷」——「玉照」二字影像首字略糊，或作「王照」，據《永樂大典》目録通行作「玉照」，從「玉」。4. 第415頁「《太清玉碑子》，葛洪與鄭思遠問答」——「思」字影像作「惠」形，然葛洪弟子通行作「鄭思遠」，此處影像確似「惠」，存疑；原文照錄作「思」，特記。5. 第415頁「不敢遑臆棄取也」——「遑」字影像稍糊，或作「逞」。6. 第415頁「釋支曇　籥六言梵唄」——「籥」字影像作「箾/",
       "directive": "/嗣」形，字書多作「德嗣」，暫從。2. 第411頁「:sm[廣韵]三十九過注引並同」——「過」爲韻目名（:sm[廣韻]去聲三十九過），影像清晰，惟體例罕見，特此標記。3. 第413頁「郭璞　玉照定真經一卷」——「玉照」二字影像首字略糊，或作「王照」，據:sm[永樂大典]目録通行作「玉照」，從「玉」。4. 第415頁「:sm[太清玉碑子]，葛洪與鄭思遠問答」——「思」字影像作「惠」形，然葛洪弟子通行作「鄭思遠」，此處影像確似「惠」，存疑；原文照錄作「思」，特記。5. 第415頁「不敢遑臆棄取也」——「遑」字影像稍糊，或作「逞」。6. 第415頁「釋支曇　籥六言梵唄」——「籥」字影像作「箾/",
       "html": "<p>/嗣」形，字書多作「德嗣」，暫從。2. 第411頁「<span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>廣韵<span class=\"guji-sm-mark\">》</span></span>三十九過注引並同」——「過」爲韻目名（<span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>廣韻<span class=\"guji-sm-mark\">》</span></span>去聲三十九過），影像清晰，惟體例罕見，特此標記。3. 第413頁「郭璞　玉照定真經一卷」——「玉照」二字影像首字略糊，或作「王照」，據<span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>永樂大典<span class=\"guji-sm-mark\">》</span></span>目録通行作「玉照」，從「玉」。4. 第415頁「<span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>太清玉碑子<span class=\"guji-sm-mark\">》</span></span>，葛洪與鄭思遠問答」——「思」字影像作「惠」形，然葛洪弟子通行作「鄭思遠」，此處影像確似「惠」，存疑；原文照錄作「思」，特記。5. 第415頁「不敢遑臆棄取也」——「遑」字影像稍糊，或作「逞」。6. 第415頁「釋支曇　籥六言梵唄」——「籥」字影像作「箾/</p>"
+    },
+    {
+      "name": "jz/split-line",
+      "note": "夹注内分行点 `|`",
+      "guji": "子曰<孔子也|魯人>",
+      "directive": "子曰:jz[孔子也|魯人]",
+      "html": "<p>子曰<span class=\"guji-jz\"><span class=\"guji-jz-line\">孔子也</span><span class=\"guji-jz-break\"></span><span class=\"guji-jz-line\">魯人</span></span></p>"
+    },
+    {
+      "name": "jz/split-line-longform",
+      "note": "长写法 `:jz[a|b]` 与短记号等价",
+      "guji": "子曰:jz[孔子也|魯人]",
+      "directive": "子曰:jz[孔子也|魯人]",
+      "html": "<p>子曰<span class=\"guji-jz\"><span class=\"guji-jz-line\">孔子也</span><span class=\"guji-jz-break\"></span><span class=\"guji-jz-line\">魯人</span></span></p>"
+    },
+    {
+      "name": "jz/split-line-nested",
+      "note": "分行前后仍可各自嵌套其他记号",
+      "guji": "子曰<《魯論》|孔子也>",
+      "directive": "子曰:jz[:sm[魯論]|孔子也]",
+      "html": "<p>子曰<span class=\"guji-jz\"><span class=\"guji-jz-line\"><span class=\"guji-sm\"><span class=\"guji-sm-mark\">《</span>魯論<span class=\"guji-sm-mark\">》</span></span></span><span class=\"guji-jz-break\"></span><span class=\"guji-jz-line\">孔子也</span></span></p>"
+    },
+    {
+      "name": "jz/pipe-outside-literal",
+      "note": "夹注之外的 `|` 一律按字面处理，不是分格符也不是分行点",
+      "guji": "甲|乙",
+      "directive": "甲|乙",
+      "html": "<p>甲|乙</p>"
+    },
+    {
+      "name": "jz/pipe-multiple-only-first-splits",
+      "note": "多个 `|` 只在第一个切，其余留在后半段字面输出",
+      "guji": "子曰<甲|乙|丙>",
+      "directive": "子曰:jz[甲|乙|丙]",
+      "html": "<p>子曰<span class=\"guji-jz\"><span class=\"guji-jz-line\">甲</span><span class=\"guji-jz-break\"></span><span class=\"guji-jz-line\">乙|丙</span></span></p>"
+    },
+    {
+      "name": "qw/with-label",
+      "note": "阙文说明非空",
+      "guji": "帝崩，[[凡三字漫漶]]即位。",
+      "directive": "帝崩，:qw[凡三字漫漶]即位。",
+      "html": "<p>帝崩，<span class=\"guji-qw\"><span class=\"guji-qw-box\">□</span><span class=\"guji-qw-label\">凡三字漫漶</span></span>即位。</p>"
+    },
+    {
+      "name": "qw/empty",
+      "note": "阙文说明未知，允许空内容",
+      "guji": "帝崩，[[]]即位。",
+      "directive": "帝崩，:qw[]即位。",
+      "html": "<p>帝崩，<span class=\"guji-qw\"><span class=\"guji-qw-box\">□</span><span class=\"guji-qw-label\"></span></span>即位。</p>"
+    },
+    {
+      "name": "qw/unclosed",
+      "note": "未闭合即字面（§0.3）",
+      "guji": "帝崩，[[凡三字即位。",
+      "directive": "帝崩，[[凡三字即位。",
+      "html": "<p>帝崩，[[凡三字即位。</p>"
+    },
+    {
+      "name": "qw/vs-gz-not-confused",
+      "note": "`[[…]]` 优先于改字 `[…]` 判定，不会被拆成两个改字候选",
+      "guji": "[[闕]]{{乙}}",
+      "directive": ":qw[闕]:sz[乙]",
+      "html": "<p><span class=\"guji-qw\"><span class=\"guji-qw-box\">□</span><span class=\"guji-qw-label\">闕</span></span><del class=\"guji-sz\">乙</del></p>"
+    },
+    {
+      "name": "qz/basic",
+      "note": "缺字猜测",
+      "guji": "帝崩，太子□{guess=即}位。",
+      "directive": "帝崩，太子:qz{guess=即}位。",
+      "html": "<p>帝崩，太子<span class=\"guji-qz\" data-guji-guess=\"即\"><span class=\"guji-qz-box\">□</span><span class=\"guji-qz-guess\">即</span></span>位。</p>"
+    },
+    {
+      "name": "qz/bare-literal",
+      "note": "裸 □，后面没有 {guess=…}，按字面处理",
+      "guji": "帝崩，太子□位。",
+      "directive": "帝崩，太子□位。",
+      "html": "<p>帝崩，太子□位。</p>"
+    },
+    {
+      "name": "qz/space-not-adjacent",
+      "note": "中间有空格，不是“紧接”，按字面",
+      "guji": "太子□ {guess=甲}位",
+      "directive": "太子□ {guess=甲}位",
+      "html": "<p>太子□ {guess=甲}位</p>"
+    },
+    {
+      "name": "qz/empty-guess-literal",
+      "note": "取值为空，不匹配，按字面",
+      "guji": "太子□{guess=}位",
+      "directive": "太子□{guess=}位",
+      "html": "<p>太子□{guess=}位</p>"
+    },
+    {
+      "name": "qz/generic-attr-not-allowed",
+      "note": "不开放通用属性后缀，只认 guess",
+      "guji": "太子□{type=推测}位",
+      "directive": "太子□{type=推测}位",
+      "html": "<p>太子□{type=推测}位</p>"
+    },
+    {
+      "name": "table/basic",
+      "note": "最简单的两行两列，无合并格",
+      "guji": ":::table\n!公元 | 紀年\n960 | 建隆元年\n:::",
+      "directive": ":::table\n:th[公元]:th[紀年]\n:td[960]:td[建隆元年]\n:::",
+      "html": "<table class=\"guji-table\"><tr><th>公元</th><th>紀年</th></tr><tr><td>960</td><td>建隆元年</td></tr></table>"
+    },
+    {
+      "name": "table/colspan",
+      "note": "跨列 `{n}`",
+      "guji": ":::table\n!甲 | 乙 | 丙\n丁{2} | 戊\n:::",
+      "directive": ":::table\n:th[甲]:th[乙]:th[丙]\n:td[丁]{colspan=2}:td[戊]\n:::",
+      "html": "<table class=\"guji-table\"><tr><th>甲</th><th>乙</th><th>丙</th></tr><tr><td colspan=\"2\">丁</td><td>戊</td></tr></table>"
+    },
+    {
+      "name": "table/rowspan-continuation",
+      "note": "跨行 `{n}^m` 起格＋裸 `^` 续格，续格不产生新的单元格",
+      "guji": ":::table\n!甲 | 乙\n丙^2 | 丁\n^ | 戊\n:::",
+      "directive": ":::table\n:th[甲]:th[乙]\n:td[丙]{rowspan=2}:td[丁]\n:td[戊]\n:::",
+      "html": "<table class=\"guji-table\"><tr><th>甲</th><th>乙</th></tr><tr><td rowspan=\"2\">丙</td><td>丁</td></tr><tr><td>戊</td></tr></table>"
+    },
+    {
+      "name": "table/empty-cell",
+      "note": "显式空格 `_`，与“省略”不同",
+      "guji": ":::table\n甲 | _\n:::",
+      "directive": ":::table\n:td[甲]:td[]\n:::",
+      "html": "<table class=\"guji-table\"><tr><td>甲</td><td></td></tr></table>"
+    },
+    {
+      "name": "table/cell-with-jz",
+      "note": "格内夹注原样嵌套",
+      "guji": ":::table\n甲<注文> | 乙\n:::",
+      "directive": ":::table\n:td[甲:jz[注文]]:td[乙]\n:::",
+      "html": "<table class=\"guji-table\"><tr><td>甲<span class=\"guji-jz\">注文</span></td><td>乙</td></tr></table>"
+    },
+    {
+      "name": "table/cell-jz-split-line-escaped",
+      "note": "格内夹注要分行，`|` 必须转义成 `\\|` 才不被当成分格符",
+      "guji": ":::table\n<甲\\|乙> | 丙\n:::",
+      "directive": ":::table\n:td[:jz[甲\\|乙]]:td[丙]\n:::",
+      "html": "<table class=\"guji-table\"><tr><td><span class=\"guji-jz\"><span class=\"guji-jz-line\">甲</span><span class=\"guji-jz-break\"></span><span class=\"guji-jz-line\">乙</span></span></td><td>丙</td></tr></table>"
+    },
+    {
+      "name": "table/idempotent-roundtrip",
+      "note": "已经是规范化之后的 :td/:th 序列，再规范化一次不变",
+      "guji": ":::table\n:th[公元]:th[紀年]\n:td[960]:td[建隆元年]\n:::",
+      "directive": ":::table\n:th[公元]:th[紀年]\n:td[960]:td[建隆元年]\n:::",
+      "html": "<table class=\"guji-table\"><tr><th>公元</th><th>紀年</th></tr><tr><td>960</td><td>建隆元年</td></tr></table>"
+    },
+    {
+      "name": "table/leading-caret-not-taitou",
+      "note": "格内容以 `^`/`.` 开头时不会被误当成抬头/空格行首标记",
+      "guji": ":::table\n^甲 | .5\n:::",
+      "directive": ":::table\n:td[^甲]:td[.5]\n:::",
+      "html": "<table class=\"guji-table\"><tr><td>^甲</td><td>.5</td></tr></table>"
+    },
+    {
+      "name": "table/nested-in-tt",
+      "note": "容器语法本身支持嵌套（book-text 现状用法不这样写，但解析器不因此报错）",
+      "guji": ":::tt{n=1}\n:::table\n甲 | 乙\n:::\n:::\n\n甲 | 乙",
+      "directive": ":::tt{n=1}\n:::table\n:td[甲]:td[乙]\n:::\n:::\n\n甲 | 乙",
+      "html": "<div class=\"guji-tt guji-tt-block\" data-guji-n=\"1\"><table class=\"guji-table\"><tr><td>甲</td><td>乙</td></tr></table></div>\n<p>:::</p>\n<p>甲 | 乙</p>"
+    },
+    {
+      "name": "zi/ids",
+      "note": "IDS 组字，直接写方位描述符",
+      "guji": "令<:zi[⿰句員]>",
+      "directive": "令:jz[:zi[⿰句員]]",
+      "html": "<p>令<span class=\"guji-jz\"><span class=\"guji-zi\">⿰句員</span></span></p>"
+    },
+    {
+      "name": "zi/description",
+      "note": "部件方位的文字描述",
+      "guji": ":zi[上雍下玉]",
+      "directive": ":zi[上雍下玉]",
+      "html": "<p><span class=\"guji-zi\">上雍下玉</span></p>"
+    },
+    {
+      "name": "zi/complex-description",
+      "note": "拼法复杂到不是简单两部件横排/竖排，原样写描述文字",
+      "guji": ":zi[三囗，囗中為歹]",
+      "directive": ":zi[三囗，囗中為歹]",
+      "html": "<p><span class=\"guji-zi\">三囗，囗中為歹</span></p>"
     }
   ]
 }

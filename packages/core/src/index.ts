@@ -20,7 +20,7 @@ export {
 
 export { gujiProcessor, parseGuji, formatDirective } from './parse.js'
 
-export { applyLineScope, normalizeDirectiveNames } from './transform.js'
+export { applyLineScope, normalizeDirectiveNames, groupTableRows } from './transform.js'
 
 export {
   DIRECTIVES,
@@ -51,4 +51,4 @@ export {
 } from './options.js'
 
 /** 本包实现的规范版本。 */
-export const SPEC_VERSION = '0.1.0'
+export const SPEC_VERSION = '0.2.0'

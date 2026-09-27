@@ -17,7 +17,7 @@ import { directive } from 'micromark-extension-directive'
 import type { Plugin, Processor } from 'unified'
 import { gujiToDirective } from './normalize.js'
 import { resolveOptions, type GujiOptions } from './options.js'
-import { applyLineScope, normalizeDirectiveNames } from './transform.js'
+import { applyLineScope, groupTableRows, normalizeDirectiveNames } from './transform.js'
 
 /** 同一个 processor 上避免重复注册 directive 扩展。 */
 const installed = new WeakSet<object>()
@@ -52,6 +52,7 @@ const remarkGuji: Plugin<[GujiOptions?], Root> = function remarkGuji(options) {
   return (tree: Root) => {
     if (settings.normalizeNames) normalizeDirectiveNames(tree)
     if (settings.lineScope) applyLineScope(tree)
+    if (settings.tableRows) groupTableRows(tree)
   }
 }
 

@@ -39,6 +39,28 @@ function textNode(value: string): ElementContent {
   return { type: 'text', value }
 }
 
+/**
+ * 找 `children` 里第一个含字面 `|` 的顶层文本子节点，在那里切成两半。
+ * 只看顶层（不下探嵌套指令自己的子节点）——嵌套指令内部的 `|` 属于它自己
+ * 的语义（如果那也是个 jz，它会在渲染它自己时再切一次），见
+ * spec/syntax.md §1「分行」。转义 `\|` 在这一步已经被 CommonMark 反斜杠
+ * 转义解成字面 `|`，与未转义的 `|` 不再可分——夹注内不支持"字面竖线"，
+ * 这是本特性认下的唯一已知局限。
+ */
+function splitJzChildren(children: ElementContent[]): [ElementContent[], ElementContent[]] | undefined {
+  for (let idx = 0; idx < children.length; idx++) {
+    const child = children[idx]
+    if (child.type !== 'text' || !child.value.includes('|')) continue
+    const at = child.value.indexOf('|')
+    const before = children.slice(0, idx)
+    if (at > 0) before.push(textNode(child.value.slice(0, at)))
+    const after = children.slice(idx + 1)
+    if (at + 1 < child.value.length) after.unshift(textNode(child.value.slice(at + 1)))
+    return [before, after]
+  }
+  return undefined
+}
+
 /** 创建 remark-rehype 的 handlers。 */
 export function gujiHandlers(options: ResolvedHtmlOptions): Record<string, Handler> {
   const cls = (suffix: string): string => options.classPrefix + suffix
@@ -64,14 +86,25 @@ export function gujiHandlers(options: ResolvedHtmlOptions): Record<string, Handl
     }
 
     switch (name) {
-      case 'jz':
+      case 'jz': {
+        // 分行 `|`：横排默认忽略（不产生可见的换行，见 guji.css），
+        // 竖排 / 原书分行主题按 `.guji-jz-break` 换行，见 spec/syntax.md §1。
+        const split = splitJzChildren(children)
+        const content = split
+          ? [
+              { type: 'element', tagName: 'span', properties: { className: [cls('jz-line')] }, children: split[0] } as Element,
+              { type: 'element', tagName: 'span', properties: { className: [cls('jz-break')] }, children: [] } as Element,
+              { type: 'element', tagName: 'span', properties: { className: [cls('jz-line')] }, children: split[1] } as Element
+            ]
+          : children
         return element(
           state,
           node,
           'span',
           { className: [cls('jz')], 'data-guji-type': attributes.type },
-          children
+          content
         )
+      }
 
       case 'bz':
         return element(
@@ -153,6 +186,42 @@ export function gujiHandlers(options: ResolvedHtmlOptions): Record<string, Handl
         )
       }
 
+      // 阙文／缺字猜测：默认只显示 □，label／猜测字藏在 `.guji-qw-label`／
+      // `.guji-qz-guess` 里，校对模式（`.guji-doc--proofing`）切换显示哪个，
+      // 见 spec/ast.md §2.6。
+      case 'qw':
+        return element(state, node, 'span', { className: [cls('qw')] }, [
+          { type: 'element', tagName: 'span', properties: { className: [cls('qw-box')] }, children: [textNode('□')] },
+          { type: 'element', tagName: 'span', properties: { className: [cls('qw-label')] }, children }
+        ])
+
+      case 'qz': {
+        const guess = attributes.guess ?? ''
+        return element(state, node, 'span', { className: [cls('qz')], 'data-guji-guess': guess }, [
+          { type: 'element', tagName: 'span', properties: { className: [cls('qz-box')] }, children: [textNode('□')] },
+          { type: 'element', tagName: 'span', properties: { className: [cls('qz-guess')] }, children: [textNode(guess)] }
+        ])
+      }
+
+      // 组字：内容是 IDS（含 U+2FF0-U+2FFB 描述符）或部件方位描述文字，
+      // 两种都原样显示，靠 CSS/字体自行决定能不能把 IDS 合成出字形，
+      // 见 spec/syntax.md §16。
+      case 'zi':
+        return element(state, node, 'span', { className: [cls('zi')] }, children)
+
+      case 'table':
+        return element(state, node, 'table', { className: [cls('table')] }, children)
+
+      case 'th':
+      case 'td': {
+        const properties: Properties = {}
+        const colspan = Number.parseInt(attributes.colspan ?? '', 10)
+        const rowspan = Number.parseInt(attributes.rowspan ?? '', 10)
+        if (Number.isFinite(colspan) && colspan > 1) properties.colSpan = colspan
+        if (Number.isFinite(rowspan) && rowspan > 1) properties.rowSpan = rowspan
+        return element(state, node, name, properties, children)
+      }
+
       default:
         return children
     }
@@ -160,9 +229,18 @@ export function gujiHandlers(options: ResolvedHtmlOptions): Record<string, Handl
 
   const handler: Handler = (state, node) => render(state, node as DirectiveNode)
 
+  /** `:::table` 规范化产生的合成行节点（不是指令），见 transform.ts groupTableRows。 */
+  const tableRowHandler: Handler = (state, node) => {
+    const children = state.all(node as unknown as AnyMdastNode) as ElementContent[]
+    const result: Element = { type: 'element', tagName: 'tr', properties: {}, children }
+    state.patch(node as unknown as AnyMdastNode, result)
+    return state.applyData(node as unknown as AnyMdastNode, result) as Element
+  }
+
   return {
     textDirective: handler,
     leafDirective: handler,
-    containerDirective: handler
+    containerDirective: handler,
+    gujiTableRow: tableRowHandler
   }
 }

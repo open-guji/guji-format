@@ -14,21 +14,21 @@ describe('长度上限的解析', () => {
   it('不传则用默认：夹注 4096，其余 64', () => {
     expect(resolveMaxSpanLength(undefined)).toEqual(DEFAULT_MAX_SPAN_LENGTH)
     expect(DEFAULT_MAX_SPAN_LENGTH.jz).toBe(4096)
-    for (const m of ['bz', 'sz', 'gz', 'zm', 'sm'] as const) {
+    for (const m of ['bz', 'sz', 'gz', 'zm', 'sm', 'qw'] as const) {
       expect(DEFAULT_MAX_SPAN_LENGTH[m]).toBe(64)
     }
   })
 
-  it('给一个数就是六种记号一律用它，夹注不留隐藏例外', () => {
+  it('给一个数就是七种记号一律用它，夹注不留隐藏例外', () => {
     const r = resolveMaxSpanLength(100)
-    for (const m of ['jz', 'bz', 'sz', 'gz', 'zm', 'sm', 'default'] as const) {
+    for (const m of ['jz', 'bz', 'sz', 'gz', 'zm', 'sm', 'qw', 'default'] as const) {
       expect(r[m]).toBe(100)
     }
   })
 
   it('给表则缺项落到 default，default 缺则 64', () => {
     expect(resolveMaxSpanLength({ jz: 999 })).toMatchObject({
-      jz: 999, bz: 64, sz: 64, gz: 64, zm: 64, sm: 64
+      jz: 999, bz: 64, sz: 64, gz: 64, zm: 64, sm: 64, qw: 64
     })
     expect(resolveMaxSpanLength({ default: 8, sm: 3 })).toMatchObject({
       jz: 8, bz: 8, sz: 8, gz: 8, zm: 8, sm: 3
@@ -53,11 +53,12 @@ describe('默认上限下的实际行为', () => {
     expect(gujiToDirective(`《${造(65)}》`)).toBe(`《${造(65)}》`)
   })
 
-  it('改字、专名号、补字、删字同样仍守 64', () => {
+  it('改字、专名号、补字、删字、阙文同样仍守 64', () => {
     expect(gujiToDirective(`[${造(65)}]`)).toBe(`[${造(65)}]`)
     expect(gujiToDirective(`甲 /${造(65)}/ 乙`)).toBe(`甲 /${造(65)}/ 乙`)
     expect(gujiToDirective(`((${造(65)}))`)).toBe(`((${造(65)}))`)
     expect(gujiToDirective(`{{${造(65)}}}`)).toBe(`{{${造(65)}}}`)
+    expect(gujiToDirective(`[[${造(65)}]]`)).toBe(`[[${造(65)}]]`)
   })
 })
 
@@ -67,7 +68,7 @@ describe('降级必须可数——这是上限唯一的可观测出口', () => {
     const r = gujiToDirectiveWithReport(src)
     expect(r.overflows).toEqual([])
     expect(r.text).toBe(gujiToDirective(src))
-    expect(r.overflowCounts).toEqual({ jz: 0, bz: 0, sz: 0, gz: 0, zm: 0, sm: 0 })
+    expect(r.overflowCounts).toEqual({ jz: 0, bz: 0, sz: 0, gz: 0, zm: 0, sm: 0, qw: 0 })
   })
 
   it('超限时按字面输出，同时记一条事件', () => {
@@ -79,14 +80,15 @@ describe('降级必须可数——这是上限唯一的可观测出口', () => {
     expect(r.overflowCounts.sm).toBe(1)
   })
 
-  it('六种记号都报得出来', () => {
+  it('七种记号都报得出来', () => {
     const 样 = {
       jz: `<${造(70)}>`,
       bz: `((${造(70)}))`,
       sz: `{{${造(70)}}}`,
       gz: `[${造(70)}]`,
       zm: `甲 /${造(70)}/ 乙`,
-      sm: `《${造(70)}》`
+      sm: `《${造(70)}》`,
+      qw: `[[${造(70)}]]`
     }
     for (const [mark, src] of Object.entries(样)) {
       const r = gujiToDirectiveWithReport(src, { maxSpanLength: 64 })
