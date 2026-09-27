@@ -30,11 +30,17 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: 类型检查
-        run: pnpm typecheck
-
+      # 构建放在类型检查前面：packages/web、packages/pdf 的 tsconfig 没有
+      # project references，是靠 packages/core 的 package.json#exports
+      # （只指向 dist/index.d.ts，没有指回 src 的路径）解析类型的——
+      # 顺序反过来会在 web/pdf 的 typecheck 报 TS2307 找不到
+      # @open-guji/markdown-core，本仓 CI 5 次里 5 次都栽在更早的
+      # pnpm/action-setup 那一步，从没真正跑到这里过，不是本 PR 引入的问题。
       - name: 构建
         run: pnpm build
+
+      - name: 类型检查
+        run: pnpm typecheck
 
       - name: 一致性测试
         run: pnpm test
