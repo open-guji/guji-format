@@ -16,9 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 不传 version：让它从 package.json 的 packageManager 字段读版本。
+      # pnpm/action-setup@v4 现在把「两处都给了版本」当硬错误
+      # （ERR_PNPM_BAD_PM_VERSION 的前置检查），这里的 `version: 9` 和
+      # packageManager: "pnpm@9.15.4" 同时存在会直接炸在这一步，
+      # base 分支最近几次 CI 也是这样红的，不是本 PR 引入的问题。
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
