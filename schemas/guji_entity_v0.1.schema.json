@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://open-guji.org/schema/entity/v0.1.json",
   "title": "GujiEntity",
-  "description": "伴生层独立外挂命名实体与知识图谱链接格式 (guji-entity v0.1)",
+  "description": "伴生层独立外挂命名实体与知识图谱链接格式 (guji-entity v0.1)，只用于 book-text original",
   "type": "object",
   "required": ["$schema", "version", "text_version", "book_id", "entities"],
   "if": {

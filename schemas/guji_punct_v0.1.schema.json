@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://open-guji.org/schema/punct/v0.1.json",
   "title": "GujiPunct",
-  "description": "伴生层独立外挂标点格式 (guji-punct v0.1)",
+  "description": "伴生层独立外挂标点格式 (guji-punct v0.1)，只用于 book-text original",
   "type": "object",
   "required": ["$schema", "version", "text_version", "book_id", "punctuations"],
   "if": {
@@ -43,6 +43,11 @@
     "book_id": {
       "type": "string"
     },
+    "volume": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "册号，等于 book-text original/index.json 该章的 n"
+    },
     "metadata": {
       "type": "object",
       "properties": {
@@ -72,12 +77,13 @@
             "type": "string",
             "enum": ["point", "break", "range"],
             "default": "point",
-            "description": "标记类型：point(句逗标点), break(自然段分段符), range(书名号/引号区间)"
+            "description": "标记类型：point(句逗标点；引号、书名号等成对标号拆成 before／after 两条 point), break(自然段分段符)；range 保留不用"
           },
           "pos": {
             "type": "string",
             "enum": ["after", "before", "range"],
-            "default": "after"
+            "default": "after",
+            "description": "after：标点在锚点字之后；before：标点在锚点字之前（开引号、《）；range 保留不用"
           },
           "anchor": {
             "description": "基于格位的拓扑锚点。支持字符串键 '页:列:格[子列]' 或结构化对象，抬头超出上框时格位可为负数",
@@ -106,7 +112,7 @@
           },
           "pre_char": {
             "type": "string",
-            "description": "锚点前一个文字字符，用于对齐与防御性防错校验"
+            "description": "锚点那一格上的字（after、before 标点都核这一格），用于对齐与防御性防错校验"
           },
           "confidence": {
             "type": "number",
