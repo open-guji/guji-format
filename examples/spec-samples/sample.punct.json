@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "text_version": "1.0.0",
   "book_id": "96mid1ogzk",
+  "volume": 4,
   "metadata": {
     "title": "欽定四庫全書總目卷四",
     "creator": "qwen-plus",
@@ -11,7 +12,7 @@
     "description": "基于 original 底本自动生成文言断句标点，经过严格字符对齐保护"
   },
   "stats": {
-    "total_marks": 4,
+    "total_annotations": 4,
     "periods": 2,
     "commas": 1,
     "paragraph_breaks": 1
