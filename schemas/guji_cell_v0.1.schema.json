@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-guji.org/schema/cell/v0.1.json",
+  "title": "GujiCell",
+  "description": "Level 2 无坐标拓扑网格格式 (guji-cell v0.1)，包含树状视图 (Tree View) 与扁平映射视图 (Map View)",
+  "oneOf": [
+    {
+      "title": "HierarchicalTreeView",
+      "type": "object",
+      "required": ["schema", "book_id", "volume", "pages"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "enum": ["guji-cell/0.1"]
+        },
+        "book_id": { "type": "string" },
+        "volume": { "type": "integer", "minimum": 1 },
+        "pages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["page_index", "columns"],
+            "properties": {
+              "page_index": { "type": "integer", "minimum": 1 },
+              "page_label": { "type": "string" },
+              "page_type": { "type": "string" },
+              "columns": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["col_index", "cells"],
+                  "properties": {
+                    "col_index": { "type": "integer", "minimum": 1 },
+                    "raised": { "type": "integer", "default": 0 },
+                    "lead_blank": { "type": "integer", "default": 0 },
+                    "cells": {
+                      "type": "array",
+                      "items": { "$ref": "#/$defs/cellItem" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "FlatMapView",
+      "type": "object",
+      "required": ["schema", "book_id", "cells"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "enum": ["guji-cell-map/0.1"]
+        },
+        "book_id": { "type": "string" },
+        "volume": { "type": "integer", "minimum": 1 },
+        "cells": {
+          "type": "object",
+          "description": "键格式为 '<册>:<页>:<列>:<格>[子列]'，例如 '3:3:1:1' 或 '3:3:4:6a'",
+          "additionalProperties": { "$ref": "#/$defs/cellItem" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "cellItem": {
+      "type": "object",
+      "required": ["char", "lane"],
+      "properties": {
+        "slot": { "type": "integer", "description": "格位物理序号，抬头超框时可为负数（如 -1、-2）" },
+        "lane": {
+          "type": "string",
+          "enum": ["main", "jz_r", "jz_l", "solo"]
+        },
+        "char": { "type": "string", "description": "认定的字形，空字符串表示阙文" },
+        "norm_char": { "type": "string", "description": "规范繁体映射字" },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["char", "conf"],
+            "properties": {
+              "char": { "type": "string" },
+              "conf": { "type": "number", "minimum": 0, "maximum": 1 },
+              "src": { "type": "string" }
+            }
+          }
+        },
+        "review": {
+          "type": "string",
+          "enum": ["pending", "auto", "human", "disputed"],
+          "default": "auto"
+        },
+        "lacuna": {
+          "type": ["string", "null"],
+          "enum": ["defect", "unreadable", null]
+        },
+        "flags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

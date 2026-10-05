@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-guji.org/schema/page/v0.1.json",
+  "title": "GujiPage",
+  "description": "Level 1 富信息带坐标古籍页面格式 (guji-page v0.1)",
+  "type": "object",
+  "required": ["schema", "page_id", "book", "volume", "page", "image", "canvas", "text", "regions", "glyphs"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "enum": ["guji-page/0.1"]
+    },
+    "page_id": {
+      "type": "string",
+      "description": "全局唯一页标识符，通常为 <bookId>/<volumeIndex>/<pageIndex>"
+    },
+    "book": {
+      "type": "object",
+      "required": ["id", "title"],
+      "properties": {
+        "id": { "type": "string" },
+        "edition": { "type": "string" },
+        "title": { "type": "string" }
+      }
+    },
+    "volume": {
+      "type": "object",
+      "required": ["index"],
+      "properties": {
+        "index": { "type": "integer", "minimum": 1 },
+        "cv_book": { "type": "string" },
+        "label": { "type": "string" },
+        "juan_range": { "type": "string" }
+      }
+    },
+    "page": {
+      "type": "object",
+      "required": ["index", "page_type"],
+      "properties": {
+        "index": { "type": "integer", "minimum": 1 },
+        "label": { "type": "string", "description": "书叶原刻页码标签，如'一'、'二'、'自序一'" },
+        "page_type": {
+          "type": "string",
+          "enum": ["body", "toc", "preface", "colophon", "blank", "cover", "title"]
+        }
+      }
+    },
+    "image": {
+      "type": "object",
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "sha256": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "canvas": {
+      "type": "object",
+      "required": ["id", "width", "height"],
+      "properties": {
+        "id": { "type": "string", "format": "uri" },
+        "seq": { "type": "string" },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "producers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "tool": { "type": "string" },
+          "rev": { "type": "string" },
+          "pipeline": { "type": "string" },
+          "who": { "type": "string" }
+        }
+      }
+    },
+    "text": {
+      "type": "array",
+      "description": "原样字符流。数组下标即为字符索引。空字符串代表阙文未定字。",
+      "items": { "type": "string" }
+    },
+    "norm": {
+      "type": "array",
+      "description": "异体字/通行字规范映射表",
+      "items": {
+        "type": "object",
+        "required": ["i", "t"],
+        "properties": {
+          "i": { "type": "integer", "minimum": 0, "description": "text 字符索引" },
+          "t": { "type": "string", "description": "通行规范字" },
+          "why": { "type": "string", "description": "映射原因，如'异体'、'俗体'、'避讳'" }
+        }
+      }
+    },
+    "zi": {
+      "type": "array",
+      "description": "特殊组字/IDS标记",
+      "items": {
+        "type": "object",
+        "required": ["i", "form"],
+        "properties": {
+          "i": { "type": "integer", "minimum": 0 },
+          "form": { "type": "string", "enum": ["ids", "pua", "gaiji"] }
+        }
+      }
+    },
+    "regions": {
+      "type": "array",
+      "description": "版面结构与列定义",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "box", "columns"],
+        "properties": {
+          "id": { "type": "string" },
+          "kind": { "type": "string", "enum": ["body", "banxin", "margin", "header", "footer"] },
+          "box": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "[x, y, w, h]"
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "n", "kind", "box"],
+              "properties": {
+                "id": { "type": "string" },
+                "n": { "type": "integer", "minimum": 1, "description": "列序号（通常从右向左递增）" },
+                "kind": { "type": "string", "enum": ["body", "banxin", "header", "comment"] },
+                "box": {
+                  "type": "array",
+                  "items": { "type": "number" },
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "raised": { "type": "integer", "default": 0, "description": "平抬格数" },
+                "lead_blank": { "type": "integer", "default": 0, "description": "挪抬空格数" },
+                "runs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["lane", "text"],
+                    "properties": {
+                      "lane": { "type": "string", "enum": ["main", "jz_r", "jz_l", "solo"] },
+                      "text": {
+                        "type": "array",
+                        "items": { "type": "integer" },
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "description": "[start, end] 左闭右开区间，索引 text 数组"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "glyphs": {
+      "type": "array",
+      "description": "字框几何与识别候选数据",
+      "items": {
+        "type": "object",
+        "required": ["id", "box", "col", "lane", "slot", "char"],
+        "properties": {
+          "id": { "type": "string", "description": "字框稳定ID" },
+          "text": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "[start, end] 映射到 text 下标"
+          },
+          "box": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "Canvas 像素坐标 [x, y, w, h]"
+          },
+          "col": { "type": "string", "description": "关联的 column id" },
+          "lane": { "type": "string", "enum": ["main", "jz_r", "jz_l", "solo"] },
+          "slot": { "type": "integer", "description": "列内字符物理格位，抬头超框时可为负数（如 -1、-2）" },
+          "cv_id": { "type": "string", "description": "复合定位键 <册>:<页>:<列>:<格>" },
+          "char": { "type": "string", "description": "当前认定的字形" },
+          "method": { "type": "string", "description": "判定来源方法" },
+          "review": {
+            "type": "string",
+            "enum": ["pending", "auto", "human", "disputed"],
+            "default": "auto"
+          },
+          "candidates": {
+            "type": "array",
+            "description": "OCR 与多模型候选字集与置信度",
+            "items": {
+              "type": "object",
+              "required": ["char", "conf"],
+              "properties": {
+                "char": { "type": "string" },
+                "conf": { "type": "number", "minimum": 0, "maximum": 1 },
+                "src": { "type": "string" }
+              }
+            }
+          },
+          "lacuna": {
+            "type": ["string", "null"],
+            "enum": ["defect", "unreadable", null]
+          },
+          "guess": { "type": ["string", "null"] },
+          "flags": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["occluded", "orphan", "split", "merged"] }
+          }
+        }
+      }
+    },
+    "marks": {
+      "type": "array",
+      "description": "非字元素，如印章、污损、版式留白",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "box"],
+        "properties": {
+          "id": { "type": "string" },
+          "kind": { "type": "string", "enum": ["seal", "excluded", "blank", "smudge"] },
+          "box": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 4,
+            "maxItems": 4
+          },
+          "occludes": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "被遮挡的 glyph id 列表"
+          },
+          "text": { "type": "string", "description": "印章文字或说明" }
+        }
+      }
+    }
+  }
+}

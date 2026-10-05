@@ -1,0 +1,60 @@
+{
+  "$schema": "https://open-guji.org/schema/punct/v0.1.json",
+  "version": "0.1.0",
+  "book_id": "96mid1ogzk",
+  "metadata": {
+    "title": "欽定四庫全書總目卷四",
+    "creator": "qwen-plus",
+    "created_at": "2026-10-04T22:30:00Z",
+    "base_edition": "original",
+    "description": "基于 original 底本自动生成文言断句标点，经过严格字符对齐保护"
+  },
+  "stats": {
+    "total_marks": 4,
+    "periods": 2,
+    "commas": 1,
+    "paragraph_breaks": 1
+  },
+  "punctuations": [
+    {
+      "id": "p001",
+      "kind": "point",
+      "mark": "。",
+      "pos": "after",
+      "anchor": "3:3:1:10",
+      "pre_char": "四",
+      "confidence": 0.99,
+      "source": "llm:qwen-plus"
+    },
+    {
+      "id": "b001",
+      "kind": "break",
+      "mark": "\n\n",
+      "pos": "after",
+      "anchor": "3:3:1:10",
+      "pre_char": "四",
+      "confidence": 0.99,
+      "source": "llm:qwen-plus"
+    },
+    {
+      "id": "p002",
+      "kind": "point",
+      "mark": "，",
+      "pos": "after",
+      "anchor": "3:3:4:6",
+      "pre_char": "卷",
+      "confidence": 0.95,
+      "source": "llm:qwen-plus"
+    },
+    {
+      "id": "p003",
+      "kind": "point",
+      "mark": "。",
+      "pos": "after",
+      "anchor": "3:3:4:7b",
+      "pre_char": "本",
+      "confidence": 0.98,
+      "source": "llm:qwen-plus"
+    }
+  ]
+}

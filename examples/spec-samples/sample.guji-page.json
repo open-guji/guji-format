@@ -1,0 +1,194 @@
+{
+  "schema": "guji-page/0.1",
+  "page_id": "96mid1ogzk/3/3",
+  "book": {
+    "id": "96mid1ogzk",
+    "edition": "siku-zongmu",
+    "title": "欽定四庫全書總目（武英殿刻本）"
+  },
+  "volume": {
+    "index": 3,
+    "cv_book": "vol03",
+    "label": "經部四~五·易類四~五·卷四~卷五",
+    "juan_range": "4-5"
+  },
+  "page": {
+    "index": 3,
+    "label": "一",
+    "page_type": "body"
+  },
+  "image": {
+    "width": 2361,
+    "height": 3096,
+    "sha256": "05a36191f084be1a7b824db679184518db9dca6d95ab5f15ca88d30e3221c5f8",
+    "path": "data_full/zongmu/vol03/3.png"
+  },
+  "canvas": {
+    "id": "https://data.kaiyuanguji.com/iiif/96mid1ogzk/canvas/03/0003",
+    "seq": "0003",
+    "width": 2361,
+    "height": 3096
+  },
+  "producers": {
+    "cv": {
+      "tool": "open-guji-cv",
+      "rev": "1332c01734",
+      "pipeline": "keben_body_v2"
+    }
+  },
+  "text": [
+    "欽", "定", "四", "庫", "全", "書", "總", "目", "卷", "四",
+    "經", "部", "四",
+    "易", "類", "四",
+    "讀", "易", "私", "言", "一", "卷", "兩", "江", "總", "督", "採", "進", "本"
+  ],
+  "norm": [
+    {
+      "i": 26,
+      "t": "採",
+      "why": "异体"
+    }
+  ],
+  "zi": [],
+  "regions": [
+    {
+      "id": "r_body",
+      "kind": "body",
+      "box": [355, 352, 1662, 2438],
+      "columns": [
+        {
+          "id": "c1",
+          "n": 1,
+          "kind": "body",
+          "box": [1838, 352, 179, 2438],
+          "raised": 0,
+          "lead_blank": 0,
+          "runs": [
+            {
+              "lane": "main",
+              "text": [0, 10]
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "n": 2,
+          "kind": "body",
+          "box": [1659, 352, 179, 2438],
+          "raised": 0,
+          "lead_blank": 0,
+          "runs": [
+            {
+              "lane": "main",
+              "text": [10, 13]
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "n": 3,
+          "kind": "body",
+          "box": [1480, 352, 179, 2438],
+          "raised": 1,
+          "lead_blank": 0,
+          "runs": [
+            {
+              "lane": "main",
+              "text": [13, 16]
+            }
+          ]
+        },
+        {
+          "id": "c4",
+          "n": 4,
+          "kind": "body",
+          "box": [1301, 352, 179, 2438],
+          "raised": 1,
+          "lead_blank": 0,
+          "runs": [
+            {
+              "lane": "main",
+              "text": [16, 22]
+            },
+            {
+              "lane": "jz_r",
+              "text": [22, 26]
+            },
+            {
+              "lane": "jz_l",
+              "text": [26, 29]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "glyphs": [
+    {
+      "id": "3:3:1:1",
+      "text": [0, 1],
+      "box": [1851, 360, 150, 140],
+      "col": "c1",
+      "lane": "main",
+      "slot": 1,
+      "char": "欽",
+      "method": "cv:match_ref",
+      "review": "auto",
+      "candidates": [
+        {"char": "欽", "conf": 0.98, "src": "paddle_ocr"},
+        {"char": "飮", "conf": 0.02, "src": "paddle_ocr"}
+      ]
+    },
+    {
+      "id": "3:3:1:2",
+      "text": [1, 2],
+      "box": [1851, 510, 150, 140],
+      "col": "c1",
+      "lane": "main",
+      "slot": 2,
+      "char": "定",
+      "method": "cv:match_ref",
+      "review": "auto",
+      "candidates": [
+        {"char": "定", "conf": 0.99, "src": "paddle_ocr"}
+      ]
+    },
+    {
+      "id": "3:3:4:7a",
+      "text": [22, 23],
+      "box": [1350, 1200, 70, 100],
+      "col": "c4",
+      "lane": "jz_r",
+      "slot": 7,
+      "char": "兩",
+      "method": "cv:match_ref",
+      "review": "auto",
+      "candidates": [
+        {"char": "兩", "conf": 0.95, "src": "paddle_ocr"}
+      ]
+    },
+    {
+      "id": "3:3:4:7b",
+      "text": [26, 27],
+      "box": [1280, 1200, 70, 100],
+      "col": "c4",
+      "lane": "jz_l",
+      "slot": 7,
+      "char": "採",
+      "method": "cv:match_ref",
+      "review": "auto",
+      "candidates": [
+        {"char": "採", "conf": 0.91, "src": "paddle_ocr"}
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "id": "m_001",
+      "kind": "seal",
+      "box": [1800, 200, 180, 180],
+      "occludes": [],
+      "text": "乾隆御覽之寶"
+    }
+  ]
+}
