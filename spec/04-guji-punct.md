@@ -182,9 +182,9 @@
 
 | 字段 | 必填 | 说明 |
 |---|---|---|
-| `version` | 是 | 本层（标点）的内容版本，`MAJOR.MINOR.PATCH` |
+| `version` | 是 | 本层（标点）的内容版本，`MAJOR.MINOR.PATCH`；MAJOR 只能是 0–3（0 只用于 wip，1–3 是质量等级） |
 | `text_version` | 是 | 本层是对着哪一版文本做的，即 book-text `original/index.json` 该章的 `text_version`。**不得超前于当前文本** |
-| `review` | major ≥2 时必填 | 验收记录，至少含 `date`、`signed_by`、`sample`（抽检数据） |
+| `review` | major ≥2 时必填（schema 强制） | 验收记录，`date`、`signed_by`、`sample`（抽检数据）三项都不许为空 |
 
 ```json
 {

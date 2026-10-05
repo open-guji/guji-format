@@ -5,28 +5,39 @@
   "description": "伴生层独立外挂命名实体与知识图谱链接格式 (guji-entity v0.1)",
   "type": "object",
   "required": ["$schema", "version", "text_version", "book_id", "entities"],
+  "if": {
+    "properties": { "version": { "pattern": "^[2-3]\\." } },
+    "required": ["version"]
+  },
+  "then": { "required": ["review"] },
   "properties": {
     "$schema": {
       "type": "string"
     },
     "version": {
       "type": "string",
-      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
-      "description": "本层的内容版本（book-text original 三线版本号之一，MAJOR.MINOR.PATCH；major＝质量等级：1 可用／2 出版级／3 定本）。不是格式版本，格式版本看 $schema"
+      "pattern": "^[0-3]\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "description": "本层的内容版本（book-text original 三线版本号之一，MAJOR.MINOR.PATCH；major＝质量等级：1 可用／2 出版级／3 定本，0 只用于 wip，没有 3 以上）。不是格式版本，格式版本看 $schema"
     },
     "text_version": {
       "type": "string",
-      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
-      "description": "本层是对着哪一版文本做的，即 original/index.json 该章的 text_version；不得超前于当前文本"
+      "pattern": "^[0-3]\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "description": "本层是对着哪一版文本做的，即 original/index.json 该章的 text_version；不得超前于当前文本。文本线 major 同样是质量等级 0–3"
     },
     "review": {
       "type": "object",
       "description": "验收记录，本层 major ≥2 时必填",
       "required": ["date", "signed_by", "sample"],
       "properties": {
-        "date": { "type": "string" },
-        "signed_by": { "type": "string" },
-        "sample": { "description": "抽检数据：样本量、一致率／精确率等" }
+        "date": { "type": "string", "minLength": 1 },
+        "signed_by": { "type": "string", "minLength": 1 },
+        "sample": {
+          "description": "抽检数据：样本量、一致率／精确率等；写成一句话或一个对象均可，不许为空",
+          "anyOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "object", "minProperties": 1 }
+          ]
+        }
       }
     },
     "book_id": {
