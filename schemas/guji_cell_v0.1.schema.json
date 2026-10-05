@@ -58,7 +58,7 @@
         "volume": { "type": "integer", "minimum": 1 },
         "cells": {
           "type": "object",
-          "description": "键格式为 '<册>:<页>:<列>:<格>[子列]'，例如 '3:3:1:1' 或 '3:3:4:6a'",
+          "description": "键格式为 '<页>:<列>:<格>[子列]'，例如 '3:1:1' 或 '3:4:6a'",
           "additionalProperties": { "$ref": "#/$defs/cellItem" }
         }
       }

@@ -21,7 +21,7 @@
       "kind": "point",
       "mark": "。",
       "pos": "after",
-      "anchor": "3:3:1:10",
+      "anchor": "3:1:10",
       "pre_char": "四",
       "confidence": 0.99,
       "source": "llm:qwen-plus"
@@ -31,7 +31,7 @@
       "kind": "break",
       "mark": "\n\n",
       "pos": "after",
-      "anchor": "3:3:1:10",
+      "anchor": "3:1:10",
       "pre_char": "四",
       "confidence": 0.99,
       "source": "llm:qwen-plus"
@@ -41,7 +41,7 @@
       "kind": "point",
       "mark": "，",
       "pos": "after",
-      "anchor": "3:3:4:6",
+      "anchor": "3:4:6",
       "pre_char": "卷",
       "confidence": 0.95,
       "source": "llm:qwen-plus"
@@ -51,7 +51,7 @@
       "kind": "point",
       "mark": "。",
       "pos": "after",
-      "anchor": "3:3:4:7b",
+      "anchor": "3:4:7b",
       "pre_char": "本",
       "confidence": 0.98,
       "source": "llm:qwen-plus"

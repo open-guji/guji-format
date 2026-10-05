@@ -53,11 +53,11 @@
             "default": "after"
           },
           "anchor": {
-            "description": "基于格位的拓扑锚点。支持字符串键 '册:页:列:格' 或结构化对象，抬头超出上框时格位可为负数",
+            "description": "基于格位的拓扑锚点。支持字符串键 '页:列:格[子列]' 或结构化对象，抬头超出上框时格位可为负数",
             "oneOf": [
               {
                 "type": "string",
-                "pattern": "^\\d+:\\d+:\\d+:-?\\d+[ab]?$"
+                "pattern": "^\\d+:\\d+:-?\\d+[ab]?$"
               },
               {
                 "type": "object",
