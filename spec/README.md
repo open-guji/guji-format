@@ -15,7 +15,8 @@
 | **Level 2** | **`guji-cell`** | `*.guji-cell.json` | 无坐标（基于拓扑格序） | **版面拓扑**：保留册/页/列/格层级与夹注分栏结构，包含字符备选，支持树状与扁平 Map 两种形态。 |
 | **Level 3a** | **`lines.md`** | `*.lines.md` | 文本分行 | **刻本分行 Markdown**：忠实保留原书一列一行、行首抬头 `^`、挪抬 `.`、双行夹注 `<a\|b>`。 |
 | **Level 3b** | **`reflow.md`** | `*.reflow.md` / `*.md` | 篇章自然段 | **可阅读 Markdown**：经满列自适应算法合并为连贯自然段，消除竖排小注断行，保留页码锚点。 |
-| **伴生层** | **`guji-punct`** | `*.punct.json` | 字符锚点偏移量 | **独立外挂标点**：记录在第几个字后插入标点，正文原字 100% 不受影响，支持随时切换标点版本。 |
+| **伴生层 a** | **`guji-punct`** | `*.punct.json` | 字符锚点偏移量 / 拓扑格位 | **独立外挂标点**：记录在第几个字后插入标点与自然段换行，正文原字 100% 不受影响，支持随时切换标点版本。 |
+| **伴生层 b** | **`guji-entity`** | `*.entity.json` | 拓扑格位 Span `[start, end]` | **独立外挂实体与超链接**：记录人名、地名、书名、官职等实体及其关联到 `book-index` 知识库的 URI，未录入者标记为候选。 |
 
 ```mermaid
 flowchart TD
@@ -23,8 +24,9 @@ flowchart TD
     L1 -->|"省略 xywh 坐标，保留读序与多候选"| L2["Level 2: guji-cell (拓扑网格 JSON: 树状/Map)"]
     L2 -->|"导出原书分行与版式标记"| L3a["Level 3a: lines.md (分行 Markdown: 一列一行, ^/.)"]
     L3a -->|"自适应满列算法 + 去除小注转行"| L3b["Level 3b: reflow.md (连续自然段 Markdown)"]
-    L3b -.->|"按锚点安全注入"| P["伴生层: guji-punct (*.punct.json 独立标点)"]
-    P -.-> READ["最终现代阅读版 (含书名号/引号/逗句号)"]
+    L3b -.->|"按锚点安全注入"| P["伴生层 a: guji-punct (*.punct.json 独立标点/分段)"]
+    L3b -.->|"按格位 Span 注入"| E["伴生层 b: guji-entity (*.entity.json 实体/链接)"]
+    P & E -.-> READ["最终现代阅读版 (含书名号/专名线/知识库超链接)"]
 ```
 
 ---
@@ -51,3 +53,4 @@ flowchart TD
 - [02-guji-cell 规范：无坐标的版面拓扑与字符网格 (v0.1)](./02-guji-cell.md)
 - [03-guji-markdown 规范：古籍 Markdown 排版与分行分段 (v0.2)](./03-guji-markdown.md)
 - [04-guji-punct 规范：独立外挂标点格式 (v0.1)](./04-guji-punct.md)
+- [05-guji-entity 规范：独立外挂命名实体与知识图谱链接格式 (v0.1)](./05-guji-entity.md)

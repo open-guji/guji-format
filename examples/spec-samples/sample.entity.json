@@ -1,0 +1,84 @@
+{
+  "$schema": "https://open-guji.org/schema/entity/v0.1.json",
+  "version": "0.1.0",
+  "book_id": "988g7gsqhd",
+  "volume": 1,
+  "metadata": {
+    "title": "北行日錄上",
+    "creator": "qwen-plus:ner_v1",
+    "created_at": "2026-10-04T22:15:00Z",
+    "base_edition": "original"
+  },
+  "stats": {
+    "total_entities": 3,
+    "matched": 2,
+    "new_candidates": 1,
+    "people": 1,
+    "work": 1,
+    "office": 1
+  },
+  "entities": [
+    {
+      "id": "e001",
+      "type": "people",
+      "text": "李器之",
+      "anchor": {
+        "start": "3:5:2",
+        "end": "3:5:4"
+      },
+      "span": {
+        "start_offset": 118,
+        "end_offset": 121
+      },
+      "target": {
+        "status": "matched",
+        "entity_type": "people",
+        "entity_id": "hixhio740001",
+        "canonical_name": "李器之",
+        "href": "book-index://Entity/hixhio740001",
+        "confidence": 0.99
+      },
+      "source": "llm:qwen-plus"
+    },
+    {
+      "id": "e002",
+      "type": "work",
+      "text": "鳳棲梧",
+      "anchor": {
+        "start": "3:5:8",
+        "end": "3:5:10"
+      },
+      "span": {
+        "start_offset": 124,
+        "end_offset": 127
+      },
+      "target": {
+        "status": "matched",
+        "entity_type": "work",
+        "entity_id": "b1x4k9m0z2q1",
+        "canonical_name": "鳳棲梧",
+        "href": "book-index://Work/b1x4k9m0z2q1",
+        "confidence": 0.98
+      },
+      "source": "llm:qwen-plus"
+    },
+    {
+      "id": "e003",
+      "type": "office",
+      "text": "書狀官",
+      "anchor": {
+        "start": "3:3:12",
+        "end": "3:3:14"
+      },
+      "span": {
+        "start_offset": 86,
+        "end_offset": 89
+      },
+      "target": {
+        "status": "new_candidate",
+        "canonical_name": "書狀官"
+      },
+      "source": "llm:qwen-plus"
+    }
+  ]
+}
