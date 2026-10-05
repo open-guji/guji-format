@@ -54,3 +54,4 @@ flowchart TD
 - [03-guji-markdown 规范：古籍 Markdown 排版与分行分段 (v0.2)](./03-guji-markdown.md)
 - [04-guji-punct 规范：独立外挂标点格式 (v0.1)](./04-guji-punct.md)
 - [05-guji-entity 规范：独立外挂命名实体与知识图谱链接格式 (v0.1)](./05-guji-entity.md)
+  - 04、05 两份伴生层的 `version`／`text_version` 是内容版本号（book-text `original` 三线独立 semver），见各自「§5 版本号」。

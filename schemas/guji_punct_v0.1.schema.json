@@ -4,14 +4,30 @@
   "title": "GujiPunct",
   "description": "伴生层独立外挂标点格式 (guji-punct v0.1)",
   "type": "object",
-  "required": ["$schema", "version", "book_id", "punctuations"],
+  "required": ["$schema", "version", "text_version", "book_id", "punctuations"],
   "properties": {
     "$schema": {
       "type": "string"
     },
     "version": {
       "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "description": "本层的内容版本（book-text original 三线版本号之一，MAJOR.MINOR.PATCH；major＝质量等级：1 可用／2 出版级／3 定本）。不是格式版本，格式版本看 $schema"
+    },
+    "text_version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "description": "本层是对着哪一版文本做的，即 original/index.json 该章的 text_version；不得超前于当前文本"
+    },
+    "review": {
+      "type": "object",
+      "description": "验收记录，本层 major ≥2 时必填",
+      "required": ["date", "signed_by", "sample"],
+      "properties": {
+        "date": { "type": "string" },
+        "signed_by": { "type": "string" },
+        "sample": { "description": "抽检数据：样本量、一致率／精确率等" }
+      }
     },
     "book_id": {
       "type": "string"

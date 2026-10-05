@@ -1,6 +1,7 @@
 {
   "$schema": "https://open-guji.org/schema/entity/v0.1.json",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "text_version": "1.0.0",
   "book_id": "988g7gsqhd",
   "volume": 1,
   "metadata": {
