@@ -98,7 +98,8 @@
 ```json
 {
   "$schema": "https://open-guji.org/schema/punct/v0.1",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "text_version": "1.0.0",
   "book_id": "988g7gsqhd",
   "metadata": {
     "title": "北行日錄",
@@ -168,3 +169,59 @@
      - 若字形不一致，触发警告并在前端标红存疑，避免盲目错位。
 4. **输出富渲染 HTML/Markdown**：
    阅读器根据注入后的流直接渲染竖排/横排视图。
+
+---
+
+## 5. 版本号（book-text `original`，2026-10-05 定）
+
+> 规范全文：open-guji-core/overview `项目进展/古籍文本/整体设计/2026-10-文本版本号与仓库流程.md`（v2）。
+
+本格式文件顶层的 `version` 是**本层的内容版本**，不是格式版本（格式版本看 `$schema`）。
+
+### 5.1 字段
+
+| 字段 | 必填 | 说明 |
+|---|---|---|
+| `version` | 是 | 本层（标点）的内容版本，`MAJOR.MINOR.PATCH`；MAJOR 只能是 0–3（0 只用于 wip，1–3 是质量等级） |
+| `text_version` | 是 | 本层是对着哪一版文本做的，即 book-text `original/index.json` 该章的 `text_version`。**不得超前于当前文本** |
+| `review` | major ≥2 时必填（schema 强制） | 验收记录，`date`、`signed_by`、`sample`（抽检数据）三项都不许为空 |
+
+```json
+{
+  "$schema": "https://open-guji.org/schema/punct/v0.1.json",
+  "version": "1.2.0",
+  "text_version": "1.4.1",
+  "book_id": "96mid1ogzk"
+}
+```
+
+### 5.2 三线独立
+
+只有 book-text 的 `original`（本项目从书影做出来的文本）跟踪版本；维基文库、Kanripo、识典的转录不写这几个字段。`original` 每册分三条线，各自独立的 semver，互不牵连：
+
+| 线 | 文件 | 版本号记在 |
+|---|---|---|
+| 文本 | `NNN.lines.md` | `original/index.json` 章条目的 `text_version` |
+| 标点 | `NNN.punct.json`（[04](./04-guji-punct.md)） | 顶层 `version` |
+| 实体 | `NNN.entity.json`（[05](./05-guji-entity.md)） | 顶层 `version` |
+
+文本改了以后，逐个核本层锚点的校验字（`anchor` 所指格位的字与 `pre_char` 是否一致）：
+
+- 全对得上：本层只把 `text_version` 跟到新文本版本，**不升**自己的 `version`；
+- 有对不上的：本层按规模修，修好后自己升 patch 或 minor，`text_version` 同时跟上。
+
+### 5.3 三级怎么升
+
+- **major ＝ 质量等级**：1 可用，2 出版级，3 定本。门槛从严，绝大多数停在 1；升 major 要成文验收记录（`review`），并要用户点头；脚本不自动升。major 一升，minor、patch 归零。
+- **minor ＝ 较大改动**：整册重跑或换模型、换提示词；新的分段规则；新增标点类型（如引号分层）；批量修正一类错误（如「曰」后统一加冒号）。
+- **patch ＝ 小范围改动**：改几处、几十处标点；修少量锚点没对上的条目。
+- **分界**：以一次 PR 为单位，一册改动 ≤50 处且逐处改的算 patch；超过，或按规则成批改的算 minor。拿不准选 minor。
+- `wip/` 阶段可写 `0.x`；第一次并入 book-text main 时定为 `1.0.0`，前提是够得上第 1 级。
+
+### 5.4 major 门槛（标点线）
+
+| 等级 | 门槛 |
+|---|---|
+| 1 可用 | 机器标点（LLM），只插标点、不改字；抽 200 处，一致率 ≥95% |
+| 2 出版级 | 全册人工审读一遍，书名号、引号层级、分段符合标点规范；抽 500 处，一致率 ≥99.5% |
+| 3 定本 | 对照至少一种权威点校本逐段核过，分歧处有记录和取舍理由；抽 1,000 处，一致率 ≥99.9%；用户签核 |
