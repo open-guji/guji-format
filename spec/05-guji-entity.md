@@ -148,7 +148,7 @@
 ## 4. 三合一动态合成与阅读器渲染规范
 
 阅读器或富文本导出工具可联合读取：
-1. **底本纯文字**（Level 3a `lines.md`）
+1. **底本文字**（`NNN.char.json`）
 2. **外挂标点**（`*.punct.json`）
 3. **外挂实体**（`*.entity.json`）
 
@@ -192,11 +192,11 @@
 
 | 线 | 文件 | 版本号记在 |
 |---|---|---|
-| 文本 | `NNN.lines.md` | `original/index.json` 章条目的 `text_version` |
+| 文本 | `NNN.char.json` | char 顶层 `version`；`original/index.json` 章条目的 `text_version` 是它的镜像 |
 | 标点 | `NNN.punct.json`（[04](./04-guji-punct.md)） | 顶层 `version` |
 | 实体 | `NNN.entity.json`（[05](./05-guji-entity.md)） | 顶层 `version` |
 
-文本改了以后，逐个核本层锚点的校验字（`anchor.start`…`anchor.end` 之间的字与 `text` 是否一致）：
+文本改了以后，逐个核本层锚点的校验字（char 里 `anchor.start`…`anchor.end` 之间的字与 `text` 是否一致）：
 
 - 全对得上：本层只把 `text_version` 跟到新文本版本，**不升**自己的 `version`；
 - 有对不上的：本层按规模修，修好后自己升 patch 或 minor，`text_version` 同时跟上。

@@ -5,35 +5,40 @@
 
 ---
 
-## 一、格式分层架构
+## 一、文件与关系（2026-10-06 用户定）
 
-数字化链路划分为四个核心层次与一个外挂伴生层：
+只用于 book-text 的 `original`（本项目从书影做出来的文本）。每章一组文件，**代号就是文件名里的那个词**：
 
-| 层次 | 格式名称 | 扩展名 / 存储形态 | 坐标与空间 | 核心职责 |
-| :--- | :--- | :--- | :--- | :--- |
-| **Level 1** | **`guji-page`** | `pNNNN.guji-page.json` | IIIF Canvas 像素 `[x,y,w,h]` | **物理真源**：记录每字具体坐标、OCR 备选概率、定字置信度、版面区域与印章污损。 |
-| **Level 2** | **`guji-cell`** | `*.guji-cell.json` | 无坐标（基于拓扑格序） | **版面拓扑**：保留册/页/列/格层级与夹注分栏结构，包含字符备选，支持树状与扁平 Map 两种形态。 |
-| **Level 3a** | **`lines.md`** | `*.lines.md` | 文本分行 | **刻本分行 Markdown**：忠实保留原书一列一行、行首抬头 `^`、挪抬 `.`、双行夹注 `<a\|b>`。 |
-| **Level 3b** | **`reflow.md`** | `*.reflow.md` / `*.md` | 篇章自然段 | **可阅读 Markdown**：经满列自适应算法合并为连贯自然段，消除竖排小注断行，保留页码锚点。 |
-| **伴生层 a** | **`guji-punct`** | `*.punct.json` | 字符锚点偏移量 / 拓扑格位 | **独立外挂标点**：记录在第几个字后插入标点与自然段换行，正文原字 100% 不受影响，支持随时切换标点版本。 |
-| **伴生层 b** | **`guji-entity`** | `*.entity.json` | 拓扑格位 Span `[start, end]` | **独立外挂实体与超链接**：记录人名、地名、书名、官职等实体及其关联到 `book-index` 知识库的 URI，未录入者标记为候选。 |
+| 代号 | 文件 | 是什么 | 性质 | 存在哪 |
+|---|---|---|---|---|
+| **char** | `NNN.char.json` | 每一格定下的字和版式（[02](./02-guji-char.md)）。**文本版本号跟踪它** | 真源 | main |
+| **cord** | `NNN.cord.json` | 每一格的像素框，不存字（[01](./01-guji-cord.md)） | 真源 | main |
+| **punct** | `NNN.punct.json` | 标点、分段、书名号（[04](./04-guji-punct.md)） | 真源 | main |
+| **entity** | `NNN.entity.json` | 专名，链 book-index（[05](./05-guji-entity.md)） | 真源 | main |
+| **norm** | `NNN.norm.json` | 异体→通行字，按格位 | 真源 | main |
+| **decision** | `NNN.decision.json` | 不确定的字的其他候选 | 真源 | **待设计**，先留白 |
+| **lines** | `NNN.lines.md` | 由 char 生成：一列一行（[03](./03-guji-markdown.md)） | 生成 | 生成分支 |
+| **rich** | `NNN.rich.md` | 由 char＋punct＋entity（＋norm）生成的阅读稿 | 生成 | 生成分支 |
 
 ```mermaid
 flowchart TD
-    IMG[底图 / IIIF 影像] --> L1["Level 1: guji-page (每字带坐标、多候选、印章/阙文)"]
-    L1 -->|"省略 xywh 坐标，保留读序与多候选"| L2["Level 2: guji-cell (拓扑网格 JSON: 树状/Map)"]
-    L2 -->|"导出原书分行与版式标记"| L3a["Level 3a: lines.md (分行 Markdown: 一列一行, ^/.)"]
-    L3a -->|"自适应满列算法 + 去除小注转行"| L3b["Level 3b: reflow.md (连续自然段 Markdown)"]
-    L3b -.->|"按锚点安全注入"| P["伴生层 a: guji-punct (*.punct.json 独立标点/分段)"]
-    L3b -.->|"按格位 Span 注入"| E["伴生层 b: guji-entity (*.entity.json 实体/链接)"]
-    P & E -.-> READ["最终现代阅读版 (含书名号/专名线/知识库超链接)"]
+    IMG["书影（IIIF，不在 book-text）"] -->|"cv 切分、识别、人裁（guji-workspace）"| CHAR["char：每格的字"]
+    IMG --> CORD["cord：每格的像素框"]
+    CORD -. "按格位 key 对上" .-> CHAR
+    CHAR --> PUNCT["punct"] & ENTITY["entity"] & NORM["norm"] & DEC["decision（待设计）"]
+    CHAR -->|生成| LINES["lines.md"]
+    CHAR & PUNCT & ENTITY -->|生成| RICH["rich.md"]
 ```
+
+- **两种坐标**：**cell** 是格位 key `页:列:格[子列]`（如 `3:5:12a`），char、punct、entity、norm 都用它；**box** 是像素框 `[x, y, w, h]`，只在 cord 里。
+- 原来的 Level 1／2／3 说法不再用：原 guji-page（Level 1）在 book-text 里的存储形态拆成 cord（几何）和 decision（候选），原 guji-cell（Level 2）改名 char 并去掉候选，Level 3a 就是 lines，Level 3b（reflow）不再单独生成。
+- 生成物不进 main：main 只存真源，lines、rich 由脚本从 main 生成，放在单独的生成分支上。前端读哪些文件由网站决定。
 
 ---
 
 ## 二、字形三维度规范（正交变换）
 
-在 Level 3 的 Markdown 层级中，正交支持三种字形展现形式，由字符转换器按需派生：
+在生成的 Markdown（lines、rich）里，正交支持三种字形展现形式，由字符转换器按需派生：
 
 1. **原刻底本（`original`）**：
    - 100% 忠实保留刻本原字（含刻本异体字、避讳缺笔字、俗体字、组字式）；
@@ -49,8 +54,8 @@ flowchart TD
 
 ## 三、规范详细目录索引
 
-- [01-guji-page 规范：带坐标的页面文本与 OCR 候选 (v0.1)](./01-guji-page.md)
-- [02-guji-cell 规范：无坐标的版面拓扑与字符网格 (v0.1)](./02-guji-cell.md)
+- [01-guji-cord 规范：字框坐标，不存字 (v0.1)](./01-guji-cord.md)
+- [02-guji-char 规范：定字文本，文本唯一真源 (v0.1)](./02-guji-char.md)
 - [03-guji-markdown 规范：古籍 Markdown 排版与分行分段 (v0.2)](./03-guji-markdown.md)
 - [04-guji-punct 规范：独立外挂标点格式 (v0.1)](./04-guji-punct.md)
 - [05-guji-entity 规范：独立外挂命名实体与知识图谱链接格式 (v0.1)](./05-guji-entity.md)
