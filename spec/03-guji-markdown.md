@@ -7,7 +7,7 @@
 
 ## 一、定位与设计原则
 
-`guji-markdown` 是平台面向**全文存储与最终排印呈现（Level 3）**的标准。
+`guji-markdown` 是平台面向**全文存储与最终排印呈现**的标准。book-text `original` 的 `lines.md`、`rich.md` 由 [char](./02-guji-char.md) 等真源生成，不手改，放在生成分支上；维基、Kanripo 等转录的 `NNN.md` 直接用本格式存。
 它将古籍特有的排版现象映射为贴近 CommonMark 习惯的紧凑记号：
 - 行首抬头 `^`（平抬）与挪抬 `.`（空格）；
 - 双行夹注 `<a|b>` 与单行小注 `:jz[x]{type=单行}`；
@@ -21,6 +21,7 @@
 在具体存储与输出时，全文提供两种排版形态：
 
 ### 1. 分行 Markdown（`*.lines.md`）
+- **来源**：`original` 的 lines.md 由 char 逐格生成（`cells` 顺序即读序；`raised`→`^`，`lead_blank`→`.`，夹注 a／b →`<a|b>`，`lacuna`→`[[]]`），char 是真源。
 - **核心目的**：忠实反映底本分行排版。
 - **排版规则**：
   - 底本一列对应输出文本中的一行；

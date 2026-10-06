@@ -1,0 +1,20 @@
+{
+  "$schema": "https://open-guji.org/schema/cord/v0.1.json",
+  "book_id": "96mid1ogzk",
+  "volume": 3,
+  "pages": [
+    {
+      "page": 3,
+      "image": {"width": 2361, "height": 3096},
+      "canvas": {"id": "https://data.kaiyuanguji.com/iiif/96mid1ogzk/canvas/03/0003", "seq": "0003", "width": 2361, "height": 3096},
+      "producers": {"cv": {"tool": "open-guji-cv", "rev": "1332c01734", "pipeline": "keben_body_v2"}},
+      "regions": [{"id": "r1", "kind": "body", "box": [355, 352, 1662, 2438]}],
+      "columns": [{"col": 1, "kind": "body", "box": [1838, 352, 179, 2438]}],
+      "cells": [
+        {"a": "3:1:1", "box": [1851, 341, 177, 134]},
+        {"a": "3:1:2", "box": [1850, 470, 176, 131]}
+      ],
+      "marks": [{"kind": "seal", "box": [1750, 200, 220, 220], "occludes": ["3:1:1"]}]
+    }
+  ]
+}
