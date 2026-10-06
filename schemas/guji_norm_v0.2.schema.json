@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-guji.org/schema/norm/v0.2.json",
+  "title": "GujiNorm",
+  "description": "规范层 (guji-norm v0.2)：按格位记异体→通行字，book-text original 每章一份",
+  "type": "object",
+  "required": ["schema", "book_id", "volume", "items"],
+  "properties": {
+    "schema": { "type": "string", "const": "guji-norm/0.2" },
+    "book_id": { "type": "string" },
+    "volume": { "type": "integer", "minimum": 1 },
+    "table": { "type": ["string", "null"] },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["a", "c", "t"],
+        "properties": {
+          "a": { "type": "string", "pattern": "^\\d+:\\d+:-?[1-9]\\d*[ab]?$" },
+          "c": { "type": "string", "minLength": 1 },
+          "t": { "type": "string", "minLength": 1 },
+          "by": { "type": "string" },
+          "why": { "type": "string", "enum": ["异体"] }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
