@@ -15,7 +15,7 @@
 | **cord** | `NNN.cord.json` | 每一格的像素框，不存字（[01](./01-guji-cord.md)） | 真源 | main |
 | **punct** | `NNN.punct.json` | 标点、分段、书名号（[04](./04-guji-punct.md)） | 真源 | main |
 | **entity** | `NNN.entity.json` | 专名，链 book-index（[05](./05-guji-entity.md)） | 真源 | main |
-| **norm** | `NNN.norm.json` | 异体→通行字，按格位 | 真源 | main |
+| **norm** | `NNN.norm.json` | 异体→通行字，按格位（[06](./06-guji-norm.md)） | 真源 | main |
 | **decision** | `NNN.decision.json` | 不确定的字的其他候选 | 真源 | **待设计**，先留白 |
 | **lines** | `NNN.lines.md` | 由 char 生成：一列一行（[03](./03-guji-markdown.md)） | 生成 | 生成分支 |
 | **rich** | `NNN.rich.md` | 由 char＋punct＋entity（＋norm）生成的阅读稿 | 生成 | 生成分支 |
@@ -59,4 +59,5 @@ flowchart TD
 - [03-guji-markdown 规范：古籍 Markdown 排版与分行分段 (v0.2)](./03-guji-markdown.md)
 - [04-guji-punct 规范：独立外挂标点格式 (v0.1)](./04-guji-punct.md)
 - [05-guji-entity 规范：独立外挂命名实体与知识图谱链接格式 (v0.1)](./05-guji-entity.md)
+- [06-guji-norm 规范：异体→通行字的规范层 (v0.2)](./06-guji-norm.md)
   - 04、05 两份伴生层的 `version`／`text_version` 是内容版本号（book-text `original` 三线独立 semver），见各自「§5 版本号」。
