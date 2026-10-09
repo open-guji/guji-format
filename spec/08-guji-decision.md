@@ -1,6 +1,6 @@
 # guji-decision v0.1 规范：候选字层（`NNN.decision.json`）
 
-> 状态：**草案定稿，部分待用户拍板**（2026-10-09，overview#497；由 overview `项目进展/古籍文本/整体设计/2026-10-decision.json规范草案.md`（文本总管 10-06 应网站 #444 起草）写成）。标「待定（待用户拍板）」的三处未拍板前，本篇可按此开发样例，不批量入库。账号 A 文本经理、网站经理确认中。
+> 状态：**草案定稿，部分待用户拍板**（2026-10-09，overview#497；由 overview `项目进展/古籍文本/整体设计/2026-10-decision.json规范草案.md`（文本总管 10-06 应网站 #444 起草）写成）。标「待定（待用户拍板）」的三处未拍板前，本篇可按此开发样例，不批量入库。
 > 格式标识：`https://open-guji.org/schema/decision/v0.1.json`
 > Schema：[`schemas/guji_decision_v0.1.schema.json`](../schemas/guji_decision_v0.1.schema.json)
 > 适用：book-text `original` 每章一份，存 main。总表见 [00](./00-总览.md)。现在还没有任何 decision 数据。
