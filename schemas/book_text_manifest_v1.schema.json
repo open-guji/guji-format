@@ -8,6 +8,119 @@
     "id",
     "versions"
   ],
+  "$defs": {
+    "version": {
+      "type": "object",
+      "required": [
+        "key",
+        "kind",
+        "label",
+        "source",
+        "source_name",
+        "source_url",
+        "license",
+        "quality",
+        "chapters_total"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "transcription",
+            "collated",
+            "self_collated"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_name": {
+          "type": "string"
+        },
+        "source_url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "license": {
+          "type": "string",
+          "description": "CC0 1.0／CC BY-SA 4.0／CC BY-NC-SA 4.0／「来自网络，版权未知」／其他明确的上游 CC 授权（CC 官方简称＋空格＋版本号）；is_original 的版本必须 CC0 1.0（用户 10-08 定）",
+          "anyOf": [
+            {
+              "enum": [
+                "CC0 1.0",
+                "来自网络，版权未知"
+              ]
+            },
+            {
+              "pattern": "^CC BY(-NC)?(-SA|-ND)? [1-4]\\.0$"
+            }
+          ]
+        },
+        "quality": {
+          "type": "string",
+          "enum": [
+            "source",
+            "ocr",
+            "rough",
+            "fine",
+            "none",
+            "placeholder"
+          ]
+        },
+        "chapters_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "edition_label": {
+          "type": "string"
+        },
+        "is_original": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "internal"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "is_original": {
+                "const": true
+              }
+            },
+            "required": [
+              "is_original"
+            ]
+          },
+          "then": {
+            "properties": {
+              "license": {
+                "const": "CC0 1.0"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
   "properties": {
     "id": {
       "type": "string",
@@ -18,115 +131,25 @@
       "minItems": 1,
       "prefixItems": [
         {
-          "properties": {
-            "key": {
-              "const": "default"
-            }
-          }
-        }
-      ],
-      "items": {
-        "type": "object",
-        "required": [
-          "key",
-          "kind",
-          "label",
-          "source",
-          "source_name",
-          "source_url",
-          "license",
-          "quality",
-          "chapters_total"
-        ],
-        "properties": {
-          "key": {
-            "type": "string",
-            "pattern": "^[a-z][a-z0-9-]*$"
-          },
-          "kind": {
-            "type": "string",
-            "enum": [
-              "transcription",
-              "collated",
-              "self_collated"
-            ]
-          },
-          "label": {
-            "type": "string",
-            "minLength": 1
-          },
-          "source": {
-            "type": "string",
-            "minLength": 1
-          },
-          "source_name": {
-            "type": "string"
-          },
-          "source_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "license": {
-            "type": "string",
-            "description": "self_collated、collated 必须是 CC0 1.0（用户 10-08 定）；transcription 照来源原授权：CC 官方简称＋空格＋版本号或「未知」；不许 null"
-          },
-          "quality": {
-            "type": "string",
-            "enum": [
-              "source",
-              "ocr",
-              "rough",
-              "fine",
-              "none",
-              "placeholder"
-            ]
-          },
-          "chapters_total": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "edition_label": {
-            "type": "string"
-          },
-          "is_original": {
-            "type": "boolean"
-          },
-          "note": {
-            "type": "string"
-          },
-          "visibility": {
-            "type": "string",
-            "enum": [
-              "internal"
-            ]
-          }
-        },
-        "allOf": [
-          {
-            "if": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/version"
+            },
+            {
               "properties": {
-                "kind": {
-                  "enum": [
-                    "self_collated",
-                    "collated"
-                  ]
+                "key": {
+                  "const": "default"
                 }
               },
               "required": [
-                "kind"
+                "key"
               ]
-            },
-            "then": {
-              "properties": {
-                "license": {
-                  "const": "CC0 1.0"
-                }
-              }
             }
-          }
-        ]
+          ]
+        }
+      ],
+      "items": {
+        "$ref": "#/$defs/version"
       }
     }
   }

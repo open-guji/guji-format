@@ -54,7 +54,7 @@ book-text/
   "id": "d59f2mel8d1c",
   "versions": [
     {"key": "default", "kind": "collated", "label": "整理本", "source": "wikisource", "source_name": "維基文庫",
-     "source_url": null, "license": "CC0 1.0", "quality": "rough", "chapters_total": 32},
+     "source_url": null, "license": "CC BY-SA 4.0", "quality": "rough", "chapters_total": 32},
     {"key": "wikisource", "kind": "transcription", "label": "維基文庫", "source": "wikisource", "source_name": "維基文庫",
      "source_url": "https://zh.wikisource.org/wiki/…", "license": "CC BY-SA 4.0", "quality": "source",
      "chapters_total": 32, "edition_label": "四庫全書本"}
@@ -79,7 +79,7 @@ book-text/
 | `source` | string | 是 | 来源代号 | `wikisource`、`kanripo`、`zhihu`（知乎网友整理）、`unknown`（来源不明的整理本）、`original`（本项目自做，见待定 A）、其他来源英文短名（如 `shiyuan`） | `"wikisource"` |
 | `source_name` | string | 是 | 来源中文名 | `維基文庫`、`Kanripo`、`知乎网友整理`、`网络`（unknown）、`開源古籍`… | |
 | `source_url` | string 或 null | 是（可为 null） | 来源页面 | 维基页面、Kanripo 仓库地址；没有写 `null` | |
-| `license` | string | 是 | 本版本的授权 | **`kind` 为 `self_collated` 或 `collated` 的必须是 `CC0 1.0`**（见下）；`transcription` 照来源原授权写：`CC BY-SA 4.0`、`CC BY-NC-SA 4.0`、`CC BY 4.0`、`CC0 1.0`、`未知`。写成「CC 官方简称＋空格＋版本号」；`未知`（阅读页显示「版权未知」）只许用于 transcription，**不许 `null`** | `"CC BY-SA 4.0"` |
+| `license` | string | 是 | 本版本的授权 | 取值：`CC0 1.0`／`CC BY-SA 4.0`／`CC BY-NC-SA 4.0`／`来自网络，版权未知`（固定字符串）／其他明确的上游 CC 授权（「CC 官方简称＋空格＋版本号」，如 `CC BY 4.0`）。**`is_original: true` 的版本必须是 `CC0 1.0`**；其余见下。不许 `null`、`未知`、`unknown` | `"CC BY-SA 4.0"` |
 | `quality` | string | 是 | 文本质量等级 | `source`（照录来源，未加工）、`ocr`（OCR 未校）、`rough`（粗校）、`fine`（精校）、`none`、`placeholder`（占位）。与版本 index.json 的 `text_quality.grade` 同一套 | `"source"` |
 | `chapters_total` | integer ≥0 | 是 | 章数 | 等于版本 `index.json` 的 `chapters` 条数 | `32` |
 | `edition_label` | string | 否 | 底本版本名（维基／Kanripo 页面上的版本名，如「四庫全書本」） | 只作补充显示，不替代 `label` | `"文淵閣四庫全書本"` |
@@ -87,7 +87,12 @@ book-text/
 | `note` | string | 否 | 一句话说明 | | |
 | `visibility` | string | 否 | `internal`＝只内部角色可见（book-text-private 用），公开仓不写 | `internal` | |
 
-授权以本字段为准（book-text README「授權」节）。**硬规定（2026-10-08 用户定，overview#497）：本项目自己整理的文本一律 `CC0 1.0`**——包括本项目从书影做出的 original（`kind: self_collated`）和本项目自己做的整理本（`kind: collated`），schema 强制。从外部导入的转录本（`kind: transcription`）照来源原授权写：维基文库、Kanripo 自录 CC BY-SA 4.0；Kanripo 转自 CBETA 的佛典 CC BY-NC-SA 4.0。
+授权以本字段为准（book-text README「授權」节）。**硬规定（2026-10-08 用户定，overview#497，取代同日前一条）**：
+
+1. **`CC0 1.0` 目前只给本项目从书影完全自己做的 original**（`is_original: true`，现在只有四庫總目 `96mid1ogzk`）。schema 强制。
+2. **其余从别处 OCR 或转录来的版本**（`collated`、`transcription`，包括据影印本 OCR 校对的整理本）一律暂不标 CC0：
+   - 上游授权写得明确的照上游写：维基文库、Kanripo 自录 `CC BY-SA 4.0`；Kanripo 转自 CBETA 的佛典 `CC BY-NC-SA 4.0`；
+   - 其余一律写固定字符串 **`来自网络，版权未知`**。旧写法 `未知`、`null`、`unknown` 都改成这一句。
 
 ### 2.3 original 怎么认（账号 A 文本经理确认中）
 
@@ -98,7 +103,7 @@ book-text/
 ### 2.4 待定（照实保留，不在本篇拍板）
 
 - **待定 A：自做文本的 `source` 代号。**网站阅读文本规格（10-06 用户定）写 `original`（source_name「開源古籍」），现有数据（`96mid1ogzk`）写 `open-guji`。推荐：以规格为准改成 `original`；不答时默认：两者都认，新数据写 `original`。
-- ~~待定 B：自做文本的授权~~ **已定**（用户 10-08）：`self_collated`、`collated` 一律 `CC0 1.0`，见 §二·2。存量不合的由文本经理改（吻合度报告 §六）。
+- ~~待定 B：自做文本的授权~~ **已定**（用户 10-08）：只有 `is_original` 的版本是 `CC0 1.0`，其余照上游授权或写「来自网络，版权未知」，见 §二·2。存量不合的由文本经理改（吻合度报告 §六 方案 8b）。
 
 ---
 
