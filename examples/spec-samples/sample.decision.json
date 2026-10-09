@@ -1,0 +1,40 @@
+{
+  "$schema": "https://open-guji.org/schema/decision/v0.1.json",
+  "book_id": "96mid1ogzk",
+  "volume": 3,
+  "items": [
+    {
+      "a": "3:4:12",
+      "c": "撰",
+      "kind": "uncertain",
+      "status": "open",
+      "cands": [
+        {
+          "t": "𢰅",
+          "src": "cv",
+          "conf": 0.41,
+          "why": "字形匹配次优"
+        },
+        {
+          "t": "譔",
+          "src": "gemini",
+          "note": "对读他本作譔"
+        }
+      ]
+    },
+    {
+      "a": "5:2:7",
+      "c": "内",
+      "kind": "variant",
+      "status": "resolved",
+      "cands": [
+        {
+          "t": "內",
+          "src": "table"
+        }
+      ],
+      "by": "human",
+      "note": "本书统一作「内」，不并"
+    }
+  ]
+}

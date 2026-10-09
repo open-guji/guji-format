@@ -1,0 +1,392 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-guji.org/schema/entity/v0.2.json",
+  "title": "GujiEntity",
+  "description": "外挂专名层 (guji-entity v0.2)，只用于 book-text original；见 spec/05-guji-entity.md",
+  "type": "object",
+  "required": [
+    "$schema",
+    "version",
+    "text_version",
+    "book_id",
+    "volume",
+    "entities"
+  ],
+  "if": {
+    "properties": {
+      "version": {
+        "pattern": "^[2-3]\\."
+      }
+    },
+    "required": [
+      "version"
+    ]
+  },
+  "then": {
+    "required": [
+      "review"
+    ]
+  },
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-3]\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "description": "本层的内容版本（book-text original 三线版本号之一，MAJOR.MINOR.PATCH；major＝质量等级：1 可用／2 出版级／3 定本，0 只用于 wip，没有 3 以上）。不是格式版本，格式版本看 $schema"
+    },
+    "text_version": {
+      "type": "string",
+      "pattern": "^[0-3]\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "description": "本层是对着哪一版文本做的，即 original/index.json 该章的 text_version；不得超前于当前文本。文本线 major 同样是质量等级 0–3"
+    },
+    "review": {
+      "type": "object",
+      "description": "验收记录，本层 major ≥2 时必填",
+      "required": [
+        "date",
+        "signed_by",
+        "sample"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "minLength": 1
+        },
+        "signed_by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sample": {
+          "description": "抽检数据：样本量、一致率／精确率等；写成一句话或一个对象均可，不许为空",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "object",
+              "minProperties": 1
+            }
+          ]
+        }
+      }
+    },
+    "book_id": {
+      "type": "string"
+    },
+    "volume": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "册号，等于 book-text original index.json 该章的 n"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "creator": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "base_edition": {
+          "type": "string"
+        }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "description": "统计，只供人看，不作校验依据"
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "text",
+          "anchor",
+          "target"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^e\\d{5,}$",
+            "description": "文件内唯一，一经发出不改"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "work",
+              "people",
+              "place",
+              "office",
+              "dynasty",
+              "reign",
+              "other"
+            ],
+            "description": "实体类型白名单（spec/05 §三·3）；book 不作 type 值"
+          },
+          "text": {
+            "type": "string",
+            "description": "校验字：char 里 anchor.start..end 各格的字依读序拼接"
+          },
+          "anchor": {
+            "type": "object",
+            "required": [
+              "start",
+              "end"
+            ],
+            "description": "权威起止拓扑格位锚点 <页>:<列>:<格>[子列]",
+            "properties": {
+              "start": {
+                "type": "string",
+                "pattern": "^\\d+:\\d+:-?[1-9]\\d*[ab]?$"
+              },
+              "end": {
+                "type": "string",
+                "pattern": "^\\d+:\\d+:-?[1-9]\\d*[ab]?$"
+              }
+            }
+          },
+          "span": {
+            "type": "object",
+            "description": "字下标缓存 [start_offset, end_offset)，同章 char 读序的 0 起下标（spec/00 §四·2）",
+            "required": [
+              "start_offset",
+              "end_offset"
+            ],
+            "properties": {
+              "start_offset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "end_offset": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "target": {
+            "type": "object",
+            "description": "链到 book-index 的结果（spec/05 §四）",
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "matched",
+                  "ambiguous",
+                  "new_candidate",
+                  "external"
+                ],
+                "description": "matched 唯一命中／ambiguous 多个同名待消歧／new_candidate 未建档／external 外部链接（保留）"
+              },
+              "entity_id": {
+                "type": "string",
+                "description": "book-index 条目 id；能写正式库 id 就写正式库 id"
+              },
+              "canonical_name": {
+                "type": "string"
+              },
+              "href": {
+                "type": "string",
+                "description": "matched：book-index://<Work|Book|Entity>/<entity_id>；external：外部 URL"
+              },
+              "candidates": {
+                "type": "array",
+                "minItems": 2,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "entity_id",
+                    "canonical_name"
+                  ],
+                  "properties": {
+                    "entity_id": {
+                      "type": "string"
+                    },
+                    "canonical_name": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "description": "只 ambiguous 用，按可能性从高到低"
+              },
+              "level": {
+                "type": "string",
+                "enum": [
+                  "concept",
+                  "concrete"
+                ],
+                "description": "挂概念条还是具体条；不写＝具体条"
+              },
+              "note": {
+                "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "entity_type": {
+                "type": "string",
+                "description": "v0.1 遗留，新数据不写"
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "matched"
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "entity_id",
+                    "canonical_name",
+                    "href"
+                  ],
+                  "not": {
+                    "required": [
+                      "candidates"
+                    ]
+                  },
+                  "properties": {
+                    "href": {
+                      "pattern": "^book-index://(Work|Book|Entity)/[0-9a-z]+$"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "ambiguous"
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "canonical_name",
+                    "candidates"
+                  ],
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "entity_id"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "href"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "new_candidate"
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "canonical_name"
+                  ],
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "entity_id"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "href"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "candidates"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "external"
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "href"
+                  ],
+                  "not": {
+                    "required": [
+                      "entity_id"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "source": {
+            "type": "string",
+            "description": "产出方 <类>:<名>，如 glm:glm-4.5-flash、claude:manual"
+          },
+          "group": {
+            "type": "object",
+            "description": "复合专名的整串信息（spec/05 §五）；同 id 的 span ≥2 个且读序相邻",
+            "required": [
+              "id",
+              "text",
+              "kind"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^ge\\d{5,}$"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 2
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "compound"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  }
+}
