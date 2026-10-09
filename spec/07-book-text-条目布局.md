@@ -1,6 +1,6 @@
 # 07 book-text 条目布局
 
-> 状态：正式（2026-10-09 定稿，overview#497）。§二·3（original 怎么认）、§三·3（original 的 index.json）由账号 A 文本经理确认中；标「待定」的条目照实保留。
+> 状态：正式（2026-10-09 定稿，overview#497）。标「待定」的条目照实保留。
 > Schema：[`schemas/book_text_manifest_v1.schema.json`](../schemas/book_text_manifest_v1.schema.json)、[`schemas/book_text_index_v1.schema.json`](../schemas/book_text_index_v1.schema.json)
 > 依据：overview `项目进展/古籍索引网站/设计/阅读文本.md`（#307，09-30 新结构）、`项目进展/古籍文本/整体设计/2026-09-book-text格式规范.md`（校验规则 F-*）、book-text `CLAUDE.md`、`docs/ORIGINAL.md`。总表见 [00](./00-总览.md)。
 
@@ -94,7 +94,7 @@ book-text/
    - 上游授权写得明确的照上游写：维基文库、Kanripo 自录 `CC BY-SA 4.0`；Kanripo 转自 CBETA 的佛典 `CC BY-NC-SA 4.0`；
    - 其余一律写固定字符串 **`来自网络，版权未知`**。旧写法 `未知`、`null`、`unknown` 都改成这一句。
 
-### 2.3 original 怎么认（账号 A 文本经理确认中）
+### 2.3 original 怎么认
 
 - **original**＝本项目从书影自做的文本（char／cord／punct／entity／norm 真源）。它是 manifest 里 **`kind: self_collated` 且 `is_original: true`** 的那个版本。
 - 目录 key 照主版本规则：它是本条目最好的文本时就放在 `default/`（现在四庫總目 `96mid1ogzk` 即如此）。工具识别 original 一律看 manifest 的 `is_original`，不看目录名；目录名叫 `original/` 的旧写法同样认。
@@ -169,7 +169,7 @@ book-text/
 | `pdf_pages` | 对应 PDF 页范围与核对结果 | `"43-56 ok=14 miss=0"` |
 | `has_table` | 本章含 `:::table` | `true` |
 
-### 3.3 original（`kind: self_collated`，`is_original: true`）（账号 A 文本经理确认中）
+### 3.3 original（`kind: self_collated`，`is_original: true`）
 
 **顶层：**
 

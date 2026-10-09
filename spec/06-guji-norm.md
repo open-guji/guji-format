@@ -2,7 +2,7 @@
 
 > 状态：正式（v0.2，2026-10-06；形状随 CV 导出器 F4，见 overview#419；2026-10-09 补到字段级，overview#497）
 > Schema：[`schemas/guji_norm_v0.2.schema.json`](../schemas/guji_norm_v0.2.schema.json)
-> 适用：book-text `original` 每章一份，真源，存 main。总表见 [00](./00-总览.md)。§四（norm 不跟踪版本）由账号 A 文本经理确认中。
+> 适用：book-text `original` 每章一份，真源，存 main。总表见 [00](./00-总览.md)。
 
 ## 一、定位
 

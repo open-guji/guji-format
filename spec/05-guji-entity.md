@@ -1,6 +1,6 @@
 # guji-entity v0.2 规范：专名与专名号（`NNN.entity.json`）
 
-> 状态：正式（v0.2，2026-10-09 定稿，overview#497；取代 v0.1）。其中 §三·2 `type` 白名单、§四 `target` 四态由账号 A 网站经理确认中。
+> 状态：正式（v0.2，2026-10-09 定稿，overview#497；取代 v0.1）。其中 §三·3 `type` 白名单、§四 `target` 四态由账号 A 网站经理确认中。
 > 格式标识：`https://open-guji.org/schema/entity/v0.2.json`
 > Schema：[`schemas/guji_entity_v0.2.schema.json`](../schemas/guji_entity_v0.2.schema.json)（v0.1 留档：[`guji_entity_v0.1.schema.json`](../schemas/guji_entity_v0.1.schema.json)）
 > 适用：**只用于 book-text 的 `original`**，每章一份，存 main。总表见 [00](./00-总览.md)。
