@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-guji.org/schema/decision/v0.1.json",
+  "title": "GujiDecision",
+  "description": "候选字层 (guji-decision v0.1)，book-text original 每章一份；见 spec/08-guji-decision.md（部分待用户拍板）",
+  "type": "object",
+  "required": [
+    "$schema",
+    "book_id",
+    "volume",
+    "items"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "book_id": {
+      "type": "string"
+    },
+    "volume": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "a",
+          "c",
+          "kind",
+          "status",
+          "cands"
+        ],
+        "properties": {
+          "a": {
+            "type": "string",
+            "pattern": "^\\d+:\\d+:-?[1-9]\\d*[ab]?$"
+          },
+          "c": {
+            "type": "string",
+            "minLength": 1,
+            "description": "校验字：char 该格当前的字"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "uncertain",
+              "variant"
+            ],
+            "description": "uncertain 存疑／variant 异体"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "resolved",
+              "rejected"
+            ],
+            "description": "open 待裁／resolved 已裁／rejected 驳回"
+          },
+          "cands": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "required": [
+                "t",
+                "src"
+              ],
+              "properties": {
+                "t": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "src": {
+                  "type": "string"
+                },
+                "conf": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "why": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "by": {
+            "type": "string",
+            "enum": [
+              "human",
+              "rule"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "if": {
+          "properties": {
+            "status": {
+              "enum": [
+                "resolved",
+                "rejected"
+              ]
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "by"
+          ]
+        }
+      }
+    }
+  }
+}

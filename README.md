@@ -103,9 +103,10 @@ guji-markdown/
   并让它通过 `spec/fixtures/cases.json` 的一致性测试。
 * `packages/*` 各自独立 `package.json`，可以单独打包发布；
   `web` 与 `pdf` 都只依赖 `core`，互不依赖。
-* 伴生层 `*.punct.json`（[04](./spec/04-guji-punct.md)）、`*.entity.json`（[05](./spec/05-guji-entity.md)）顶层的
-  `version`／`text_version` 是 book-text `original` 的**内容版本号**（文本、标点、实体三线独立，major＝质量等级），
-  规则见两份规范的「版本号」一节。
+* book-text 的全部文件（char、cord、punct、entity、norm、decision、lines、rich，以及条目层的
+  manifest、index、章文件）都在 `spec/` 定义，从 [`spec/00-总览.md`](./spec/00-总览.md) 读起。
+  char、punct、entity 顶层的 `version` 是 book-text `original` 的**内容版本号**（文本、标点、实体三线独立，
+  major＝质量等级），规则见 00 §四·3 与 04、05 的「版本号」一节。
 
 ## 快速开始
 

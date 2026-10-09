@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-guji.org/schema/book-text/manifest/v1.json",
+  "title": "BookTextManifest",
+  "description": "book-text 条目的 manifest.json：本条目全部版本的清单；见 spec/07-book-text-条目布局.md §二",
+  "type": "object",
+  "required": [
+    "id",
+    "versions"
+  ],
+  "$defs": {
+    "version": {
+      "type": "object",
+      "required": [
+        "key",
+        "kind",
+        "label",
+        "source",
+        "source_name",
+        "source_url",
+        "license",
+        "quality",
+        "chapters_total"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "transcription",
+            "collated",
+            "self_collated"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_name": {
+          "type": "string"
+        },
+        "source_url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "license": {
+          "type": "string",
+          "description": "CC0 1.0／CC BY-SA 4.0／CC BY-NC-SA 4.0／「来自网络，版权未知」／其他明确的上游 CC 授权（CC 官方简称＋空格＋版本号）；is_original 的版本必须 CC0 1.0（用户 10-08 定）",
+          "anyOf": [
+            {
+              "enum": [
+                "CC0 1.0",
+                "来自网络，版权未知"
+              ]
+            },
+            {
+              "pattern": "^CC BY(-NC)?(-SA|-ND)? [1-4]\\.0$"
+            }
+          ]
+        },
+        "quality": {
+          "type": "string",
+          "enum": [
+            "source",
+            "ocr",
+            "rough",
+            "fine",
+            "none",
+            "placeholder"
+          ]
+        },
+        "chapters_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "edition_label": {
+          "type": "string"
+        },
+        "is_original": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "internal"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "is_original": {
+                "const": true
+              }
+            },
+            "required": [
+              "is_original"
+            ]
+          },
+          "then": {
+            "properties": {
+              "license": {
+                "const": "CC0 1.0"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9a-z]+$"
+    },
+    "versions": {
+      "type": "array",
+      "minItems": 1,
+      "prefixItems": [
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/version"
+            },
+            {
+              "properties": {
+                "key": {
+                  "const": "default"
+                }
+              },
+              "required": [
+                "key"
+              ]
+            }
+          ]
+        }
+      ],
+      "items": {
+        "$ref": "#/$defs/version"
+      }
+    }
+  }
+}

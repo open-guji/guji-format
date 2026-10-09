@@ -1,5 +1,5 @@
 {
-  "$schema": "https://open-guji.org/schema/entity/v0.1.json",
+  "$schema": "https://open-guji.org/schema/entity/v0.2.json",
   "version": "1.0.0",
   "text_version": "1.0.0",
   "book_id": "988g7gsqhd",
@@ -20,7 +20,7 @@
   },
   "entities": [
     {
-      "id": "e001",
+      "id": "e00001",
       "type": "people",
       "text": "李器之",
       "anchor": {
@@ -42,7 +42,7 @@
       "source": "llm:qwen-plus"
     },
     {
-      "id": "e002",
+      "id": "e00002",
       "type": "work",
       "text": "鳳棲梧",
       "anchor": {
@@ -64,7 +64,7 @@
       "source": "llm:qwen-plus"
     },
     {
-      "id": "e003",
+      "id": "e00003",
       "type": "office",
       "text": "書狀官",
       "anchor": {
