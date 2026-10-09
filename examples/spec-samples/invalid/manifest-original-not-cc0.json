@@ -1,0 +1,18 @@
+{
+  "id": "96mid1ogzk",
+  "versions": [
+    {
+      "key": "default",
+      "kind": "self_collated",
+      "label": "維基文庫",
+      "source": "original",
+      "source_name": "維基文庫",
+      "source_url": "https://zh.wikisource.org/wiki/x",
+      "license": "CC BY 4.0",
+      "quality": "source",
+      "chapters_total": 1,
+      "is_original": true
+    }
+  ],
+  "_note": "is_original 的版本必须 CC0 1.0"
+}

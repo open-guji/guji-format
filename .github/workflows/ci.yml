@@ -30,6 +30,17 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # 规范样例对照 schemas/ 校验（overview#497）：examples/spec-samples 与 spec/*.md 里的 json 示例
+      # 必须通过，examples/spec-samples/invalid/ 里的反例必须被拦住。
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Schema 样例检查
+        run: |
+          python3 -m pip install --quiet 'jsonschema>=4.18,<5'
+          python3 scripts/check-schemas.py
+
       # 构建放在类型检查前面：packages/web、packages/pdf 的 tsconfig 没有
       # project references，是靠 packages/core 的 package.json#exports
       # （只指向 dist/index.d.ts，没有指回 src 的路径）解析类型的——

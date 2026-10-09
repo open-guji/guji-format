@@ -1,0 +1,17 @@
+{
+  "id": "d59f2mel8d1c",
+  "versions": [
+    {
+      "key": "default",
+      "kind": "transcription",
+      "label": "維基文庫",
+      "source": "wikisource",
+      "source_name": "維基文庫",
+      "source_url": "https://zh.wikisource.org/wiki/x",
+      "license": null,
+      "quality": "source",
+      "chapters_total": 1
+    }
+  ],
+  "_note": "versions[0] 的 license 为 null，必须报错（10-09 曾因 prefixItems 盖过 items 漏检）"
+}
