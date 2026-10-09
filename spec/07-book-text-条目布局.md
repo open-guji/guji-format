@@ -76,7 +76,7 @@ book-text/
 | `key` | string | 是 | 版本 key＝目录名 | 见 §一·2 | `"kanripo"` |
 | `kind` | string | 是 | 版本性质 | `transcription` 转录（维基、Kanripo、识典等搬来的文本）／`collated` 整理本／`self_collated` 本项目从书影自做的文本（即 original，见 2.3） | `"transcription"` |
 | `label` | string | 是 | 下拉显示名，**只写来源** | `維基文庫`、`Kanripo`、`整理本`、`開源古籍自校本`…；同源第二份写「維基文庫 2」 | `"維基文庫"` |
-| `source` | string | 是 | 来源代号 | `wikisource`、`kanripo`、`zhihu`（知乎网友整理）、`unknown`（来源不明的整理本）、`original`（本项目自做，见待定 A）、其他来源英文短名（如 `shiyuan`） | `"wikisource"` |
+| `source` | string | 是 | 来源代号 | `wikisource`、`kanripo`、`zhihu`（知乎网友整理）、`unknown`（来源不明的整理本）、`original`（本项目从书影自做；旧数据里已有的 `open-guji` 仍认，见 §二·4）、其他来源英文短名（如 `shiyuan`） | `"wikisource"` |
 | `source_name` | string | 是 | 来源中文名 | `維基文庫`、`Kanripo`、`知乎网友整理`、`网络`（unknown）、`開源古籍`… | |
 | `source_url` | string 或 null | 是（可为 null） | 来源页面 | 维基页面、Kanripo 仓库地址；没有写 `null` | |
 | `license` | string | 是 | 本版本的授权 | 取值：`CC0 1.0`／`CC BY-SA 4.0`／`CC BY-NC-SA 4.0`／`来自网络，版权未知`（固定字符串）／其他明确的上游 CC 授权（「CC 官方简称＋空格＋版本号」，如 `CC BY 4.0`）。**`is_original: true` 的版本必须是 `CC0 1.0`**；其余见下。不许 `null`、`未知`、`unknown` | `"CC BY-SA 4.0"` |
@@ -100,10 +100,10 @@ book-text/
 - 目录 key 照主版本规则：它是本条目最好的文本时就放在 `default/`（现在四庫總目 `96mid1ogzk` 即如此）。工具识别 original 一律看 manifest 的 `is_original`，不看目录名；目录名叫 `original/` 的旧写法同样认。
 - 旧文档（book-text `docs/ORIGINAL.md`、`VERSIONING.md`）写的 `original/` 目录按本节理解。
 
-### 2.4 待定（照实保留，不在本篇拍板）
+### 2.4 已定事项
 
-- **待定 A：自做文本的 `source` 代号。**网站阅读文本规格（10-06 用户定）写 `original`（source_name「開源古籍」），现有数据（`96mid1ogzk`）写 `open-guji`。推荐：以规格为准改成 `original`；不答时默认：两者都认，新数据写 `original`。
-- ~~待定 B：自做文本的授权~~ **已定**（用户 10-08）：只有 `is_original` 的版本是 `CC0 1.0`，其余照上游授权或写「来自网络，版权未知」，见 §二·2。存量不合的由文本经理改（吻合度报告 §六 方案 8b）。
+- **自做文本的 `source` 代号**（用户 10-09 定，overview#497）：新数据写 `original`（`source_name`「開源古籍」）。旧数据里已有的 `open-guji`（如四庫 `96mid1ogzk`）仍认，读取方两者一视同仁。
+- **自做文本的授权**（用户 10-08 定）：只有 `is_original` 的版本是 `CC0 1.0`，其余照上游授权或写「来自网络，版权未知」，见 §二·2。存量不合的由文本经理改（吻合度报告 §六 方案 8b）。
 
 ---
 
