@@ -1,0 +1,17 @@
+{
+  "id": "96mid1ogzk",
+  "versions": [
+    {
+      "key": "default",
+      "kind": "self_collated",
+      "label": "開源古籍自校本",
+      "source": "original",
+      "source_name": "開源古籍",
+      "source_url": null,
+      "license": "CC0 1.0",
+      "quality": "fine",
+      "chapters_total": 2,
+      "is_original": true
+    }
+  ]
+}
