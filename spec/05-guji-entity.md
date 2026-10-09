@@ -143,7 +143,6 @@ T 匹配流程内部用的 `coarse`、`reclass`、`route_to` 等字段**不进�
 - 草稿 id 升格后，读取方按 book-index 的 `promotions.json` 跳转到新 id（网站的 `/item/<id>` 已 308 跳转，悬停卡也跟随）；**读取方不得写死旧 id**。
 - 一批草稿 id 升格后，集中把文件里的旧 id 回挂成新 id，算实体线 **minor**。
 - 校验器只**报告**「指向已升格旧 id」的条数，不判错。
-- 正式 id 还没落地的官职、官署、地名，保持 `new_candidate`，不写 id。
 
 ## 五、复合专名：相邻 span ＋ `group`
 
