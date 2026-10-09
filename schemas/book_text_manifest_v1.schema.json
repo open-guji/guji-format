@@ -70,7 +70,7 @@
           },
           "license": {
             "type": "string",
-            "description": "CC 官方简称＋空格＋版本号（CC0 1.0、CC BY-SA 4.0…）或「未知」；不许 null"
+            "description": "self_collated、collated 必须是 CC0 1.0（用户 10-08 定）；transcription 照来源原授权：CC 官方简称＋空格＋版本号或「未知」；不许 null"
           },
           "quality": {
             "type": "string",
@@ -102,7 +102,31 @@
               "internal"
             ]
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "self_collated",
+                    "collated"
+                  ]
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "properties": {
+                "license": {
+                  "const": "CC0 1.0"
+                }
+              }
+            }
+          }
+        ]
       }
     }
   }
