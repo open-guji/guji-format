@@ -121,7 +121,7 @@
 | cord | 按 `a` 对上每格的像素框；cord 不存字 |
 | punct | 锚点是 char 的格位 key，校验字 `pre_char` 取 char 该格的 `c` |
 | entity | 锚点 `anchor.start`..`anchor.end` 是 char 的格位 key，校验字 `text` 是这段格的 `c` 依读序拼起来 |
-| norm、decision | 按格位记，校验字 `c` 等于 char 该格的 `c` |
+| norm、decision | 按格位记（norm 用 `a`，decision 用 `cell`）；校验字（norm 的 `c`、decision 的 `current`）等于 char 该格的 `c` |
 | lines.md、rich.md | 由 char（加 punct、entity）生成，放 derived 分支 |
 
 ## 六、校验
