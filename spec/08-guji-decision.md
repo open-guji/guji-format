@@ -1,6 +1,6 @@
 # guji-decision v0.1 规范：候选字层（`NNN.decision.json`）
 
-> 状态：**草案定稿，部分待用户拍板**（2026-10-09，overview#497；由 overview `项目进展/古籍文本/整体设计/2026-10-decision.json规范草案.md`（文本总管 10-06 应网站 #444 起草）写成）。标「待定（待用户拍板）」的三处未拍板前，本篇可按此开发样例，不批量入库。
+> 状态：**正式**（v0.1，2026-10-09 定稿，overview#497；由 overview `项目进展/古籍文本/整体设计/2026-10-decision.json规范草案.md`（文本总管 10-06 应网站 #444 起草）写成；§五 三点用户 10-09 已定）。
 > 格式标识：`https://open-guji.org/schema/decision/v0.1.json`
 > Schema：[`schemas/guji_decision_v0.1.schema.json`](../schemas/guji_decision_v0.1.schema.json)
 > 适用：book-text `original` 每章一份，存 main。总表见 [00](./00-总览.md)。现在还没有任何 decision 数据。
@@ -23,21 +23,21 @@
   "volume": 3,
   "items": [
     {
-      "a": "3:4:12",
-      "c": "撰",
+      "cell": "3:4:12",
+      "current": "撰",
       "kind": "uncertain",
       "status": "open",
       "cands": [
-        {"t": "𢰅", "src": "cv", "conf": 0.41, "why": "字形匹配次优"},
-        {"t": "譔", "src": "gemini", "note": "对读他本作譔"}
+        {"text": "𢰅", "src": "cv", "conf": 0.41, "why": "字形匹配次优"},
+        {"text": "譔", "src": "gemini", "note": "对读他本作譔"}
       ]
     },
     {
-      "a": "5:2:7",
-      "c": "内",
+      "cell": "5:2:7",
+      "current": "内",
       "kind": "variant",
       "status": "resolved",
-      "cands": [{"t": "內", "src": "table"}],
+      "cands": [{"text": "內", "src": "table"}],
       "by": "human",
       "note": "本书统一作「内」，不并"
     }
@@ -60,8 +60,8 @@
 
 | 字段 | 类型 | 必填 | 含义 | 取值 | 例 |
 |---|---|---|---|---|---|
-| `a` | string | 是 | 格位 key | 必须在同章 char 里存在；同一 `a` 只一条 | `"3:4:12"` |
-| `c` | string | 是 | **校验字**：char 该格**当前**的字 | 等于 char 该格的 `c`；文本改了以后对不上的条目要修 | `"撰"` |
+| `cell` | string | 是 | 格位 key | 必须在同章 char 里存在；同一 `cell` 只一条 | `"3:4:12"` |
+| `current` | string | 是 | **校验字**：char 该格**当前**的字 | 等于 char 该格的 `c`；文本改了以后对不上的条目要修 | `"撰"` |
 | `kind` | string | 是 | 疑什么（见 §四） | `uncertain` 存疑／`variant` 异体 | `"uncertain"` |
 | `status` | string | 是 | 到哪一步（见 §四） | `open` 待裁／`resolved` 已裁／`rejected` 驳回 | `"open"` |
 | `cands` | array | 是，非空 | 其他候选，按可信度从高到低，≤5 个 | 见 3.3；驳回也留着原候选 | |
@@ -72,12 +72,12 @@
 
 | 字段 | 类型 | 必填 | 含义 | 取值 |
 |---|---|---|---|---|
-| `t` | string | 是 | 候选字 | 不等于条目的 `c` |
+| `text` | string | 是 | 候选字 | 不等于条目的 `current` |
 | `src` | string | 是 | 来源 | `cv`、`ocr`、模型名（`gemini`、`glm`…）、`human`、`table` |
 | `conf` | number 0–1 | 否 | 来源自报的置信度，只用于排序 | |
 | `why`、`note` | string | 否 | 依据，一句话 | |
 
-## 四、两个维度：`kind` 与 `status`（待定（待用户拍板）：是否采用两维标法）
+## 四、两个维度：`kind` 与 `status`
 
 | `kind` | 中文 | 含义 |
 |---|---|---|
@@ -87,18 +87,18 @@
 | `status` | 中文 | 含义 |
 |---|---|---|
 | `open` | 待裁 | 还没人定 |
-| `resolved` | 已裁 | 人已定；定下的字已在 char，`c` 就是结果，**`c` 不得出现在 `cands` 里** |
+| `resolved` | 已裁 | 人已定；定下的字已在 char，`current` 就是结果，**`current` 不得出现在 `cands[].text` 里** |
 | `rejected` | 驳回 | 候选都不成立，维持原字 |
 
 网站建议：`open` 的 `uncertain` 最醒目；`resolved`、`rejected` 默认不标（或灰标）。
 
-## 五、草案里未拍板的三点（照实保留）
+## 五、已定事项（用户 10-09 定，overview#497）
 
-1. **待定（待用户拍板）**：§四 的两维标法（`kind`＋`status`）是否采用。
-2. **待定（待用户拍板）**：候选**先只展示、不入检索**。检索只用 char（定下的字），否则一个字多个写法会让命中数和高亮对不上；以后要「搜候选」由网站加开关，不改本格式。
-3. **待定（待用户拍板）**：用户同意后，文本侧在 vol03 造一个小样例给网站开发。
+1. **两维标法**：采用 §四 的 `kind`＋`status`。
+2. **候选先只展示、不进检索**。检索只用 char（定下的字），否则一个字多个写法会让命中数和高亮对不上；以后要「搜候选」由网站加开关，不改本格式。
+3. **样例**：文本侧在四庫 vol03 造 10–20 条小样例给网站开发。
 
-（草案里的第 3 点「进 guji-format」由本篇完成。）
+（草案里的「进 guji-format」由本篇完成。）
 
 ## 六、版本与流程
 
@@ -109,7 +109,7 @@
 ## 七、校验（F-OV-05，待落地进 `validate_text_format.py`）
 
 - 过 schema；`volume`、`book_id` 与同章 char 一致。
-- `a` 在 char 里存在；`c` 等于 char 该格的字；同一 `a` 只一条。
-- `cands` 非空；`resolved` 的条目 `c` 不在 `cands[].t` 里；`resolved`、`rejected` 带 `by`。
+- `cell` 在 char 里存在；`current` 等于 char 该格的字；同一 `cell` 只一条。
+- `cands` 非空；`resolved` 的条目 `current` 不在 `cands[].text` 里；`resolved`、`rejected` 带 `by`。
 
 （草案原把这条编为 F-OV-04；F-OV-04 已用于 `*_file` 声明，改为 F-OV-05。）

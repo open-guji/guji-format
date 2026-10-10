@@ -26,18 +26,19 @@
       "items": {
         "type": "object",
         "required": [
-          "a",
-          "c",
+          "cell",
+          "current",
           "kind",
           "status",
           "cands"
         ],
         "properties": {
-          "a": {
+          "cell": {
             "type": "string",
-            "pattern": "^\\d+:\\d+:-?[1-9]\\d*[ab]?$"
+            "pattern": "^\\d+:\\d+:-?[1-9]\\d*[ab]?$",
+            "description": "格位 key，必须在同章 char 里存在"
           },
-          "c": {
+          "current": {
             "type": "string",
             "minLength": 1,
             "description": "校验字：char 该格当前的字"
@@ -66,13 +67,14 @@
             "items": {
               "type": "object",
               "required": [
-                "t",
+                "text",
                 "src"
               ],
               "properties": {
-                "t": {
+                "text": {
                   "type": "string",
-                  "minLength": 1
+                  "minLength": 1,
+                  "description": "候选字"
                 },
                 "src": {
                   "type": "string"

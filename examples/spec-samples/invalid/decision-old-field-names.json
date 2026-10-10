@@ -1,0 +1,20 @@
+{
+  "$schema": "https://open-guji.org/schema/decision/v0.1.json",
+  "book_id": "96mid1ogzk",
+  "volume": 3,
+  "items": [
+    {
+      "a": "3:4:12",
+      "c": "撰",
+      "kind": "uncertain",
+      "status": "open",
+      "cands": [
+        {
+          "t": "𢰅",
+          "src": "cv"
+        }
+      ]
+    }
+  ],
+  "_note": "旧字段名 a、c、t 已改为 cell、current、text，旧写法必须报错"
+}
