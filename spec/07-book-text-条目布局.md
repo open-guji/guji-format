@@ -344,6 +344,6 @@ book-text/
 | F-FR-01 | 辑佚 13 字段 | HARD |
 | F-MD-* | md 记法（见 03 §二·5） | HARD／SOFT |
 | F-OV-01～04 | original 三线版本、锚点校验字、验收记录、`*_file` 声明 | HARD |
-| F-OV-05 | decision（见 08） | HARD（待落地） |
+| F-OV-05 | decision（见 08） | HARD |
 
 校验器：overview `项目进展/古籍文本/scripts/validate_text_format.py`、`scripts/validate-collated.py`；JSON 文件另过本仓 `schemas/`。

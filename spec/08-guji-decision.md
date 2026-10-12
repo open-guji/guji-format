@@ -106,7 +106,9 @@
 - **谁写**：候选由 CV 导出器、外部模型（Gemini、GLM 等）的候选文件产出；**入库与改 `status` 只由 Claude 道或本地整理会话做**（外部模型只出候选文件）。
 - **体量**：稀疏，预期每册几百到几千条。
 
-## 七、校验（F-OV-05，待落地进 `validate_text_format.py`）
+## 七、校验（F-OV-05，已落地进 `validate_text_format.py`）
+
+夹具见 [`spec/fixtures/decision/`](./fixtures/decision/)（1 个正例、4 个反例）。
 
 - 过 schema；`volume`、`book_id` 与同章 char 一致。
 - `cell` 在 char 里存在；`current` 等于 char 该格的字；同一 `cell` 只一条。
