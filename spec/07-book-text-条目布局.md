@@ -85,6 +85,7 @@ book-text/
 | `edition_label` | string | 否 | 底本版本名（维基／Kanripo 页面上的版本名，如「四庫全書本」） | 只作补充显示，不替代 `label` | `"文淵閣四庫全書本"` |
 | `is_original` | boolean | 否 | `true`＝本版本就是 original（见 2.3）；同一条目最多一个版本为 `true` | 只与 `kind: self_collated` 一起用 | `true` |
 | `note` | string | 否 | 一句话说明 | | |
+| `script` | string | 否 | 本版本正文的字形：`hant` 繁体／`hans` 简体／`mixed` 繁简混杂。**缺省＝未判定**（没有正文的空版本不写，也不写 `null`）；由 book-text 的 `scripts/set_script.py` 按统一口径写入，手写也合法 | `hant`／`hans`／`mixed` | `"hant"` |
 | `visibility` | string | 否 | `internal`＝只内部角色可见（book-text-private 用），公开仓不写 | `internal` | |
 
 授权以本字段为准（book-text README「授權」节）。**硬规定（2026-10-08 用户定，overview#497，取代同日前一条）**：
@@ -326,7 +327,7 @@ book-text/
 {"d59f28n8k000": [{"key": "default", "kind": "transcription", "label": "維基文庫", "chapters_total": 1}]}
 ```
 
-每个条目一个数组，按 manifest 顺序列出各版本的 `key`、`kind`、`label`、`chapters_total`，有 `edition_label` 的带上。
+每个条目一个数组，按 manifest 顺序列出各版本的 `key`、`kind`、`label`、`chapters_total`，有 `edition_label`、`quality`、`script` 的带上（manifest 缺哪个键，这里就缺哪个，不写 `null`）。
 
 ### 6.2 `index/fragments/{0-f}.json`
 

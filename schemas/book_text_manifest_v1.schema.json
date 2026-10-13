@@ -91,6 +91,15 @@
         "note": {
           "type": "string"
         },
+        "script": {
+          "type": "string",
+          "enum": [
+            "hant",
+            "hans",
+            "mixed"
+          ],
+          "description": "本版本正文的字形：hant 繁体／hans 简体／mixed 繁简混杂；可选，缺省＝未判定（空版本也不写）。overview#605 E2"
+        },
         "visibility": {
           "type": "string",
           "enum": [
