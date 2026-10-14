@@ -255,7 +255,7 @@ book-text/
 2. 该章在 `index.json` 的 `chapters[]` 里 `has_json: true`；
 3. 例外清单登记在 book-text 的巡检脚本输出里（`b3_status.py` 的 #11 行），新增例外须经文本块经理点头。
 
-存量例外（10-14 登记，共 81 章）：`d59f2mua7w8y` 75 章（馬國翰辑佚目录，各章只有目录元数据，`fragments` 为空）、`d59f2ncf8cn5` 1 章、`d59f2mcdblz4` 1 章、`d59dh3vo9af4` 4 章（json 章号与 md 章号错位，需逐章对照后另案处理，处理完即从例外中移出）。
+存量例外（10-14 登记，现 77 章）：`d59f2mua7w8y` 75 章（馬國翰辑佚目录，各章只有目录元数据，`fragments` 为空）、`d59f2ncf8cn5` 1 章、`d59f2mcdblz4` 1 章。`d59dh3vo9af4` 原登记 4 章（json 章号与 md 章号错位），10-14 已按 json = md + 4 整体改名对齐（book-text #99），卷首 1–4 的 json 移入 `sources/`，该条目已从例外中移出。
 
 **顶层：**
 
