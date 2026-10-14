@@ -249,6 +249,14 @@ book-text/
 
 整理本每章可有一份同名 json（`has_json: true`），**由同名 md 派生**（F-CE-05：md 为真源）；md 与 json 不同步是巡检项。
 
+**F-CE-05 登记的例外（json 为真源）**：只有 `NNN.json`、没有同名 md 的章，须同时满足下列条件才算合规，否则仍按 F-CE-05 要求补 md：
+
+1. 所属版本的 `index.json` 中 `type` 为 `fragment_collection`（辑佚集），或该章 json 的内容无法一一还原成 md（例如 json 的章号与同版本其他章的 md 章号不对应）；
+2. 该章在 `index.json` 的 `chapters[]` 里 `has_json: true`；
+3. 例外清单登记在 book-text 的巡检脚本输出里（`b3_status.py` 的 #11 行），新增例外须经文本块经理点头。
+
+存量例外（10-14 登记，共 81 章）：`d59f2mua7w8y` 75 章（馬國翰辑佚目录，各章只有目录元数据，`fragments` 为空）、`d59f2ncf8cn5` 1 章、`d59f2mcdblz4` 1 章、`d59dh3vo9af4` 4 章（json 章号与 md 章号错位，需逐章对照后另案处理，处理完即从例外中移出）。
+
 **顶层：**
 
 | 字段 | 必填 | 含义 | 例 |
