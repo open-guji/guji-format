@@ -3,7 +3,7 @@
 古籍 Markdown 的**网页解析器**：源文 → HTML，附横排与竖排两套样式。
 
 建在 [`@open-guji/markdown-core`](../core) + unified（remark / rehype）之上。
-规范见仓库 [`spec/`](../../spec)，本包实现规范 **0.1.0**。
+规范见仓库 [`spec/`](../../spec)，本包实现规范 **0.2.0**。
 
 ## 安装
 

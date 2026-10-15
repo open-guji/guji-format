@@ -1,6 +1,6 @@
 {
   "name": "@open-guji/markdown-web",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "古籍 Markdown 的网页解析器：HTML 渲染与横排 / 竖排样式",
   "keywords": [
     "markdown",
