@@ -68,7 +68,7 @@
 | 字段 | 类型 | 必填 | 含义 | 取值 | 例 |
 |---|---|---|---|---|---|
 | `$schema` | string | 是 | 格式版本 | `https://open-guji.org/schema/char/v0.1.json` | |
-| `version` | string | 是 | **文本线内容版本**；index.json 该章的 `text_version` 是它的镜像，必须相等 | `MAJOR.MINOR.PATCH`，major 0–3（0 只用于 wip，并入 main 时 ≥1.0.0）；正则 `^[0-3]\.(0\|[1-9]\d*)\.(0\|[1-9]\d*)$` | `"1.0.0"` |
+| `version` | string | 是 | **文本线内容版本**；index.json 该章的 `text_version` 是它的镜像，必须相等 | `MAJOR.MINOR.PATCH`，major 0–3（0.x＝粗校完、精校未完，并入 main 时 ≥0.1.0，且章条目 `proofing` 必须为 true；见 00 §4.3）；正则 `^[0-3]\.(0\|[1-9]\d*)\.(0\|[1-9]\d*)$` | `"1.0.0"` |
 | `review` | object | major ≥2 时必填（schema 强制） | 文本线验收记录 | `date`（日期串）、`signed_by`（签核人）、`sample`（抽检数据：一句话或对象），三项都不许空 | |
 | `book_id` | string | 是 | 所属条目 id | 等于条目目录名 | `"96mid1ogzk"` |
 | `volume` | integer ≥1 | 是 | 册号 | 等于 index.json 该章 `n`、文件名 `NNN` 的数值 | `2` |

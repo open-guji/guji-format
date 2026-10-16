@@ -191,12 +191,14 @@ book-text/
 |---|---|---|---|---|
 | `n`、`file`、`title` | | 是 | 同 3.1；`n`＝册号＝各层文件的 `volume` | |
 | `char_file` | string | **是** | 文本真源文件名 | `"002.char.json"` |
-| `cord_file` | string | 否 | 像素框文件名 | `"002.cord.json"` |
+| `cord_file` | string | 否（文本线 0.x 的册必填，F-OV-04） | 像素框文件名 | `"002.cord.json"` |
 | `punct_file` | string | 否 | 标点文件名 | `"002.punct.json"` |
 | `entity_file` | string | 否 | 实体文件名；**网站没有这个声明就不画专名** | `"002.entity.json"` |
 | `norm_file` | string | 否 | 规范层文件名 | `"002.norm.json"` |
 | `decision_file` | string | 否 | 候选层文件名 | `"002.decision.json"` |
-| `text_version` | string | 是 | 文本线版本，char `version` 的镜像 | `"1.0.0"` |
+| `pending_file` | string | 否 | 册级待审清单文件名；**只在 `proofing: true` 时存在**（F-OV-07，见 00 §4.3） | `"002.pending.json"` |
+| `proofing` | boolean | 文本线 0.x 时必填 `true` | 校对中；网站据此挂「欢迎帮助校对」banner（F-OV-06） | `true` |
+| `text_version` | string | 是 | 文本线版本，char `version` 的镜像；粗校完 `"0.1.0"`，精校完 `"1.0.0"` | `"1.0.0"` |
 | `punct_version` | string | 有 punct 时必填 | punct `version` 的镜像 | `"1.1.0"` |
 | `entity_version` | string | 有 entity 时必填 | entity `version` 的镜像 | `"1.4.0"` |
 | `pages` | string | 否 | 本册覆盖的页号范围（扫描顺序号，首尾都含） | `"1-188"` |
