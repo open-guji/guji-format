@@ -1,0 +1,20 @@
+{
+  "$schema": "https://open-guji.org/schema/decision/v0.2.json",
+  "book_id": "96mid1ogzk",
+  "volume": 3,
+  "items": [
+    {
+      "cell": "3:4:12",
+      "current": "撰",
+      "kind": "uncertain",
+      "status": "open",
+      "cands": [
+        {
+          "text": "譔",
+          "src": "cv"
+        }
+      ],
+      "reason": "seg_bad"
+    }
+  ]
+}

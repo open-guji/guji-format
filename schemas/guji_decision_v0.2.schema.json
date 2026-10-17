@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-guji.org/schema/decision/v0.2.json",
+  "title": "GujiDecision",
+  "description": "候选字层 (guji-decision v0.2)，book-text original 每章一份；见 spec/08-guji-decision.md。v0.2 在条目层加可选 reason／route／route_ref，v0.1 文件原样仍合法（$schema 仍写 v0.1 者按 v0.1 校验）",
+  "type": "object",
+  "required": [
+    "$schema",
+    "book_id",
+    "volume",
+    "items"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "book_id": {
+      "type": "string"
+    },
+    "volume": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "cell",
+          "current",
+          "kind",
+          "status",
+          "cands"
+        ],
+        "properties": {
+          "cell": {
+            "type": "string",
+            "pattern": "^\\d+:\\d+:-?[1-9]\\d*[ab]?$",
+            "description": "格位 key，必须在同章 char 里存在"
+          },
+          "current": {
+            "type": "string",
+            "minLength": 1,
+            "description": "校验字：char 该格当前的字"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "uncertain",
+              "variant"
+            ],
+            "description": "uncertain 存疑／variant 异体"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "resolved",
+              "rejected"
+            ],
+            "description": "open 待裁／resolved 已裁／rejected 驳回"
+          },
+          "cands": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "required": [
+                "text",
+                "src"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "候选字"
+                },
+                "src": {
+                  "type": "string"
+                },
+                "conf": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "why": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "by": {
+            "type": "string",
+            "enum": [
+              "human",
+              "rule"
+            ]
+          },
+          "note": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "unclear",
+              "seg_bad",
+              "seg_recut",
+              "seg_missing_page"
+            ],
+            "description": "为什么拿不准；缺省等于 unclear（字本身认不清）。seg_* 是切分问题（切坏／需重切／缺页），须带 route"
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "recut",
+              "list",
+              "add_page"
+            ],
+            "description": "seg_* 的处置去向：recut 重切／list 进某清单／add_page 补页；reason 为 unclear 或缺省时不得出现"
+          },
+          "route_ref": {
+            "type": "string",
+            "minLength": 1,
+            "description": "route 的指向：清单名或 GUJI-xxx；须与 route 同在"
+          }
+        },
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "enum": [
+                    "resolved",
+                    "rejected"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "by"
+              ]
+            }
+          },
+          {
+            "if": {
+              "required": [
+                "reason"
+              ],
+              "properties": {
+                "reason": {
+                  "pattern": "^seg_"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "route"
+              ]
+            }
+          },
+          {
+            "if": {
+              "anyOf": [
+                {
+                  "not": {
+                    "required": [
+                      "reason"
+                    ]
+                  }
+                },
+                {
+                  "properties": {
+                    "reason": {
+                      "const": "unclear"
+                    }
+                  },
+                  "required": [
+                    "reason"
+                  ]
+                }
+              ]
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "route"
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "required": [
+                "route_ref"
+              ]
+            },
+            "then": {
+              "required": [
+                "route"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
