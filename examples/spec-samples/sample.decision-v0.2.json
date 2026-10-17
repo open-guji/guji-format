@@ -1,0 +1,62 @@
+{
+  "$schema": "https://open-guji.org/schema/decision/v0.2.json",
+  "book_id": "96mid1ogzk",
+  "volume": 3,
+  "items": [
+    {
+      "cell": "3:4:12",
+      "current": "撰",
+      "kind": "uncertain",
+      "status": "open",
+      "cands": [
+        {
+          "text": "譔",
+          "src": "cv"
+        }
+      ],
+      "reason": "unclear"
+    },
+    {
+      "cell": "3:4:13",
+      "current": "撰",
+      "kind": "uncertain",
+      "status": "open",
+      "cands": [
+        {
+          "text": "譔",
+          "src": "cv"
+        }
+      ],
+      "reason": "seg_bad",
+      "route": "recut",
+      "note": "reason=seg_bad;route=recut | 切框压到邻格"
+    },
+    {
+      "cell": "3:5:2",
+      "current": "撰",
+      "kind": "uncertain",
+      "status": "open",
+      "cands": [
+        {
+          "text": "譔",
+          "src": "cv"
+        }
+      ],
+      "reason": "seg_missing_page",
+      "route": "add_page",
+      "route_ref": "GUJI-558"
+    },
+    {
+      "cell": "3:5:3",
+      "current": "撰",
+      "kind": "uncertain",
+      "status": "open",
+      "cands": [
+        {
+          "text": "譔",
+          "src": "cv"
+        }
+      ]
+    }
+  ]
+}

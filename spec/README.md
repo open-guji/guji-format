@@ -16,7 +16,7 @@
 | [05 guji-entity](./05-guji-entity.md) | `NNN.entity.json` 专名与专名号 | 0.2 | [`guji_entity_v0.2`](../schemas/guji_entity_v0.2.schema.json) |
 | [06 guji-norm](./06-guji-norm.md) | `NNN.norm.json` 异体→通行字 | 0.2 | [`guji_norm_v0.2`](../schemas/guji_norm_v0.2.schema.json) |
 | [07 book-text 条目布局](./07-book-text-条目布局.md) | 条目目录、`manifest.json`、`index.json`、章文件、辑佚、汇总索引 | 1 | [`book_text_manifest_v1`](../schemas/book_text_manifest_v1.schema.json)、[`book_text_index_v1`](../schemas/book_text_index_v1.schema.json) |
-| [08 guji-decision](./08-guji-decision.md) | `NNN.decision.json` 候选字（部分待用户拍板） | 0.1 | [`guji_decision_v0.1`](../schemas/guji_decision_v0.1.schema.json) |
+| [08 guji-decision](./08-guji-decision.md) | `NNN.decision.json` 候选字（部分待用户拍板） | 0.2 | [`guji_decision_v0.2`](../schemas/guji_decision_v0.2.schema.json) |
 
 `original`（本项目从书影做出来的文本）每章一组：char、cord、punct、entity、norm、decision 是真源，存 main；lines、rich 由脚本生成，存生成分支 `derived`。转录本（维基、Kanripo、识典）和整理本用 `NNN.md`（＋整理本的 `NNN.json`）。
 

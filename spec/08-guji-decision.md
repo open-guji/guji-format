@@ -1,8 +1,8 @@
 # guji-decision v0.1 规范：候选字层（`NNN.decision.json`）
 
-> 状态：**正式**（v0.1，2026-10-09 定稿，overview#497；由 overview `项目进展/古籍文本/整体设计/2026-10-decision.json规范草案.md`（文本总管 10-06 应网站 #444 起草）写成；§五 三点用户 10-09 已定）。
-> 格式标识：`https://open-guji.org/schema/decision/v0.1.json`
-> Schema：[`schemas/guji_decision_v0.1.schema.json`](../schemas/guji_decision_v0.1.schema.json)
+> 状态：**正式**（v0.1，2026-10-09 定稿；**v0.2 2026-10-17 增可选 `reason`／`route`／`route_ref`**，GUJI-558 Eliot 提出，见 §3.4；overview#497；由 overview `项目进展/古籍文本/整体设计/2026-10-decision.json规范草案.md`（文本总管 10-06 应网站 #444 起草）写成；§五 三点用户 10-09 已定）。
+> 格式标识：`https://open-guji.org/schema/decision/v0.2.json`（v0.1 `…/decision/v0.1.json` 的文件原样仍合法，不必迁移）
+> Schema：[`schemas/guji_decision_v0.2.schema.json`](../schemas/guji_decision_v0.2.schema.json)（v0.1：[`guji_decision_v0.1.schema.json`](../schemas/guji_decision_v0.1.schema.json)）
 > 适用：book-text `original` 每章一份，存 main。总表见 [00](./00-总览.md)。现在还没有任何 decision 数据。
 
 ---
@@ -67,6 +67,9 @@
 | `cands` | array | 是，非空 | 其他候选，按可信度从高到低，≤5 个 | 见 3.3；驳回也留着原候选 | |
 | `by` | string | `resolved`、`rejected` 时写 | 谁裁的 | `human`／`rule` | `"human"` |
 | `note` | string | 否 | 一句话依据 | | |
+| `reason` | string | 否（v0.2） | 为什么拿不准，见 §3.4 | `unclear`（缺省）／`seg_bad`／`seg_recut`／`seg_missing_page` | `"seg_bad"` |
+| `route` | string | `reason` 为 `seg_*` 时必填（v0.2） | 处置去向，见 §3.4 | `recut`／`list`／`add_page` | `"recut"` |
+| `route_ref` | string | 否（v0.2） | `route` 的指向：清单名或 GUJI-xxx；须与 `route` 同在 | | `"GUJI-558"` |
 
 ### 3.3 候选（`cands[]`）
 
@@ -76,6 +79,27 @@
 | `src` | string | 是 | 来源 | `cv`、`ocr`、模型名（`gemini`、`glm`…）、`human`、`table` |
 | `conf` | number 0–1 | 否 | 来源自报的置信度，只用于排序 | |
 | `why`、`note` | string | 否 | 依据，一句话 | |
+
+### 3.4 v0.2 新增：`reason`／`route`／`route_ref`
+
+三项全是**可选**、条目层（不在 `cands[]` 里），由 H 道写（与改 `status` 同权）。0.1 的文件没有这三项，照旧合法；读者对缺省的 `reason` 一律当 `unclear`。
+
+| `reason` | 含义 | `route` |
+|---|---|---|
+| `unclear`（缺省） | 字本身认不清、漫漶、形近 | 不得出现 |
+| `seg_bad` | 切分切坏了（框压邻格、切断字） | 必填 |
+| `seg_recut` | 需整块重切 | 必填 |
+| `seg_missing_page` | 缺页 | 必填 |
+
+| `route` | 去向 |
+|---|---|
+| `recut` | 回 CV 重切 |
+| `list` | 进某张清单（名字写 `route_ref`） |
+| `add_page` | 补页（任务号或清单写 `route_ref`） |
+
+- **对账规则**：`status: open` 且 `reason` 以 `seg_` 开头 ⇒ 必须有 `route`（否则无人接手）；`reason` 缺省或 `unclear` 时不得带 `route`；`route_ref` 只能在 `route` 存在时出现。schema 已用条件子句拦这三条。
+- **转态时 `note` 的前缀**：`reason=seg_bad;route=recut[;route_ref=…] | 自由文字`；前缀只是给人和脚本 grep 的快照，机读以字段为准。
+- 不影响任何版本线：decision 不跟踪版本号，`$schema` 写 v0.1 或 v0.2 都合法；用了这三项就应写 v0.2（v0.1 schema 对它们 `additionalProperties: false`）。
 
 ## 四、两个维度：`kind` 与 `status`
 
@@ -112,6 +136,7 @@
 
 - 过 schema；`volume`、`book_id` 与同章 char 一致。
 - `cell` 在 char 里存在；`current` 等于 char 该格的字；同一 `cell` 只一条。
+- v0.2：`reason`∈{unclear, seg_bad, seg_recut, seg_missing_page}；`route`∈{recut, list, add_page}；`seg_*` 必带 `route`，`unclear`／缺省不得带 `route`，`route_ref` 须与 `route` 同在（§3.4）；`$schema` 接受 v0.1 与 v0.2 两个标识，v0.1 文件带 `reason`／`route` 类键按未知键报错。
 - `cands` 非空；`resolved` 的条目 `current` 不在 `cands[].text` 里；`resolved`、`rejected` 带 `by`。
 
 （草案原把这条编为 F-OV-04；F-OV-04 已用于 `*_file` 声明，改为 F-OV-05。）
