@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://open-guji.org/schema/punct/v0.2.json",
   "title": "GujiPunct",
-  "description": "伴生层独立外挂标点格式 (guji-punct v0.2)，只用于 book-text original；v0.2 增标题符 kind: heading、分段符可锚下一段首字（pos: before），删去保留值 range",
+  "description": "伴生层独立外挂标点格式 (guji-punct v0.2)，只用于 book-text original；v0.2 增标题符 kind: heading，分段符限定 pos: after，删去保留值 range",
   "type": "object",
   "required": [
     "$schema",
@@ -140,7 +140,7 @@
               "before"
             ],
             "default": "after",
-            "description": "after 标点在锚点字之后；before 在之前（开引号、《、标题符；分段符锚下一段首字时）"
+            "description": "after 标点在锚点字之后；before 在之前（开引号、《、标题符）。分段符只能 after，锚在段末字之后"
           },
           "label": {
             "type": "string",
@@ -277,6 +277,9 @@
               "properties": {
                 "mark": {
                   "const": "\n\n"
+                },
+                "pos": {
+                  "const": "after"
                 }
               }
             }

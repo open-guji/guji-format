@@ -27,9 +27,9 @@
     {
       "mark": "\n\n",
       "kind": "break",
-      "pos": "before",
-      "anchor": "39:2:2",
-      "pre_char": "經",
+      "pos": "after",
+      "anchor": "39:1:10",
+      "pre_char": "二",
       "source": "claude:GUJI-240"
     },
     {
@@ -43,9 +43,9 @@
     {
       "mark": "\n\n",
       "kind": "break",
-      "pos": "before",
-      "anchor": "39:3:3",
-      "pre_char": "易",
+      "pos": "after",
+      "anchor": "39:2:4",
+      "pre_char": "二",
       "source": "claude:GUJI-240"
     },
     {
@@ -58,9 +58,9 @@
     {
       "mark": "\n\n",
       "kind": "break",
-      "pos": "before",
-      "anchor": "39:4:1",
-      "pre_char": "易",
+      "pos": "after",
+      "anchor": "39:3:5",
+      "pre_char": "二",
       "source": "claude:GUJI-240"
     },
     {
