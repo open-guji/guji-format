@@ -203,7 +203,7 @@
           },
           "pre_char": {
             "type": "string",
-            "description": "锚点那一格上的字（after、before 标点都核这一格），用于对齐与防御性防错校验"
+            "description": "锚点那一格上的字（after、before 标点都核这一格），用于对齐与防御性防错校验；标题符不写（改字不影响标题，spec/04 §4.2）"
           },
           "confidence": {
             "type": "number",
@@ -238,6 +238,11 @@
                 "pos": {
                   "const": "before"
                 }
+              },
+              "not": {
+                "required": [
+                  "pre_char"
+                ]
               }
             },
             "else": {
