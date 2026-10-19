@@ -184,6 +184,7 @@ book-text/
 | `note` | string | 否 | 说明 | |
 | `fetched_at` | string | 否 | 入库日期 | |
 | `revision`、`guji_markdown` | string | 否 | **存量，不维护**：original 的版本由三条线管（§三·4），不用 `revision` | |
+| `heading_levels` | array of string | 否 | 标题符各级的名字，第 i 项是第 i 级（`#`× i，[04 §4.2](./04-guji-punct.md)）；供目录、检索显示 | `["卷", "類", "書"]` |
 
 **章条目（每册一条）：**
 
@@ -203,6 +204,7 @@ book-text/
 | `entity_version` | string | 有 entity 时必填 | entity `version` 的镜像 | `"1.4.0"` |
 | `pages` | string | 否 | 本册覆盖的页号范围（扫描顺序号，首尾都含） | `"1-188"` |
 | `lines_file`、`rich_file` | string | **只在 derived 分支** | 生成物文件名 | `"002.lines.md"` |
+| `headings` | array | 否；punct 有进目录的标题符时由脚本写 | 本册目录**缓存**：punct 里 `toc` 不为 `false` 的标题符按读序抽出，每项 `{level, label, anchor}`（`label` 取标题符的 `label`，缺省取标题原文）。由 `build_texts_index.py` 生成，不手改；校验与 punct 一致。阅读器读它就能画全书目录，不用下载各册 punct | `[{"level": 1, "label": "卷二　經部二", "anchor": "39:1:1"}]` |
 
 - **有这个字段＝有这个文件**：写了的 `*_file` 必须存在，文件名必须是 `NNN.<代号>.json`／`.md`（F-OV-04）。
 - 三个 `*_version` 是镜像，必须和各自文件顶层的 `version` 相等（F-OV-01），由 `bump_original.py` 同步，不手改。

@@ -103,6 +103,34 @@
           },
           "has_table": {
             "type": "boolean"
+          },
+          "headings": {
+            "type": "array",
+            "description": "本册目录缓存：punct 标题符（toc 不为 false）按读序抽出；脚本生成，不手改（spec/07 §3.3、spec/04 §4.2）",
+            "items": {
+              "type": "object",
+              "required": [
+                "level",
+                "label",
+                "anchor"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "level": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 6
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "anchor": {
+                  "type": "string",
+                  "pattern": "^\\d+:\\d+:-?\\d+[ab]?$"
+                }
+              }
+            }
           }
         },
         "allOf": [
@@ -227,6 +255,15 @@
     },
     "guji_markdown": {
       "type": "string"
+    },
+    "heading_levels": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "maxItems": 6,
+      "description": "标题符各级的名字，第 i 项是第 i 级（spec/07 §3.3、spec/04 §4.2）"
     },
     "other_sources": {
       "type": "array"

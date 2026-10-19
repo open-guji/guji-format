@@ -1,0 +1,27 @@
+{
+  "$schema": "https://open-guji.org/schema/punct/v0.1.json",
+  "version": "1.4.0",
+  "text_version": "1.0.0",
+  "book_id": "96mid1ogzk",
+  "volume": 2,
+  "metadata": {
+    "title": "欽定四庫全書總目·第2册",
+    "creator": "claude:GUJI-240",
+    "base_edition": "original",
+    "description": "卷二开头：卷名、副题、類名、首篇书名行，带标题符（v0.2 样例）"
+  },
+  "stats": {
+    "total_annotations": 11,
+    "headings": 4,
+    "paragraph_breaks": 4
+  },
+  "punctuations": [
+    {
+      "mark": "#",
+      "kind": "heading",
+      "pos": "before",
+      "anchor": "39:1:1",
+      "pre_char": "欽"
+    }
+  ]
+}
