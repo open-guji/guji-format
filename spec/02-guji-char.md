@@ -1,7 +1,8 @@
-# guji-char v0.1 规范：定字文本（`NNN.char.json`）
+# guji-char v0.2 规范：定字文本（`NNN.char.json`）
 
-> 状态：正式（v0.1，2026-10-06 用户定；2026-10-09 补到字段级，overview#497）
-> Schema：[`schemas/guji_char_v0.1.schema.json`](../schemas/guji_char_v0.1.schema.json)
+> 状态：正式（v0.1，2026-10-06 用户定；2026-10-09 补到字段级，overview#497；**v0.2 2026-10-20 增格字段 `guess_c`：阙文格带推测字**，GUJI-717 用户定，见 §4.6）
+> 格式标识：`https://open-guji.org/schema/char/v0.2.json`（v0.1 `…/char/v0.1.json` 的文件原样仍合法，不必迁移；用了 `guess_c` 就要写 v0.2）
+> Schema：[`schemas/guji_char_v0.2.schema.json`](../schemas/guji_char_v0.2.schema.json)（v0.1：[`guji_char_v0.1.schema.json`](../schemas/guji_char_v0.1.schema.json)）
 > 适用：book-text `original` 每章一份，存 main，**文本的唯一真源**。总表见 [00](./00-总览.md)。
 
 ---
@@ -36,7 +37,7 @@
 
 ```jsonc
 {
-  "$schema": "https://open-guji.org/schema/char/v0.1.json",
+  "$schema": "https://open-guji.org/schema/char/v0.2.json",
   "version": "1.0.0",
   "book_id": "96mid1ogzk",
   "volume": 2,
@@ -52,7 +53,8 @@
           {"a": "3:4:6a", "c": "兩"}, {"a": "3:4:7a", "c": "江"},
           {"a": "3:4:6b", "c": "採"}, {"a": "3:4:7b", "c": "進"},
           {"a": "3:4:8", "c": "□", "lacuna": true},
-          {"a": "3:4:9", "c": "春", "guess": true}
+          {"a": "3:4:9", "c": "春", "guess": true},
+          {"a": "3:4:10", "c": "□", "lacuna": true, "guess_c": "一"}
         ]},
         {"col": 9, "kind": "blank", "cells": []}
       ]
@@ -67,7 +69,7 @@
 
 | 字段 | 类型 | 必填 | 含义 | 取值 | 例 |
 |---|---|---|---|---|---|
-| `$schema` | string | 是 | 格式版本 | `https://open-guji.org/schema/char/v0.1.json` | |
+| `$schema` | string | 是 | 格式版本 | `https://open-guji.org/schema/char/v0.2.json`；没有 `guess_c` 的文件也可以照旧写 `…/char/v0.1.json` | |
 | `version` | string | 是 | **文本线内容版本**；index.json 该章的 `text_version` 是它的镜像，必须相等 | `MAJOR.MINOR.PATCH`，major 0–3（0.x＝粗校完、精校未完，并入 main 时 ≥0.1.0，且章条目 `proofing` 必须为 true；见 00 §4.3）；正则 `^[0-3]\.(0\|[1-9]\d*)\.(0\|[1-9]\d*)$` | `"1.0.0"` |
 | `review` | object | major ≥2 时必填（schema 强制） | 文本线验收记录 | `date`（日期串）、`signed_by`（签核人）、`sample`（抽检数据：一句话或对象），三项都不许空 | |
 | `book_id` | string | 是 | 所属条目 id | 等于条目目录名 | `"96mid1ogzk"` |
@@ -102,7 +104,8 @@
 | `c` | string | 是 | 定下的字，一个字符（或一个组字的近似字） | Unicode 已收的字。Unicode 没收的字放近似的已收字，另在 `zi` 记原形；阙文写 `□`（U+25A1） | `"欽"` |
 | `lane` | string | 否 | 所在分道 | `main` 正文（缺省）／`solo` 单行小注／`jz_r` 双行夹注右列／`jz_l` 双行夹注左列。`jz_r`、`jz_l` 可由 `a` 的 `a`／`b` 后缀推出，写不写都行；**`solo` 推不出，必须写** | `"solo"` |
 | `lacuna` | boolean | 否 | `true`＝阙文（这格原有字，看不清或缺失），`c` 写 `□` | 不带这个标记的 `□` 是刻本上本来就刻着的方框 | `true` |
-| `guess` | boolean | 否 | `true`＝残字，`c` 是推测的字 | | `true` |
+| `guess` | boolean | 否 | `true`＝残字（图上有残笔），`c` 是推测的字 | 不能和 `guess_c` 同时出现 | `true` |
+| `guess_c` | string | 否（v0.2 起） | 阙文格的推测字：图上这格没有字（磨损、缺损），据文意、他本推测原是什么字。`c` 仍写 `□`，见 §4.6 | 只许出现在 `lacuna: true` 的格上；单字，Unicode 没收的字写 IDS 或组字式；不含空白和花括号 | `"一"` |
 | `zi` | string | 否 | 组字：Unicode 没收的字的原形，写 IDS 串或描述文字；`c` 是近似字 | 如 `"⿰木孚"` | |
 
 格对象不许有别的字段（schema `additionalProperties: false`）。
@@ -113,6 +116,42 @@
 
 - 双行夹注的一段：先排完这一段的 `a`（右列），再排 `b`（左列）。一列里可以有好几段夹注。
 - 字下标（punct 的 `char_offset`、entity 的 `span`）就是这条字流的 0 起下标，见 [00 §四·2](./00-总览.md)。
+
+### 4.6 阙文带推测字（`guess_c`，v0.2）
+
+**录文以图为准**（用户 2026-10-20 定，GUJI-717）：图上这一格没有字，但文意、他本都说明原有一字的，录成阙文 `□`，按磨损缺字处理；推测的字另记在 `guess_c`，阅读器鼠标移上去才显示，不进正文字流。
+
+```jsonc
+{"a": "3:1:10", "c": "□", "lacuna": true, "guess_c": "一"}
+```
+
+和 `guess: true`（残字）的区别：
+
+| | 阙文带推测字 `lacuna` ＋ `guess_c` | 残字 `guess: true` |
+|---|---|---|
+| 图上 | 这格没有字（磨损、缺损、墨污盖住） | 有残笔，能看出个大概 |
+| `c` | `□` | 推测的字 |
+| 推测字在哪 | `guess_c` | `c` |
+| 正文字流（punct `pre_char`、entity `text`、norm `c`、decision `current` 的校验字） | `□`，和不带推测字的阙文一样 | 推测的字 |
+| 阅读器建议显示 | 和阙文一样的虚线框 `□`；悬停提示「闕文，推測為「一」」（简体「阙文，推测为「一」」） | 推测的字，灰色加点线下划线；悬停提示「殘字（推測）」 |
+| lines.md、rich.md | 和阙文一样：`[[]]`，单行小注里 `□`（推测字不出，见 [03 §三](./03-guji-markdown.md)） | `□{guess=字}` |
+
+约束（schema 强制）：
+
+- `guess_c` 只许出现在 `lacuna: true`、`c` 为 `□` 的格上；和 `guess` 互斥；
+- 取值非空，不含空白和花括号（与 guji-markdown `□{guess=…}` 的取值同一口径，见 [syntax §14](./syntax.md)）；
+- 用了 `guess_c` 的文件 `$schema` 写 v0.2；v0.1 schema 不认这个键（格对象 `additionalProperties: false`）。
+
+**为什么是新键、而不是让 `guess` 取字符串**：
+
+| | 新键 `guess_c`（采用） | `guess` 在阙文格上取字符串 |
+|---|---|---|
+| 旧读取方（只认 v0.1 的工具） | 不认识的键忽略，这格照旧是阙文 `□`——只丢了悬停提示，不出错 | `guess` 从布尔变成「布尔或字符串」：写成 `if cell.get("guess")` 的地方会把阙文当残字，显示出 `□` 灰字加点线 |
+| 正文字流与各层锚点 | `c` 不变，punct／entity／norm／decision 的校验字都不动 | 同左 |
+| 类型 | 每个键一种类型 | 同一键两种类型，各语言读取方都要分支 |
+| 是否升格式版本 | 加字段：升 0.2（[README §四](./README.md)） | 改字段含义：也要升 |
+
+两种写法都要升格式版本，新键对旧读取方是「静默降级为阙文」，`guess` 改类型是「静默误读为残字」，所以取新键。
 
 ## 五、与其他文件的关系
 
@@ -126,7 +165,13 @@
 
 ## 六、校验
 
-- 过 schema；格位 key 在全章不重复。
+- 过 schema（`$schema` 是 v0.1 就对 v0.1，是 v0.2 就对 v0.2）；格位 key 在全章不重复。
 - `version` 与 index.json 该章 `text_version` 相等（F-OV-01）；major ≥2 带 `review`（F-OV-03）。
 - `volume`、`book_id` 与同章 cord、punct、entity、norm 一致。
 - char → lines.md 必须能逐字节还原（`convert_original_char.py` 入库时核）。
+
+## 七、上一版 → 本版的变化（v0.1 → v0.2）
+
+- 格对象新增可选键 `guess_c`（阙文格的推测字），只许和 `lacuna: true` 一起出现，与 `guess` 互斥（§4.4、§4.6）。
+- 其余字段、格位 key、读序都不变；v0.1 文件原样是合法的 v0.2 文件（只是 `$schema` 写的是 v0.1），不必迁移。
+- 读取方：v0.1、v0.2 两个 `$schema` 都要认；不认 `guess_c` 的旧工具会把这格当普通阙文，不出错。
