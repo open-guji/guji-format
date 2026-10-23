@@ -1,8 +1,8 @@
 # guji-char v0.2 规范：定字文本（`NNN.char.json`）
 
-> 状态：正式（v0.1，2026-10-06 用户定；2026-10-09 补到字段级，overview#497；**v0.2 2026-10-20 增格字段 `guess_c`：阙文格带推测字**，GUJI-717 用户定，见 §4.6）
-> 格式标识：`https://open-guji.org/schema/char/v0.2.json`（v0.1 `…/char/v0.1.json` 的文件原样仍合法，不必迁移；用了 `guess_c` 就要写 v0.2）
-> Schema：[`schemas/guji_char_v0.2.schema.json`](../schemas/guji_char_v0.2.schema.json)（v0.1：[`guji_char_v0.1.schema.json`](../schemas/guji_char_v0.1.schema.json)）
+> 状态：正式（v0.1，2026-10-06 用户定；2026-10-09 补到字段级，overview#497；**v0.2 2026-10-20 增格字段 `guess_c`：阙文格带推测字**，GUJI-717 用户定，见 §4.6；**v0.3 2026-10-23 增图片格 `fig` 与图列 `kind: figure`**，GUJI-737 Sheldon 评审通过，见 §4.7）
+> 格式标识：`https://open-guji.org/schema/char/v0.3.json`（v0.1、v0.2 的文件原样仍合法，不必迁移；用了 `guess_c` 至少写 v0.2，用了 `fig` 或图列就要写 v0.3）
+> Schema：[`schemas/guji_char_v0.3.schema.json`](../schemas/guji_char_v0.3.schema.json)（v0.2：[`guji_char_v0.2.schema.json`](../schemas/guji_char_v0.2.schema.json)；v0.1：[`guji_char_v0.1.schema.json`](../schemas/guji_char_v0.1.schema.json)）
 > 适用：book-text `original` 每章一份，存 main，**文本的唯一真源**。总表见 [00](./00-总览.md)。
 
 ---
@@ -91,7 +91,9 @@
 | `col` | integer ≥1 | 是 | 列号 | 见 §二 |
 | `raised` | integer ≥0 | 否，缺省 0 | 抬头格数。lines.md 里该行行首写这么多个 `^` | 现有数据 0–2 |
 | `lead_blank` | integer ≥0 | 否，缺省 0 | 行首空格数（挪抬、低格）。lines.md 里该行行首在 `^` 之后写这么多个 `.` | 现有数据 0–4 |
-| `kind` | string | 否，缺省 `body` | 列类别 | `body` 正文列／`banxin` 版心列／`blank` 空列（`cells` 为空） |
+| `kind` | string | 否，缺省 `body` | 列类别 | `body` 正文列／`banxin` 版心列／`blank` 空列（`cells` 为空）／`figure` 图列（插图块，`cells` 为空，v0.3，见 §4.7） |
+| `span` | integer ≥1 | 否，缺省 1；只许 `kind: figure` | 图列占几列（含 `col` 本列） | |
+| `fig` | string | `kind: figure` 时必填，别的列不许有 | 图 id，在同章 [fig.json](./09-guji-fig.md) 里有 | `[a-z0-9][a-z0-9-]*` |
 | `cells` | array | 是 | 本列的格，**数组顺序就是阅读顺序** | 见 4.4 |
 
 `raised`、`lead_blank` 是 lines.md 的排印记号，由 cv 给出；格位以 `a` 为准，不要从这两个数去推首格的格号（两者的对应关系不是机械的）。
@@ -107,6 +109,7 @@
 | `guess` | boolean | 否 | `true`＝残字（图上有残笔），`c` 是推测的字 | 不能和 `guess_c` 同时出现 | `true` |
 | `guess_c` | string | 否（v0.2 起） | 阙文格的推测字：图上这格没有字（磨损、缺损），据文意、他本推测原是什么字。`c` 仍写 `□`，见 §4.6 | 只许出现在 `lacuna: true` 的格上；单字，Unicode 没收的字写 IDS 或组字式；不含空白和花括号 | `"一"` |
 | `zi` | string | 否 | 组字：Unicode 没收的字的原形，写 IDS 串或描述文字；`c` 是近似字 | 如 `"⿰木孚"` | |
+| `fig` | string | 否（v0.3 起） | 图片格：这格是图形，不是字；值是同章 [fig.json](./09-guji-fig.md) 里的图 id。`c` 写 `□`，见 §4.7 | 不能和 `lacuna`、`guess`、`guess_c`、`zi` 同时出现 | `"f148-2-14"` |
 
 格对象不许有别的字段（schema `additionalProperties: false`）。
 
@@ -153,6 +156,46 @@
 
 两种写法都要升格式版本，新键对旧读取方是「静默降级为阙文」，`guess` 改类型是「静默误读为残字」，所以取新键。
 
+### 4.7 图片格与图列（`fig`、`kind: figure`，v0.3）
+
+刻本上有些东西**不是字，但要显示**（Sheldon 2026-10-23 评审通过，GUJI-737）：
+
+- **图片格**：在正文字流里占一格的图形，Unicode 没有对应字（例：殿本《總目》册 5 第 148 叶「圖作▢形」，左半圈一横连一实点）。格上加 `fig`，`c` 写 `□`、**不带** `lacuna`（这格不是看不清，而是图）：
+
+  ```jsonc
+  {"a": "148:2:14", "c": "□", "fig": "f148-2-14"}
+  ```
+
+  连占几格的图（少见）每格都写同一个 `fig`，阅读器把连续同 id 的格合成一张图。
+- **图列**（插图块）：占若干列、半页或整页的插图、图表。`columns[]` 里插一项 `kind: figure`，`col` 是图块右边第一列的列号，`span` 是占几列，`fig` 指向图，`cells` 为空；被占的列号不再另出列项。读序就是 `columns[]` 的顺序，图插在前后两列之间。整页插图页的 `columns` 只有这一项。图上的题字、图注照常作为字列录入，不塞进图里（能检索、能标点）。
+
+  ```jsonc
+  {"col": 2, "kind": "figure", "span": 4, "fig": "p149-fig1", "cells": []}
+  ```
+
+图本身（来源、说明、文件、哈希）记在 [09 guji-fig](./09-guji-fig.md)；cord 里图片格的框照旧在 `cells[]`，插图块的框在 `marks[]`（`kind: figure`，见 [01 §3.6](./01-guji-cord.md)）。
+
+| | 图片格 `fig` | 阙文 `lacuna` | 刻本上本来就刻的方框 |
+|---|---|---|---|
+| 图上 | 一个图形，没有对应字 | 原有字，看不清或缺失 | 一个 □ |
+| `c` | `□` | `□` | `□` |
+| 标记 | `fig` | `lacuna: true` | 无 |
+| 正文字流（punct `pre_char`、entity `text`、decision `current`） | `□` | `□` | `□` |
+| norm | **不许**有条目 | 可以没有 | 可以没有 |
+| 阅读器 | 显示图；悬停「图形符号：说明」；复制得 `〔图：说明〕` | 虚线框 □ | □ |
+| 全文检索 | 跳过 | 跳过 | 收 □ |
+| lines.md、rich.md | `:tu[说明]{id=…}`（见 [03 §三](./03-guji-markdown.md)） | `[[]]` | `□` |
+
+`c` 为什么写 `□`、不用 U+FFFC（对象替换符）或私用区：不认识 `fig` 的旧工具只会把这格显示成方框，不出错；punct、entity、decision 的校验字照常工作；与「未收字写近似字＋`zi`」、v0.2 `guess_c`「旧读取方静默降级」同一取法。
+
+约束（schema 强制）：
+
+- `fig` 只许在 `c` 为 `□` 的格上，与 `lacuna`、`guess`、`guess_c`、`zi` 互斥；
+- `kind: figure` 的列必有 `fig`、`cells` 为空；`fig`、`span` 只许出现在图列上；
+- id 写法 `[a-z0-9][a-z0-9-]*`；用了 `fig` 或图列的文件 `$schema` 写 v0.3。
+
+不进 schema、由 book-text F-OV-13 核的：`fig` 在同章 fig.json 里有、`kind` 对得上（格 → `inline`，列 → `block`）、框与 cord 一致，见 [09 §七](./09-guji-fig.md)。
+
 ## 五、与其他文件的关系
 
 | 文件 | 和 char 的关系 |
@@ -161,16 +204,27 @@
 | punct | 锚点是 char 的格位 key，校验字 `pre_char` 取 char 该格的 `c` |
 | entity | 锚点 `anchor.start`..`anchor.end` 是 char 的格位 key，校验字 `text` 是这段格的 `c` 依读序拼起来 |
 | norm、decision | 按格位记（norm 用 `a`，decision 用 `cell`）；校验字（norm 的 `c`、decision 的 `current`）等于 char 该格的 `c` |
+| fig | 格的 `fig`、图列的 `fig` 引用 fig.json 的图 id（[09](./09-guji-fig.md)）；char 里有图，章条目就要声明 `fig_file` |
 | lines.md、rich.md | 由 char（加 punct、entity）生成，放 derived 分支 |
 
 ## 六、校验
 
-- 过 schema（`$schema` 是 v0.1 就对 v0.1，是 v0.2 就对 v0.2）；格位 key 在全章不重复。
+- 过 schema（`$schema` 是哪一版就对哪一版）；格位 key 在全章不重复。
+- 有图片格或图列的：同章 fig.json 的引用、框、文件都对得上（F-OV-13，[09 §七](./09-guji-fig.md)）。
 - `version` 与 index.json 该章 `text_version` 相等（F-OV-01）；major ≥2 带 `review`（F-OV-03）。
 - `volume`、`book_id` 与同章 cord、punct、entity、norm 一致。
 - char → lines.md 必须能逐字节还原（`convert_original_char.py` 入库时核）。
 
-## 七、上一版 → 本版的变化（v0.1 → v0.2）
+## 七、上一版 → 本版的变化
+
+### v0.2 → v0.3（2026-10-23，GUJI-737）
+
+- 格对象新增可选键 `fig`（图片格），只许在 `c` 为 `□` 的格上，与 `lacuna`、`guess`、`guess_c`、`zi` 互斥（§4.4、§4.7）。
+- 列类别新增 `figure`（图列），配 `fig`（必填）、`span`（可选），`cells` 为空（§4.3、§4.7）。
+- 其余字段、格位 key、读序都不变；v0.1、v0.2 文件原样是合法的 v0.3 文件，不必迁移。
+- 读取方：v0.1–v0.3 三个 `$schema` 都要认；不认 `fig` 的旧工具会把图片格当刻本方框 □、把图列当一个没有字的列，不出错。
+
+### v0.1 → v0.2
 
 - 格对象新增可选键 `guess_c`（阙文格的推测字），只许和 `lacuna: true` 一起出现，与 `guess` 互斥（§4.4、§4.6）。
 - 其余字段、格位 key、读序都不变；v0.1 文件原样是合法的 v0.2 文件（只是 `$schema` 写的是 v0.1），不必迁移。

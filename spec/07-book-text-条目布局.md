@@ -17,6 +17,7 @@ book-text/
 │   │   ├── 001.md  002.md …           章文件（§四·1）
 │   │   ├── 001.json …                 整理本才有：由 md 派生的结构化条目（§四·2）
 │   │   ├── pages.tsv                  一列一行的转录本才有：页码对照（§四·3）
+│   │   ├── fig/<NNN>/<图 id>.png …     original 用到图的章才有：图片文件（09 §四）
 │   │   └── extra/                     附件（§五·3）
 │   ├── <key>/                         其他版本，结构同 default/
 │   ├── fragments/<书名>.json          辑佚（§五·1）
@@ -197,6 +198,7 @@ book-text/
 | `entity_file` | string | 否 | 实体文件名；**网站没有这个声明就不画专名** | `"002.entity.json"` |
 | `norm_file` | string | 否 | 规范层文件名 | `"002.norm.json"` |
 | `decision_file` | string | 否 | 候选层文件名 | `"002.decision.json"` |
+| `fig_file` | string | char 里有图片格或图列时必填（F-OV-13） | 图表文件名（[09](./09-guji-fig.md)） | `"005.fig.json"` |
 | `pending_file` | string | 否 | 册级待审清单文件名；**只在 `proofing: true` 时存在**（F-OV-07，见 00 §4.3） | `"002.pending.json"` |
 | `proofing` | boolean | 文本线 0.x 时必填 `true` | 校对中；网站据此挂「欢迎帮助校对」banner（F-OV-06） | `true` |
 | `text_version` | string | 是 | 文本线版本，char `version` 的镜像；粗校完 `"0.1.0"`，精校完 `"1.0.0"` | `"1.0.0"` |
@@ -358,5 +360,6 @@ book-text/
 | F-MD-* | md 记法（见 03 §二·5） | HARD／SOFT |
 | F-OV-01～04 | original 三线版本、锚点校验字、验收记录、`*_file` 声明 | HARD |
 | F-OV-05 | decision（见 08） | HARD |
+| F-OV-13 | fig 与 char、cord、norm 的一致（见 09 §七） | HARD |
 
 校验器：overview `项目进展/古籍文本/scripts/validate_text_format.py`、`scripts/validate-collated.py`；JSON 文件另过本仓 `schemas/`。
