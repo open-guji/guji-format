@@ -61,6 +61,16 @@ function splitJzChildren(children: ElementContent[]): [ElementContent[], Element
   return undefined
 }
 
+/** hast 子节点里的全部文字，给 `<img alt>` 用。 */
+function plainText(nodes: ElementContent[]): string {
+  let out = ''
+  for (const node of nodes) {
+    if (node.type === 'text') out += node.value
+    else if (node.type === 'element') out += plainText(node.children)
+  }
+  return out
+}
+
 /** 创建 remark-rehype 的 handlers。 */
 export function gujiHandlers(options: ResolvedHtmlOptions): Record<string, Handler> {
   const cls = (suffix: string): string => options.classPrefix + suffix
@@ -208,6 +218,41 @@ export function gujiHandlers(options: ResolvedHtmlOptions): Record<string, Handl
       // 见 spec/syntax.md §16。
       case 'zi':
         return element(state, node, 'span', { className: [cls('zi')] }, children)
+
+      // 图：行内是图片格（占一格），leaf 是插图块（单独一行，占几列或整页）。
+      // 拿 `id` 问 `resolveFigure` 要图片；查不到就显示 `〔图：说明〕`，见 spec/syntax.md §17。
+      case 'tu': {
+        const block = node.type !== 'textDirective'
+        const id = attributes.id ?? ''
+        const alt = plainText(children).trim()
+        const found = id ? options.resolveFigure?.(id) : undefined
+        const content: ElementContent = found
+          ? {
+              type: 'element',
+              tagName: 'img',
+              properties: {
+                className: [cls('tu-img')],
+                src: found.src,
+                alt: alt || '图',
+                width: found.width,
+                height: found.height
+              },
+              children: []
+            }
+          : {
+              type: 'element',
+              tagName: 'span',
+              properties: { className: [cls('tu-fallback')] },
+              children: [textNode(alt ? `〔图：${alt}〕` : '〔图〕')]
+            }
+        return element(
+          state,
+          node,
+          block ? 'figure' : 'span',
+          { className: block ? [cls('tu'), cls('tu-block')] : [cls('tu')], 'data-guji-id': id },
+          [content]
+        )
+      }
 
       case 'table':
         return element(state, node, 'table', { className: [cls('table')] }, children)

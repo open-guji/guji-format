@@ -1,6 +1,6 @@
 {
   "name": "@open-guji/markdown-core",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "古籍 Markdown 扩展的核心：短记号 → Directive 规范化器与 remark 插件",
   "keywords": [
     "markdown",

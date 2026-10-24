@@ -1,6 +1,6 @@
 {
   "name": "@open-guji/markdown-pdf",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "古籍 Markdown 的 PDF 生成器：可打印 HTML 与 Chromium 排版后端",
   "keywords": [
     "markdown",

@@ -1,5 +1,13 @@
 import type { GujiOptions } from '@open-guji/markdown-core'
 
+/** `tu` 指令的 `id` 解析出来的图片，见 spec/syntax.md §17。 */
+export interface FigureSource {
+  /** 图片地址，原样写进 `<img src>` */
+  src: string
+  width?: number
+  height?: number
+}
+
 /** 未注册指令的处理方式。 */
 export type UnknownDirectivePolicy = 'keep' | 'children' | 'error'
 
@@ -31,6 +39,11 @@ export interface GujiHtmlOptions extends GujiOptions {
    * @default false
    */
   allowDangerousHtml?: boolean
+  /**
+   * 把 `tu`（图）的 `id` 解析成图片，一般是到同章 fig.json 里查文件。
+   * 不给、或返回 `undefined` 时显示 `〔图：说明〕`。
+   */
+  resolveFigure?: (id: string) => FigureSource | undefined
 }
 
 export type ResolvedHtmlOptions = GujiHtmlOptions &

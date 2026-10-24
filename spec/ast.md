@@ -63,6 +63,8 @@
 | `qw` | `<span>` | `guji-qw` | 内含 `.guji-qw-box`（固定文本 `□`）与 `.guji-qw-label`（阙文说明，默认隐藏） |
 | `qz` | `<span>` | `guji-qz` | `data-guji-guess`；内含 `.guji-qz-box`（`□`）与 `.guji-qz-guess`（猜测字，默认隐藏） |
 | `zi` | `<span>` | `guji-zi` | 无，内容原样（IDS 或方位描述） |
+| `tu`（行内，图片格） | `<span>` | `guji-tu` | `data-guji-id`；内含 `<img class="guji-tu-img" alt="说明">`，查不到图时是 `.guji-tu-fallback`（`〔图：说明〕`） |
+| `tu`（leaf，插图块） | `<figure>` | `guji-tu guji-tu-block` | 同上 |
 | `table` | `<table>` | `guji-table` | 无 |
 | 表格行（合成，非指令） | `<tr>` | 无 | 由 `groupTableRows` 变换产生，见 [transform.ts](../packages/core/src/transform.ts) |
 | `th`／`td` | `<th>`／`<td>` | 无 | `colspan`／`rowspan`（对应属性 > 1 时） |
@@ -151,6 +153,7 @@ mdast → hast 阶段被丢弃（`allowDangerousHtml: false`）。
 | `qw` | `□`（不管 label 有没有内容，检索时统一算一个缺字符号） |
 | `qz` | `□`（猜测字不进入纯文本，只在校对模式的显示里出现） |
 | `zi` | 内容原样（IDS 或方位描述），检索时当作这个字的占位文本 |
+| `tu` | `□`（图片格、插图块都算一个占位符，检索跳过，同阙文） |
 | `table`／`th`／`td` | 逐格内容以空格连接，行之间换行；不体现 `colspan`/`rowspan` |
 
 保留 `bz`、`gz` 而丢弃 `sz`，得到的正是"整理者认定的**定本**"；

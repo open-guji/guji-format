@@ -1,6 +1,6 @@
 {
   "$schema": "./cases.schema.json",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "note": "guji-markdown 一致性测试语料。任何平台的实现都应通过这里的全部用例，见 ../conformance.md。",
   "cases": [
     {
@@ -731,6 +731,34 @@
       "guji": ":zi[三囗，囗中為歹]",
       "directive": ":zi[三囗，囗中為歹]",
       "html": "<p><span class=\"guji-zi\">三囗，囗中為歹</span></p>"
+    },
+    {
+      "name": "tu/inline",
+      "note": "图片格：占一格的小图形，没给 resolveFigure 时显示〔图：说明〕",
+      "guji": "圖作:tu[左半圈连一实点]{id=f148-2-14}形益恠誕矣",
+      "directive": "圖作:tu[左半圈连一实点]{id=f148-2-14}形益恠誕矣",
+      "html": "<p>圖作<span class=\"guji-tu\" data-guji-id=\"f148-2-14\"><span class=\"guji-tu-fallback\">〔图：左半圈连一实点〕</span></span>形益恠誕矣</p>"
+    },
+    {
+      "name": "tu/block",
+      "note": "插图块：单独一行的 leaf 指令，打断前后段落",
+      "guji": "上一行\n::tu[河圖]{id=p52-fig1}\n下一行",
+      "directive": "上一行\n::tu[河圖]{id=p52-fig1}\n下一行",
+      "html": "<p>上一行</p>\n<figure class=\"guji-tu guji-tu-block\" data-guji-id=\"p52-fig1\"><span class=\"guji-tu-fallback\">〔图：河圖〕</span></figure>\n<p>下一行</p>"
+    },
+    {
+      "name": "tu/alias",
+      "note": "英文别名 figure 归一到 tu",
+      "guji": ":figure[卦]{id=a1}",
+      "directive": ":figure[卦]{id=a1}",
+      "html": "<p><span class=\"guji-tu\" data-guji-id=\"a1\"><span class=\"guji-tu-fallback\">〔图：卦〕</span></span></p>"
+    },
+    {
+      "name": "tu/no-label",
+      "note": "没写说明：显示〔图〕",
+      "guji": "甲:tu{id=x}乙",
+      "directive": "甲:tu{id=x}乙",
+      "html": "<p>甲<span class=\"guji-tu\" data-guji-id=\"x\"><span class=\"guji-tu-fallback\">〔图〕</span></span>乙</p>"
     }
   ]
 }
