@@ -141,7 +141,7 @@ npmjs.com → 包页面 → Settings → Trusted Publisher → GitHub Actions，
 
 * `permissions.id-token: write` —— 缺了会以 `E404 Not Found - PUT …` 失败，
   这个 404 是在说「OIDC 没认过」，不是「包不存在」；
-* Node 22.14.0 起步，并且开头就 `npm install -g npm@latest`——
+* Node 22.14.0 起步，并且开头就 `npm install -g npm@11`（npm 12 要 node ≥22.22，装不上）——
   可信发布要求 npm ≥ 11.5.1，而 setup-node 自带的是 10.x；
 * `actions/setup-node` **不要**设 `registry-url`。设了会写出一份带
   `_authToken=${NODE_AUTH_TOKEN}` 的 `.npmrc`，令牌为空时反而把 OIDC 顶掉。
