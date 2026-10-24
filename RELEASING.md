@@ -133,7 +133,7 @@ npmjs.com → 包页面 → Settings → Trusted Publisher → GitHub Actions，
 | 字段 | 值 |
 | --- | --- |
 | Organization or user | `open-guji` |
-| Repository | `guji-markdown` |
+| Repository | `guji-format`（仓库已从 guji-markdown 改名） |
 | Workflow filename | `release.yml` ← **只填文件名，不要写路径** |
 | Environment | 留空（工作流里没有用 GitHub Environment） |
 
