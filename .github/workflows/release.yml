@@ -26,9 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 版本取 package.json 的 packageManager；再写 `version:` 会被 action 当成冲突报错（同 ci.yml）
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       # 注意：这里刻意不设 registry-url。设了会写出一份带
       # _authToken=${NODE_AUTH_TOKEN} 的 .npmrc，令牌为空时 OIDC 反而被顶掉。
