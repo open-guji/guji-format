@@ -26,9 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 版本取 package.json 的 packageManager；再写 `version:` 会被 action 当成冲突报错（同 ci.yml）
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       # 注意：这里刻意不设 registry-url。设了会写出一份带
       # _authToken=${NODE_AUTH_TOKEN} 的 .npmrc，令牌为空时 OIDC 反而被顶掉。
@@ -40,7 +39,7 @@ jobs:
       # 可信发布要求 npm >= 11.5.1，setup-node 自带的是 10.x
       - name: 升级 npm
         run: |
-          npm install -g npm@latest
+          npm install -g npm@11   # 可信发布要 ≥11.5.1；npm 12 要 node ≥22.22，与上面钉的 22.14 不合
           npm --version
 
       - run: pnpm install --frozen-lockfile
