@@ -90,7 +90,7 @@ book-text 里有三种用到它的文件：
    - 双行夹注连续的一段（先 a 后 b）：两列都有字写 `<a 列的字|b 列的字>`（保留 `|`）；只有一列有字的，按单行小注写 `:jz[字]{type=单行}`。
 5. 每格的写法：`lacuna: true` 写 `[[]]`（在单行小注里写 `□`；带 `guess_c` 的阙文也一样，推测字不进分行稿——`□{guess=X}` 已是残字 `guess: true` 的写法，分行稿转回 char 时不能有歧义，见 [02 §4.6](./02-guji-char.md)）；有 `zi` 写 `:zi[zi 的值]`（`c` 是近似字时，生成器可选在字后附 `{ids=zi 的值}`；缺省不输出，解析端暂不识别该后缀，下游需先剥掉）；`guess: true` 写 `□{guess=c}`；图片格（`fig`，char v0.3）写 `:tu[说明]{id=fig}`，说明取同章 fig.json 该图的 `alt`；其余写 `c`。
    - 图列（`kind: figure`，char v0.3）单独出一行 `::tu[说明]{id=fig}`（行首不加 `^`、`.`），位置按 `columns[]` 读序。
-   - `tu`（图）指令还没进 guji-markdown 的指令注册表（下一版 v0.3 再加渲染器），现在的渲染器按 `unknown: keep` 保留成 `<span class="guji-unknown" data-guji-directive="tu">说明</span>`，读得到说明文字；char 与 lines.md 来回转换靠 `id` 不丢信息。
+   - `tu`（图）指令 v0.3 起进了注册表（[syntax.md §17](./syntax.md#17-图-tu)）：渲染器拿 `id` 经 `resolveFigure` 选项找图，查不到显示 `〔图：说明〕`；v0.2 的渲染器按 `unknown: keep` 保留成 `<span class="guji-unknown" data-guji-directive="tu">说明</span>`，也读得到说明文字。char 与 lines.md 来回转换靠 `id` 不丢信息。
 6. 全文末尾一个换行。
 
 ```markdown

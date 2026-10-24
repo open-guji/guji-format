@@ -161,6 +161,7 @@ gujiToDirective('^惟我\n.皇上')
 - [x] 规范 v0.1：八种扩展 + 转义规则 + 一致性语料
 - [x] 规范 v0.2：夹注分行 `|`、阙文 `[[…]]`、缺字猜测 `□{guess=…}`、
       表格容器 `:::table`、组字 `:zi[…]`
+- [x] 规范 v0.3：图 `:tu[…]`（图片格）／`::tu[…]`（插图块，首个 leaf 指令）
 - [x] `@open-guji/markdown-core`：规范化器 + remark 插件
 - [x] `@open-guji/markdown-web`：HTML 渲染 + 横排 / 竖排样式
 - [ ] `@open-guji/markdown-pdf`：Paged.js + Chromium 后端（骨架已就绪）

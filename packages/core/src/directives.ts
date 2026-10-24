@@ -125,6 +125,16 @@ export const DIRECTIVES: readonly DirectiveSpec[] = [
     // 无短记号：直接写 `:zi[…]`，内容是 IDS 或部件方位描述，见 spec/syntax.md。
   },
   {
+    name: 'tu',
+    cn: '图',
+    aliases: ['figure', 'tupian'],
+    shapes: ['text', 'leaf'],
+    attributes: ['id'],
+    tagName: 'span'
+    // 无短记号：图片格写 `:tu[说明]{id=…}`，插图块单独一行写 `::tu[说明]{id=…}`
+    // （首个用 leaf 形态的指令），见 spec/syntax.md §17。
+  },
+  {
     name: 'table',
     cn: '表格',
     aliases: [],

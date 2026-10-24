@@ -206,6 +206,33 @@
   color: var(--guji-gz-color);
 }
 
+/* -------------------------------------------------------------- 图 */
+
+/*
+ * 图片格（行内 `:tu`）占一个字的位置；插图块（`::tu`）单独成块，
+ * 宽不超过容器。查不到图时显示 `〔图：说明〕`，见 spec/syntax.md §17。
+ */
+.guji-tu-img {
+  block-size: 1em;
+  inline-size: auto;
+  vertical-align: -0.12em;
+}
+
+.guji-tu-block {
+  margin: 0.8em 0;
+  text-align: center;
+}
+
+.guji-tu-block .guji-tu-img {
+  block-size: auto;
+  max-inline-size: 100%;
+  max-block-size: 80vh;
+}
+
+.guji-tu-fallback {
+  color: var(--guji-gz-color);
+}
+
 /* ------------------------------------------------------------ 表格 */
 
 .guji-table {

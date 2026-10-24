@@ -3,7 +3,7 @@
 古籍 Markdown 的**网页解析器**：源文 → HTML，附横排与竖排两套样式。
 
 建在 [`@open-guji/markdown-core`](../core) + unified（remark / rehype）之上。
-规范见仓库 [`spec/`](../../spec)，本包实现规范 **0.2.0**。
+规范见仓库 [`spec/`](../../spec)，本包实现规范 **0.3.0**。
 
 ## 安装
 
@@ -68,6 +68,8 @@ interface GujiHtmlOptions extends GujiOptions {
   unknown?: 'keep' | 'children' | 'error'  // 未注册指令怎么办，默认 'keep'
   spaceChar?: string                       // 空格实际写入的字符，默认 U+3000
   allowDangerousHtml?: boolean             // 放行原始 HTML，默认 false
+  resolveFigure?: (id: string) => { src: string; width?: number; height?: number } | undefined
+                                           // 图 tu 的 id → 图片；不给或查不到显示〔图：说明〕
 }
 ```
 
@@ -89,6 +91,7 @@ interface GujiHtmlOptions extends GujiOptions {
 | `qz` 缺字猜测 | `<span class="guji-qz" data-guji-guess="…">`，`□` 与猜测字分别包在 `.guji-qz-box`／`.guji-qz-guess` 里 |
 | `zi` 组字 | `<span class="guji-zi">`，内容原样（IDS 或方位描述） |
 | `table` 表格 | `<table class="guji-table">`，行渲染为 `<tr>`，表头行的格是 `<th>`，其余 `<td>` |
+| `tu` 图 | 行内 `<span class="guji-tu" data-guji-id="…">`，块级 `<figure class="guji-tu guji-tu-block">`；里面是 `<img class="guji-tu-img">`，查不到图时是 `<span class="guji-tu-fallback">〔图：说明〕</span>` |
 
 补字、改字用 `<ins>`，删字用 `<del>`，是因为它们在语义上正是 HTML 的插入与删除，
 屏幕阅读器与纯文本提取工具都能正确理解；补字与改字靠 class 区分，

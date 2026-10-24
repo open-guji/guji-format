@@ -26,6 +26,7 @@ export { gujiHandlers } from './handlers.js'
 export {
   DEFAULT_HTML_OPTIONS,
   resolveHtmlOptions,
+  type FigureSource,
   type GujiHtmlOptions,
   type ResolvedHtmlOptions,
   type UnknownDirectivePolicy
@@ -38,7 +39,7 @@ export {
 } from './document.js'
 
 /** 本包实现的规范版本。 */
-export const SPEC_VERSION = '0.2.0'
+export const SPEC_VERSION = '0.3.0'
 
 /** 创建一个「古籍 Markdown → HTML」的 unified processor，便于再接自己的插件。 */
 export function createGujiProcessor(options?: GujiHtmlOptions) {

@@ -11,7 +11,7 @@
 | --- | --- | --- | --- |
 | 行内 text | `:name[label]{attrs}` | 行内内容 | 夹注、补删、专名、书名 |
 | 行内标记 | `:name{attrs}` | 无 | 抬头、空格 |
-| 块级 leaf | `::name[label]{attrs}` | 单行 | （暂未使用） |
+| 块级 leaf | `::name[label]{attrs}` | 单行 | 插图块（`tu`，v0.3 起） |
 | 容器 container | `:::name{attrs}` … `:::` | 块级内容 | 多行抬头 |
 
 `label` 内容会被**递归解析**为行内 Markdown，因此指令可以嵌套。
@@ -35,6 +35,7 @@
 | `qz` | 缺字猜测 | `guess` | marker | `guess` | 无独立短记号，见 [syntax.md §14](./syntax.md#14-缺字猜测guess) |
 | `zi` | 组字 | `compose` | text | 无 | 无短记号，直接写 `:zi[…]` |
 | `table` | 表格 | 无 | container | 无 | `:::table` … `:::`，见 [syntax.md §15](./syntax.md#15-表格容器-table) |
+| `tu` | 图 | `figure`、`tupian` | text / leaf | `id` | 无短记号，见 [syntax.md §17](./syntax.md#17-图-tu) |
 | `th`\* | 表格表头格 | 无 | text | `colspan`、`rowspan` | 内部表示，见下 |
 | `td`\* | 表格数据格 | 无 | text | `colspan`、`rowspan` | 内部表示，见下 |
 
@@ -53,6 +54,7 @@
 | `part` | `sm` | 自由文本 | 无 | 篇名，如 `藝文志` |
 | `guess` | `qz` | 自由文本，不含空白与花括号 | 无 | OCR／整理者对缺字的猜测 |
 | `colspan`、`rowspan` | `th`、`td` | 正整数字符串 | `1` | 跨列／跨行格数，`:::table` 规范化产生 |
+| `id` | `tu` | `[a-z0-9][a-z0-9-]*` | 无 | 图的 id，到同章 fig.json 里查文件（[09](./09-guji-fig.md)） |
 
 指令属性值在指令语法中一律是**字符串**；`n` 需由渲染器转成整数，
 非法或缺省时按 `1` 处理，超过上限时钳制到上限。

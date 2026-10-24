@@ -54,6 +54,40 @@ describe('选项', () => {
   })
 })
 
+describe('图 tu', () => {
+  const figs: Record<string, { src: string; width?: number; height?: number }> = {
+    'f148-2-14': { src: 'fig/005/f148-2-14.png', width: 40, height: 40 },
+    'p52-fig1': { src: 'fig/005/p52-fig1.webp' }
+  }
+  const resolveFigure = (id: string) => figs[id]
+
+  it('图片格查到图：span 里放 img，alt 取说明', () => {
+    expect(gujiToHtml('圖作:tu[左半圈连一实点]{id=f148-2-14}形', { resolveFigure })).toBe(
+      '<p>圖作<span class="guji-tu" data-guji-id="f148-2-14"><img class="guji-tu-img" src="fig/005/f148-2-14.png" alt="左半圈连一实点" width="40" height="40"></span>形</p>'
+    )
+  })
+
+  it('插图块查到图：figure 里放 img，没给尺寸就不写', () => {
+    expect(gujiToHtml('::tu[河圖]{id=p52-fig1}', { resolveFigure })).toBe(
+      '<figure class="guji-tu guji-tu-block" data-guji-id="p52-fig1"><img class="guji-tu-img" src="fig/005/p52-fig1.webp" alt="河圖"></figure>'
+    )
+  })
+
+  it('id 查不到、没写 id：退回〔图：说明〕', () => {
+    expect(gujiToHtml(':tu[卦]{id=nope}', { resolveFigure })).toContain('〔图：卦〕')
+    expect(gujiToHtml(':tu[卦]', { resolveFigure })).toContain('〔图：卦〕')
+  })
+
+  it('说明里有别的指令：alt 只取文字', () => {
+    expect(gujiToHtml('::tu[九宫[图]]{id=p52-fig1}', { resolveFigure })).toContain('alt="九宫图"')
+  })
+
+  it('样式表有图的规则', () => {
+    expect(gujiCss).toContain('.guji-tu-img')
+    expect(gujiCss).toContain('.guji-tu-block')
+  })
+})
+
 describe('校勘三式互相区分', () => {
   const html = gujiToHtml('改：[甲]{{乙}}；刪：{{丙}}；補：((丁))。')
 
