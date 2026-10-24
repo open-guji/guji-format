@@ -1,0 +1,45 @@
+{
+  "$schema": "https://open-guji.org/schema/fig/v0.1.json",
+  "book_id": "96mid1ogzk",
+  "volume": 5,
+  "figures": [
+    {
+      "id": "f148-2-14",
+      "kind": "inline",
+      "page": 148,
+      "box": [
+        1648,
+        1873,
+        116,
+        44
+      ],
+      "file": "fig/005/f148-2-14.png",
+      "sha256": "9d1125d982e04b8446a1bf23f3918be171481da712e8035491727152e17cba61",
+      "mime": "image/png",
+      "width": 120,
+      "height": 48,
+      "source": "crop",
+      "by": "cv:export"
+    },
+    {
+      "id": "p149-fig1",
+      "kind": "block",
+      "page": 149,
+      "box": [
+        900,
+        330,
+        880,
+        2450
+      ],
+      "alt": "河圖",
+      "file": "fig/005/p149-fig1.svg",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "mime": "image/svg+xml",
+      "width": 880,
+      "height": 2450,
+      "source": "redraw",
+      "by": "human:示例",
+      "note": "示例数据：第 149 页的插图块是虚构的，只演示格式"
+    }
+  ]
+}

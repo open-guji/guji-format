@@ -56,6 +56,10 @@
             "type": "string",
             "pattern": "^\\d{3,}\\.decision\\.json$"
           },
+          "fig_file": {
+            "type": "string",
+            "pattern": "^\\d{3,}\\.fig\\.json$"
+          },
           "lines_file": {
             "type": "string",
             "pattern": "^\\d{3,}\\.lines\\.md$",

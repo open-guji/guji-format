@@ -1,7 +1,8 @@
-# guji-cord v0.1 规范：字框坐标（`NNN.cord.json`）
+# guji-cord v0.2 规范：字框坐标（`NNN.cord.json`）
 
-> 状态：正式（v0.1，2026-10-06 用户定；2026-10-09 补到字段级，overview#497）
-> Schema：[`schemas/guji_cord_v0.1.schema.json`](../schemas/guji_cord_v0.1.schema.json)
+> 状态：正式（v0.1，2026-10-06 用户定；2026-10-09 补到字段级，overview#497；**v0.2 2026-10-23 增 `marks` kind `figure`（插图块）**，GUJI-737 Sheldon 评审通过，见 §3.6）
+> 格式标识：`https://open-guji.org/schema/cord/v0.2.json`（v0.1 文件原样仍合法；用了 `figure` 就要写 v0.2）
+> Schema：[`schemas/guji_cord_v0.2.schema.json`](../schemas/guji_cord_v0.2.schema.json)（v0.1：[`guji_cord_v0.1.schema.json`](../schemas/guji_cord_v0.1.schema.json)）
 > 适用：book-text `original` 每章一份，存 main，网站图文对读用。总表见 [00](./00-总览.md)。
 
 ---
@@ -45,7 +46,7 @@
 
 | 字段 | 类型 | 必填 | 含义 | 取值 | 例 |
 |---|---|---|---|---|---|
-| `$schema` | string | 是 | 格式版本 | `https://open-guji.org/schema/cord/v0.1.json` | |
+| `$schema` | string | 是 | 格式版本 | `https://open-guji.org/schema/cord/v0.2.json`；没用 `figure` 的文件也可以照旧写 `…/cord/v0.1.json` | |
 | `book_id` | string | 是 | 所属条目 id（book-index 的 Book 或 Work id） | 等于条目目录名 | `"96mid1ogzk"` |
 | `volume` | integer ≥1 | 是 | 册号 | 等于 index.json 该章的 `n`，等于文件名 `NNN` 的数值 | `2` |
 | `pages` | array | 是 | 每页一项，按 `page` 升序 | 见 3.2 | |
@@ -96,17 +97,28 @@ cord 收**全部**列框，包括没有字的列；char 只收有字的列和显
 
 | 字段 | 类型 | 必填 | 含义 | 取值 |
 |---|---|---|---|---|
-| `kind` | string | 是 | 类别 | `blank` 版式留白格（挪抬、低格留出的空格）／`seal` 印章／`excluded` 切出来但不是字（墨污、切坏） |
+| `kind` | string | 是 | 类别 | `blank` 版式留白格（挪抬、低格留出的空格）／`seal` 印章／`excluded` 切出来但不是字（墨污、切坏）／`figure` 插图块（v0.2；图片格的框不在这里，照旧在 `cells[]`） |
 | `box` | box | 是 | 像素框 | |
 | `id` | string | 否 | 稳定框 id | 同 3.5 |
 | `col` | integer | 否 | 所在列 | `blank`、`excluded` 有 |
 | `slot` | integer | 否 | 列内几何格序 | 与格位 key 的「格」同一数法 |
 | `occludes` | array of string | 否 | 印章压住的格位 key | 只 `seal` 用 |
 | `note` | string | 否 | 说明 | `excluded` 现写「排除名单·非字（墨污/切坏）」 |
+| `fig` | string | `figure` 必填，别的 kind 不许有 | 图 id，等于 char 图列的 `fig`，在同章 [fig.json](./09-guji-fig.md) 里有 | `[a-z0-9][a-z0-9-]*` |
+| `span` | integer ≥1 | 否，只 `figure` 用 | 占几列，等于 char 图列的 `span` | |
+
+`figure` 另须有 `col`（等于 char 图列的 `col`）。印章（`seal`）第一版阅读器不显示（Sheldon 2026-10-23 定）。
 
 ## 四、校验
 
 - cord 每个 `cells[].a` 都在同章 char 里有；char 里的格可以暂时没有框（还没切到）。
 - 页号、列号与 char 一致；`volume`、`book_id` 与 char 一致。
 - 同一页内 `a` 不重复；`id` 在全章不重复。
+- `marks.figure` 的 `fig`、`col`、`span`、`box` 与 char 图列、fig.json 对得上（book-text F-OV-13，见 [09 §七](./09-guji-fig.md)）。
 - 改动 cord 不升任何版本线；cord 格位变了，说明 char 的格位也变了，按 [00 §三](./00-总览.md) 走 char 那一行。
+
+## 五、上一版 → 本版的变化（v0.1 → v0.2，2026-10-23，GUJI-737）
+
+- `marks[].kind` 新增 `figure`（插图块），配 `fig`（必填）、`col`（必填）、`span`（可选）；`fig`、`span` 只许 `figure` 用（schema 强制）。
+- schema 补列了 v0.1 文本里已有的 `id`、`note` 两个键（v0.1 schema 本来就不拦未列出的键，不算改约束）。
+- 其余不变；v0.1 文件原样是合法的 v0.2 文件。不认 `figure` 的旧工具把它当一个不认识的非字元素，不出错。
