@@ -189,9 +189,10 @@
                   "matched",
                   "ambiguous",
                   "new_candidate",
-                  "external"
+                  "external",
+                  "matched_multi"
                 ],
-                "description": "matched 唯一命中／ambiguous 多个同名待消歧／new_candidate 未建档／external 外部链接（保留）"
+                "description": "matched 唯一命中／ambiguous 多个同名待消歧／new_candidate 未建档／external 外部链接（保留）／matched_multi 一个 span 对应多个条目（合称，spec/05 §四·4）"
               },
               "entity_id": {
                 "type": "string",
@@ -243,6 +244,42 @@
               "entity_type": {
                 "type": "string",
                 "description": "v0.1 遗留，新数据不写"
+              },
+              "targets": {
+                "type": "array",
+                "minItems": 2,
+                "description": "只 matched_multi 用；按文中先后排",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "entity_id",
+                    "canonical_name",
+                    "href"
+                  ],
+                  "properties": {
+                    "entity_id": {
+                      "type": "string"
+                    },
+                    "canonical_name": {
+                      "type": "string"
+                    },
+                    "href": {
+                      "type": "string"
+                    },
+                    "part": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "对应 span 文本里的哪一段字（可选）"
+                    },
+                    "level": {
+                      "type": "string",
+                      "enum": [
+                        "concept",
+                        "concrete"
+                      ]
+                    }
+                  }
+                }
               }
             },
             "allOf": [
@@ -349,6 +386,40 @@
                   "not": {
                     "required": [
                       "entity_id"
+                    ]
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "matched_multi"
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "canonical_name",
+                    "targets"
+                  ],
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "entity_id"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "href"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "candidates"
+                        ]
+                      }
                     ]
                   }
                 }
