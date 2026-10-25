@@ -112,11 +112,12 @@
 
 ## 四、`target`：链到 book-index
 
-### 4.1 四种状态
+### 4.1 五种状态
 
 | `status` | 含义 | 必带 | 不得带 | 网站渲染 |
 |---|---|---|---|---|
 | `matched` | 唯一命中一个 book-index 条目 | `entity_id`、`canonical_name`、`href` | `candidates` | 画线＋链接＋悬停摘要卡 |
+| `matched_multi` | 一个 span 是合称，对应两个以上条目（正嘉＝正德＋嘉靖，二程＝程顥＋程頤） | `canonical_name`、`targets[]`（≥2 项） | `entity_id`、`href`、`candidates` | 画线＋一张悬停卡，卡内逐项列出（§四·4） |
 | `ambiguous` | 命中多个同名条目，尚未消歧 | `canonical_name`、`candidates[]`（≥2 项） | `entity_id`、`href` | 只画线 |
 | `new_candidate` | 是专名，但 book-index 里还没建档 | `canonical_name` | `entity_id`、`href`、`candidates` | 只画线 |
 | `external` | 链到外部（CBDB、维基等），保留 | `href`（外部 URL） | `entity_id` | 只画线 |
@@ -143,6 +144,23 @@ T 匹配流程内部用的 `coarse`、`reclass`、`route_to` 等字段**不进�
 - 草稿 id 升格后，读取方按 book-index 的 `promotions.json` 跳转到新 id（网站的 `/item/<id>` 已 308 跳转，悬停卡也跟随）；**读取方不得写死旧 id**。
 - 一批草稿 id 升格后，集中把文件里的旧 id 回挂成新 id，算实体线 **minor**。
 - 校验器只**报告**「指向已升格旧 id」的条数，不判错。
+
+### 4.4 多链接 `matched_multi`
+
+合称（正嘉、漢唐、魏晉、六朝、二程）一个 span 不拆，`target` 写：
+
+```json
+"target": {"status": "matched_multi", "canonical_name": "正德＋嘉靖",
+  "targets": [
+    {"part": "正", "entity_id": "hixi1ubq0obp", "canonical_name": "正德", "href": "book-index://Entity/hixi1ubq0obp"},
+    {"part": "嘉", "entity_id": "hixi1ubq0obq", "canonical_name": "嘉靖", "href": "book-index://Entity/hixi1ubq0obq"}]}
+```
+
+- `targets[]` 每项 `entity_id`、`canonical_name`、`href` 必带（同 `matched`，href 末段等于 `entity_id`），按文中先后排；可选 `part`（对应 span 文本里的哪一段字）、`level`。顶层 `canonical_name` 为各项规范名用「＋」连接，只作显示。
+- 与 `group`／`decomposition` 的分工：上下级拆分（官署＋官职、州＋县）用 §五的相邻 span；并列的独立条目（合称）用 `matched_multi`；同一个 span 不并存两套。
+- 不认识 `matched_multi` 的旧读取方当作未链接（只画线），不会错链到第一项。
+- `part` 只是标注信息：每项都写时，按序拼起来必须等于 span 文本（正＋嘉＝正嘉）；有的写有的不写（或二程、六朝按字拆不开）时都合法。
+- 渲染：rich 里整个 span 写成一个不带链接的专名（[03 §四·6](./03-guji-markdown.md)）；网站读 entity 层，整个 span 出**一张**悬停卡，卡内逐项列出各条目摘要，不切成多个链接。
 
 ## 五、复合专名：相邻 span ＋ `group`
 
@@ -182,7 +200,7 @@ T 匹配流程内部用的 `coarse`、`reclass`、`route_to` 等字段**不进�
 
 - 网站按 index.json 章条目的 `entity_file` 取本文件；**没有 `entity_file` 声明＝不画**。
 - 必须有逐字可解的 `anchor`；`span` 只是缓存。
-- matched 有链接和悬停卡；ambiguous、new_candidate、external 只画线。
+- matched 有链接和悬停卡；matched_multi 整个 span 一张悬停卡、卡内逐项列出（§四·4）；ambiguous、new_candidate、external 只画线。
 
 ## 八、版本号（实体线）
 
@@ -206,7 +224,7 @@ T 匹配流程内部用的 `coarse`、`reclass`、`route_to` 等字段**不进�
 - 过 schema；`volume`、`book_id` 与同章 char 一致；`id` 唯一。
 - 每条 `anchor.start`、`anchor.end` 在 char 里存在，`text` 等于其间各格的字（F-OV-02 在 `text_version` 落后时逐条核）。
 - `span`（有的话）与 `anchor` 换算一致。
-- 各 `status` 的必带、不得带字段（§四·1）；matched 的 `href` 末段等于 `entity_id`。
+- 各 `status` 的必带、不得带字段（§四·1）；matched 的 `href` 末段等于 `entity_id`；matched_multi 的 `targets` ≥2 项、每项 `href` 末段等于 `entity_id`、顶层不带 `entity_id`／`href`；每项都写 `part` 时按序拼起来等于 span 文本，只写了部分项的 `part` 须是 span 文本里的片段。
 - span 不重叠；`group` 满足 §五 规则。
 - 每个 `work` 实体都有同起止的一对《》。
 - `version` 与 index.json `entity_version` 相等，`text_version` 不超前，major 不高于文本线（F-OV-01、F-OV-03）。
@@ -216,7 +234,7 @@ T 匹配流程内部用的 `coarse`、`reclass`、`route_to` 等字段**不进�
 | 项 | v0.1 | v0.2 |
 |---|---|---|
 | `type` | work／people／place／office／dynasty／other | 加 `reign` |
-| `target.status` | matched／new_candidate／external | 加 `ambiguous`（带 `candidates`） |
+| `target.status` | matched／new_candidate／external | 加 `ambiguous`（带 `candidates`）；2026-10 再加 `matched_multi`（带 `targets[]`，向后兼容的新增值，见 §四·4） |
 | `target` 字段 | `entity_type`、`entity_id`、`canonical_name`、`href`、`confidence` | 加 `candidates`、`level`、`note`；`entity_type` 废弃 |
 | `group` | 无 | 新增（复合专名） |
 | `id`、`target`、`volume` | 选填 | 必填 |
