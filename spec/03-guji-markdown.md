@@ -2,6 +2,7 @@
 
 > 状态：正式（v0.2；2026-10-09 按 book-text 实际补写 lines.md／rich.md 的生成规则，overview#497）
 > 适用：book-text 的章文件 `NNN.md`（转录本、整理本）；`original` 生成的 `NNN.lines.md`、`NNN.rich.md`；网页渲染、排版引擎。
+> v0.4（2026-11-02）：文件开头可写 YAML front matter（§2.6）。
 > 记法的逐条语法见 [syntax.md](./syntax.md)；中间表示见 [directives.md](./directives.md)；HTML 输出见 [ast.md](./ast.md)。总表见 [00](./00-总览.md)。
 
 ---
@@ -24,6 +25,7 @@
 | 表格 | `:::table` 容器 | [syntax §15](./syntax.md) |
 | 组字 | `:zi[IDS 或描述]` | [syntax §16](./syntax.md) |
 | 页码 | 独占一行的 `<!-- pN -->`（HTML 注释，渲染时不显示） | 本篇 §二·3 |
+| 元数据 | 文件开头的 YAML front matter（`---` … `---`，渲染时不显示；v0.4 起） | [syntax §0.1](./syntax.md#01-不生效区inert-regions)、本篇 §2.6 |
 
 book-text 里有三种用到它的文件：
 
@@ -72,6 +74,25 @@ book-text 里有三种用到它的文件：
 | F-MD-07 | 同一份 md 里标题层级不跳级 |
 | F-MD-09 | `:::table` 容器块合法 |
 | — | 组字式（`[口*恒]`、`{宀兒}` 等 CBETA／维基组字式）一律保留原样，不批量换成 `□` |
+
+### 2.6 元数据（YAML front matter，v0.4 起）
+
+- 文件开头可以有一段 YAML front matter：第一行 `---`，然后若干 `键: 值`，再一行 `---` 收尾。内容按字面处理（不识别夹注、专名等记号），渲染时不输出。
+- 用途：网站下载的文件（分行本、标点本、专名本）在开头写书名、册、格式、字形、各层版本号、许可等，读者反馈时据此对上版本。
+- book-text 存的真源 `NNN.md` 暂不写 front matter（元数据在 `index.json`、`manifest.json`）；整理者的话仍按 §2.4 写注释。
+
+```markdown
+---
+title: 欽定四庫全書總目
+volume: 40
+format: 專名本
+text_version: 1.2.0
+punct_version: 1.1.2
+entity_version: 1.5.4
+license: CC0 1.0
+---
+### 《[爾雅註疏](book-index://Work/d59f2ht89lhc)》十卷<内府藏本>
+```
 
 ---
 

@@ -663,6 +663,18 @@ function transformTableRow(line: string, lineNo: number, o: ResolvedSyntaxOption
   return out
 }
 
+const FM_FENCE_RE = /^---[ \t]*\r?$/
+
+/**
+ * 文件开头 YAML front matter 的结束行下标：第 1 行是 `---`，其后第一个 `---` 行收尾；
+ * 没有 front matter（或没有收尾行）返回 -1。口径同 micromark-extension-frontmatter。
+ */
+export function frontmatterEnd(lines: readonly string[]): number {
+  if (lines.length < 2 || !FM_FENCE_RE.test(lines[0])) return -1
+  for (let li = 1; li < lines.length; li++) if (FM_FENCE_RE.test(lines[li])) return li
+  return -1
+}
+
 /**
  * 古籍 Markdown → Directive Markdown。
  *
@@ -675,12 +687,16 @@ export function gujiToDirective(source: string, options?: GujiSyntaxOptions): st
   const lines = source.split('\n')
   const out: string[] = new Array<string>(lines.length)
 
+  // 文件开头的 YAML front matter（元数据）整段按字面输出，见 spec/syntax.md §0.1 第 0 条
+  const fmEnd = frontmatterEnd(lines)
+  for (let li = 0; li <= fmEnd; li++) out[li] = lines[li]
+
   let fence: Fence | undefined
   let inIndentedCode = false
   let inTable = false
   let prevBlank = true
 
-  for (let li = 0; li < lines.length; li++) {
+  for (let li = fmEnd + 1; li < lines.length; li++) {
     const line = lines[li]
 
     // 0. :::table 容器块：开闭行原样输出，块内的每一行都是数据行，

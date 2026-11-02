@@ -71,3 +71,21 @@ describe('formatDirective', () => {
     expect(formatDirective(tree).trim()).toBe('子曰:jz[孔子也]。')
   })
 })
+
+describe('YAML front matter（v0.4）', () => {
+  const src = '---\ntitle: 欽定四庫全書總目\nnote: <内府藏本> /郭璞/\n---\n子曰<孔子也>。'
+
+  it('解析成 yaml 节点，内容按字面保留', () => {
+    const tree = parseGuji(src)
+    expect(tree.children[0]).toMatchObject({
+      type: 'yaml',
+      value: 'title: 欽定四庫全書總目\nnote: <内府藏本> /郭璞/'
+    })
+    expect(tree.children[1].type).toBe('paragraph')
+  })
+
+  it('formatDirective 原样写回 front matter', () => {
+    const out = formatDirective(parseGuji(src))
+    expect(out.startsWith('---\ntitle: 欽定四庫全書總目\nnote: <内府藏本> /郭璞/\n---\n')).toBe(true)
+  })
+})

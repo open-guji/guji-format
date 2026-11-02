@@ -46,6 +46,7 @@
 | `inert/` | 代码块、代码片段、链接目标、HTML、转义 |
 | `nest/` | 嵌套与优先级 |
 | `mixed/` | 综合段落 |
+| `fm/` | 文件开头的 YAML front matter（v0.4） |
 
 ## 添加用例
 

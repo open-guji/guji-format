@@ -1,6 +1,6 @@
 {
   "$schema": "./cases.schema.json",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "note": "guji-markdown 一致性测试语料。任何平台的实现都应通过这里的全部用例，见 ../conformance.md。",
   "cases": [
     {
@@ -759,6 +759,25 @@
       "guji": "甲:tu{id=x}乙",
       "directive": "甲:tu{id=x}乙",
       "html": "<p>甲<span class=\"guji-tu\" data-guji-id=\"x\"><span class=\"guji-tu-fallback\">〔图〕</span></span>乙</p>"
+    },
+    {
+      "name": "fm/basic",
+      "note": "文件开头的 YAML front matter（元数据）整段按字面处理，不渲染",
+      "guji": "---\ntitle: 欽定四庫全書總目\nnote: <内府藏本> /郭璞/ 《爾雅》\n---\n子曰<孔子也>",
+      "directive": "---\ntitle: 欽定四庫全書總目\nnote: <内府藏本> /郭璞/ 《爾雅》\n---\n子曰:jz[孔子也]",
+      "html": "<p>子曰<span class=\"guji-jz\">孔子也</span></p>"
+    },
+    {
+      "name": "fm/not-at-start",
+      "note": "不在文件第一行的 --- 不是 front matter，照常解析",
+      "guji": "甲\n\n---\nx<乙>\n---",
+      "directive": "甲\n\n---\nx:jz[乙]\n---"
+    },
+    {
+      "name": "fm/unclosed",
+      "note": "没有收尾的 --- 行，不是 front matter",
+      "guji": "---\n子曰<孔子也>",
+      "directive": "---\n子曰:jz[孔子也]"
     }
   ]
 }
