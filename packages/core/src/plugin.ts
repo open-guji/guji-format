@@ -6,14 +6,16 @@
  * ```
  *
  * 插件做三件事：
- * 1. 注册 directive 的 micromark / mdast 扩展（不必再单独 use remark-directive）；
+ * 1. 注册 directive 与 YAML front matter 的 micromark / mdast 扩展（不必再单独 use remark-directive、remark-frontmatter）；
  * 2. 包裹 parser，在解析前把短记号规范化为指令；
  * 3. 解析后归一指令名、并做抬头的行作用域归并。
  */
 
 import type { Root } from 'mdast'
 import { directiveFromMarkdown, directiveToMarkdown } from 'mdast-util-directive'
+import { frontmatterFromMarkdown, frontmatterToMarkdown } from 'mdast-util-frontmatter'
 import { directive } from 'micromark-extension-directive'
+import { frontmatter } from 'micromark-extension-frontmatter'
 import type { Plugin, Processor } from 'unified'
 import { gujiToDirective } from './normalize.js'
 import { resolveOptions, type GujiOptions } from './options.js'
@@ -33,9 +35,9 @@ const remarkGuji: Plugin<[GujiOptions?], Root> = function remarkGuji(options) {
     const fromMarkdownExtensions =
       data.fromMarkdownExtensions ?? (data.fromMarkdownExtensions = [])
     const toMarkdownExtensions = data.toMarkdownExtensions ?? (data.toMarkdownExtensions = [])
-    micromarkExtensions.push(directive())
-    fromMarkdownExtensions.push(directiveFromMarkdown())
-    toMarkdownExtensions.push(directiveToMarkdown())
+    micromarkExtensions.push(directive(), frontmatter('yaml'))
+    fromMarkdownExtensions.push(directiveFromMarkdown(), frontmatterFromMarkdown('yaml'))
+    toMarkdownExtensions.push(directiveToMarkdown(), frontmatterToMarkdown('yaml'))
   }
 
   if (settings.shorthand) {
