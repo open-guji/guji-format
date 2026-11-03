@@ -1,8 +1,8 @@
-# guji-char v0.2 规范：定字文本（`NNN.char.json`）
+# guji-char v0.4 规范：定字文本（`NNN.char.json`）
 
-> 状态：正式（v0.1，2026-10-06 用户定；2026-10-09 补到字段级，overview#497；**v0.2 2026-10-20 增格字段 `guess_c`：阙文格带推测字**，GUJI-717 用户定，见 §4.6；**v0.3 2026-10-23 增图片格 `fig` 与图列 `kind: figure`**，GUJI-737 Sheldon 评审通过，见 §4.7）
-> 格式标识：`https://open-guji.org/schema/char/v0.3.json`（v0.1、v0.2 的文件原样仍合法，不必迁移；用了 `guess_c` 至少写 v0.2，用了 `fig` 或图列就要写 v0.3）
-> Schema：[`schemas/guji_char_v0.3.schema.json`](../schemas/guji_char_v0.3.schema.json)（v0.2：[`guji_char_v0.2.schema.json`](../schemas/guji_char_v0.2.schema.json)；v0.1：[`guji_char_v0.1.schema.json`](../schemas/guji_char_v0.1.schema.json)）
+> 状态：正式（v0.1，2026-10-06 用户定；2026-10-09 补到字段级，overview#497；**v0.2 2026-10-20 增格字段 `guess_c`：阙文格带推测字**，GUJI-717 用户定，见 §4.6；**v0.3 2026-10-23 增图片格 `fig` 与图列 `kind: figure`**，GUJI-737 Sheldon 评审通过，见 §4.7；**v0.4 2026-11-03 增格字段 `pending_reason`：待审格记为什么待审，`lacuna` 只留给审定的阙文**，Sheldon 定，见 §4.8）
+> 格式标识：`https://open-guji.org/schema/char/v0.4.json`（v0.1–v0.3 的文件原样仍合法，不必迁移；用了 `guess_c` 至少写 v0.2，用了 `fig` 或图列至少写 v0.3，用了 `pending_reason` 就要写 v0.4）
+> Schema：[`schemas/guji_char_v0.4.schema.json`](../schemas/guji_char_v0.4.schema.json)（v0.3：[`guji_char_v0.3.schema.json`](../schemas/guji_char_v0.3.schema.json)；v0.2：[`guji_char_v0.2.schema.json`](../schemas/guji_char_v0.2.schema.json)；v0.1：[`guji_char_v0.1.schema.json`](../schemas/guji_char_v0.1.schema.json)）
 > 适用：book-text `original` 每章一份，存 main，**文本的唯一真源**。总表见 [00](./00-总览.md)。
 
 ---
@@ -105,10 +105,11 @@
 | `a` | string | 是 | 格位 key | 见 §二 | `"3:4:6a"` |
 | `c` | string | 是 | 定下的字，一个字符（或一个组字的近似字） | Unicode 已收的字。Unicode 没收的字放近似的已收字，另在 `zi` 记原形；阙文写 `□`（U+25A1） | `"欽"` |
 | `lane` | string | 否 | 所在分道 | `main` 正文（缺省）／`solo` 单行小注／`jz_r` 双行夹注右列／`jz_l` 双行夹注左列。`jz_r`、`jz_l` 可由 `a` 的 `a`／`b` 后缀推出，写不写都行；**`solo` 推不出，必须写** | `"solo"` |
-| `lacuna` | boolean | 否 | `true`＝阙文（这格原有字，看不清或缺失），`c` 写 `□` | 不带这个标记的 `□` 是刻本上本来就刻着的方框 | `true` |
+| `lacuna` | boolean | 否 | `true`＝阙文（这格原有字，看不清或缺失），**已审定**；`c` 写 `□` | 不带这个标记、也不带 `pending_reason` 的 `□` 是刻本上本来就刻着的方框；还没审的格不用它，用 `pending_reason`（v0.4 起，§4.8） | `true` |
 | `guess` | boolean | 否 | `true`＝残字（图上有残笔），`c` 是推测的字 | 不能和 `guess_c` 同时出现 | `true` |
 | `guess_c` | string | 否（v0.2 起） | 阙文格的推测字：图上这格没有字（磨损、缺损），据文意、他本推测原是什么字。`c` 仍写 `□`，见 §4.6 | 只许出现在 `lacuna: true` 的格上；单字，Unicode 没收的字写 IDS 或组字式；不含空白和花括号 | `"一"` |
 | `zi` | string | 否 | 组字：Unicode 没收的字的原形，写 IDS 串或描述文字；`c` 是近似字 | 如 `"⿰木孚"` | |
+| `pending_reason` | string | 否（v0.4 起） | 待审格：这格还没人审定，值是**为什么待审**；`c` 是机器暂定的字，机器没给字就写 `□`，见 §4.8 | open-guji-cv `PendingReason` 的英文名（`^[a-z][a-z0-9_]*$`），推不出写 `unknown`；与 `lacuna`、`guess_c`、`fig` 互斥 | `"hard_pair"` |
 | `fig` | string | 否（v0.3 起） | 图片格：这格是图形，不是字；值是同章 [fig.json](./09-guji-fig.md) 里的图 id。`c` 写 `□`，见 §4.7 | 不能和 `lacuna`、`guess`、`guess_c`、`zi` 同时出现 | `"f148-2-14"` |
 
 格对象不许有别的字段（schema `additionalProperties: false`）。
@@ -196,6 +197,30 @@
 
 不进 schema、由 book-text F-OV-13 核的：`fig` 在同章 fig.json 里有、`kind` 对得上（格 → `inline`，列 → `block`）、框与 cord 一致，见 [09 §七](./09-guji-fig.md)。
 
+### 4.8 待审格（`pending_reason`，v0.4）
+
+**`lacuna` 只表示审定的阙文**（Sheldon 2026-11-03 定）。v0.3 以前，入库时机器没定下来、还在待审单上的格也写成 `□` ＋ `lacuna: true`，和审过、确认看不清的阙文分不开；机器给了字、但仍在待审的格，文本里也看不出来。v0.4 起：
+
+| 格 | `c` | 标记 |
+|---|---|---|
+| 在待审单上、机器没给字 | `□` | `pending_reason`，**不带** `lacuna` |
+| 在待审单上、机器给了字 | 机器暂定的字 | `pending_reason` |
+| 审过、定为阙字 | `□` | `lacuna: true`（可带 `guess_c`） |
+| 刻本上本来就刻着的方框 | `□` | 无 |
+
+```jsonc
+{"a": "3:4:2", "c": "□", "pending_reason": "ref_lacuna"}
+{"a": "3:4:3", "c": "已", "pending_reason": "hard_pair"}
+```
+
+- 取值是 open-guji-cv `PendingReason` 的英文名（码表真源 `open_guji_cv/review/pending_reasons.yaml`），与该格在待审单上的 `pending_reason` 相同；推不出写 `unknown`。本规范只约束写法，不枚举取值：码表会加值，取值是否在码表里由 book-text 校验器核。
+- 格审完，下一次入库就去掉 `pending_reason`，换成审定的字，或 `lacuna: true`。
+- 正文字流（punct `pre_char`、entity `text`、norm `c`、decision `current`）照旧取 `c`。
+- lines.md、rich.md：机器没给字的待审格和阙文一样写 `[[]]`（单行小注里 `□`），给了字的照写 `c`；`pending_reason` 不进分行稿，分行稿转回 char 时还原不出它（char 是真源，分行稿只由 char 生成）。
+- 阅读器建议：机器没给字的待审格和阙文一样画虚线框 `□`，给了字的照常显示；都可以加悬停提示「待审：原因名」（原因名取码表的 `label`）。
+
+约束（schema 强制）：`pending_reason` 匹配 `^[a-z][a-z0-9_]*$`；不能和 `lacuna`、`guess_c`、`fig` 同时出现；用了它的文件 `$schema` 写 v0.4。
+
 ## 五、与其他文件的关系
 
 | 文件 | 和 char 的关系 |
@@ -216,6 +241,13 @@
 - char → lines.md 必须能逐字节还原（`convert_original_char.py` 入库时核）。
 
 ## 七、上一版 → 本版的变化
+
+### v0.3 → v0.4（2026-11-03，Sheldon 定）
+
+- 格对象新增可选键 `pending_reason`（待审格的待审原因），与 `lacuna`、`guess_c`、`fig` 互斥（§4.4、§4.8）。
+- `lacuna: true` 的含义收窄为「审定的阙文」；待审的 `□` 改带 `pending_reason`。
+- 其余字段、格位 key、读序都不变；v0.1–v0.3 文件原样是合法的 v0.4 文件，不必迁移。book-text 现有各册按待审单改写（待审格加 `pending_reason`、去 `lacuna`），分行稿逐字节不变。
+- 读取方：v0.1–v0.4 四个 `$schema` 都要认；不认 `pending_reason` 的旧工具会把机器没给字的待审格当刻本方框 □、把给了字的待审格当定字，不出错。
 
 ### v0.2 → v0.3（2026-10-23，GUJI-737）
 
