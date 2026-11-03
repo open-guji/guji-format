@@ -1,0 +1,25 @@
+{
+  "$schema": "https://open-guji.org/schema/char/v0.4.json",
+  "version": "0.5.4",
+  "book_id": "96mid1ogzk",
+  "volume": 20,
+  "pages": [
+    {
+      "page": 3,
+      "columns": [
+        {
+          "col": 4,
+          "cells": [
+            {
+              "a": "3:4:2",
+              "c": "□",
+              "lacuna": true,
+              "guess_c": "一",
+              "pending_reason": "unknown"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

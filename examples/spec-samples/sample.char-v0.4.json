@@ -1,0 +1,43 @@
+{
+  "$schema": "https://open-guji.org/schema/char/v0.4.json",
+  "version": "0.5.4",
+  "book_id": "96mid1ogzk",
+  "volume": 20,
+  "pages": [
+    {
+      "page": 3,
+      "columns": [
+        {
+          "col": 4,
+          "cells": [
+            {
+              "a": "3:4:1",
+              "c": "欽"
+            },
+            {
+              "a": "3:4:2",
+              "c": "□",
+              "pending_reason": "ref_lacuna"
+            },
+            {
+              "a": "3:4:3",
+              "c": "已",
+              "pending_reason": "hard_pair"
+            },
+            {
+              "a": "3:4:4",
+              "c": "□",
+              "lacuna": true,
+              "guess_c": "一"
+            },
+            {
+              "a": "3:4:5",
+              "c": "定",
+              "pending_reason": "unknown"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
