@@ -25,14 +25,13 @@
   "book_id": "96mid1ogzk",
   "volume": 2,
   "metadata": {"title": "欽定四庫全書總目·第2册", "creator": "glm:glm-4.5-flash", "base_edition": "original"},
-  "stats": {"total_entities": 1368, "matched": 567, "ambiguous": 14, "new_candidates": 787},
   "entities": [
     {
       "id": "e00002", "type": "work", "text": "四書通證",
       "anchor": {"start": "4:5:14b", "end": "4:5:17b"},
       "span": {"start_offset": 252, "end_offset": 256},
       "target": {"status": "matched", "entity_id": "d59f2gpsxjia", "canonical_name": "四書通證",
-                 "href": "book-index://Work/d59f2gpsxjia", "note": "按撰人「張存中」核对"},
+                 "note": "按撰人「張存中」核对"},
       "source": "glm:glm-4.5-flash"
     },
     {
@@ -57,7 +56,7 @@
       "anchor": {"start": "9:9:13a", "end": "9:9:5b"},
       "span": {"start_offset": 1124, "end_offset": 1126},
       "target": {"status": "matched", "entity_id": "1jb8awb9axxxc", "canonical_name": "評事",
-                 "href": "book-index://Entity/1jb8awb9axxxc", "level": "concept", "note": "未定朝代，挂概念条"},
+                 "level": "concept", "note": "未定朝代，挂概念条"},
       "source": "glm:glm-4.5-flash",
       "group": {"id": "ge00035", "text": "大理寺評事", "kind": "compound"}
     }
@@ -78,7 +77,7 @@
 | `book_id` | string | 是 | 所属条目 id | 与同章 char 一致 | |
 | `volume` | integer ≥1 | 是 | 册号 | 与同章 char 一致 | `2` |
 | `metadata` | object | 否 | 说明 | `title`、`creator`、`created_at`（ISO 8601）、`base_edition`（固定 `original`） | |
-| `stats` | object | 否 | 统计，**只供人看**，不作校验依据 | 键名不限，值是整数；常用 `total_entities`、`matched`、`ambiguous`、`new_candidates`，以及各类型计数（`works`、`people`、`places`、`offices`、`dynasties`、`reigns`） | |
+| `stats` | object | 否 | **已停用（2026-11）**：统计不写进文件，要看跑脚本；旧文件里有也不作校验依据 | | |
 | `entities` | array | 是 | 实体条目 | 见 3.2；数组顺序不限 | |
 
 ### 3.2 实体条目（`entities[]`）
@@ -106,7 +105,7 @@
 | `reign` | 年号 | `Entity`（reign） | 专名直线 | 乾道、建隆 |
 | `other` | 其他专名（族名、国名等），兜底 | `Entity` | 专名直线 | 匈奴 |
 
-- `book` **不作** `type` 值：指向 Book 条目的书名仍写 `work`，靠 `href` 的 `Book/` 前缀区分。
+- `book` **不作** `type` 值：指向 Book 条目的书名仍写 `work`，靠 `entity_id` 的类型位（Book／Work／Entity）区分。
 - 白名单之外的值不许写。新增类型先改本规范和 schema，并请网站确认渲染。
 - 线型由 `type` 决定，数据里不写线型。
 
@@ -116,7 +115,7 @@
 
 | `status` | 含义 | 必带 | 不得带 | 网站渲染 |
 |---|---|---|---|---|
-| `matched` | 唯一命中一个 book-index 条目 | `entity_id`、`canonical_name`、`href` | `candidates` | 画线＋链接＋悬停摘要卡 |
+| `matched` | 唯一命中一个 book-index 条目 | `entity_id`、`canonical_name` | `candidates`、`href` | 画线＋链接＋悬停摘要卡 |
 | `matched_multi` | 一个 span 是合称，对应两个以上条目（正嘉＝正德＋嘉靖，二程＝程顥＋程頤） | `canonical_name`、`targets[]`（≥2 项） | `entity_id`、`href`、`candidates` | 画线＋一张悬停卡，卡内逐项列出（§四·4） |
 | `ambiguous` | 命中多个同名条目，尚未消歧 | `canonical_name`、`candidates[]`（≥2 项） | `entity_id`、`href` | 只画线 |
 | `new_candidate` | 是专名，但 book-index 里还没建档 | `canonical_name` | `entity_id`、`href`、`candidates` | 只画线 |
@@ -129,7 +128,7 @@
 | `status` | string | 状态 | 上表四值之一 | `"matched"` |
 | `entity_id` | string | book-index 条目 id | 见 §四·3 | `"d59f2gpsxjia"` |
 | `canonical_name` | string | 规范名（book-index 条目的主名；未建档的写拟用名） | | `"四書通證"` |
-| `href` | string | 链接 | matched：`book-index://<Work\|Book\|Entity>/<entity_id>`，末段必须等于 `entity_id`；external：外部 URL | `"book-index://Entity/1jb8awb9axxxc"` |
+| `href` | string | 外部链接（只 `external` 用） | 外部 URL。站内条目**不写** `href`（2026-11 起）：读取方由 `entity_id` 拼 `book-index://<Work\|Book\|Collection\|Entity>/<entity_id>`，类型段由 id 的类型位解出 | `"https://cbdb.fas.harvard.edu/…"` |
 | `candidates` | array | 候选（只 `ambiguous` 用） | 每项 `{"entity_id", "canonical_name"}`，按可能性从高到低 | |
 | `level` | string | 挂的是概念条还是具体条（主要用于官职：定不了朝代时挂概念条） | `concept`／`concrete`；不写＝具体条 | `"concept"` |
 | `note` | string | 一句话依据或说明（匹配依据、为何不挂等） | | `"未定朝代，挂概念条"` |
@@ -140,7 +139,7 @@ T 匹配流程内部用的 `coarse`、`reclass`、`route_to` 等字段**不进�
 
 ### 4.3 `entity_id` 用哪个 id
 
-- **写 matched 时用正式库（`book-index`）的 id。**正式库还没有、只在草稿库（`book-index-draft`）有的，可以写草稿 id，`href` 同步写草稿 id。
+- **写 matched 时用正式库（`book-index`）的 id。**正式库还没有、只在草稿库（`book-index-draft`）有的，可以写草稿 id。
 - 草稿 id 升格后，读取方按 book-index 的 `promotions.json` 跳转到新 id（网站的 `/item/<id>` 已 308 跳转，悬停卡也跟随）；**读取方不得写死旧 id**。
 - 一批草稿 id 升格后，集中把文件里的旧 id 回挂成新 id，算实体线 **minor**。
 - 校验器只**报告**「指向已升格旧 id」的条数，不判错。
@@ -152,11 +151,11 @@ T 匹配流程内部用的 `coarse`、`reclass`、`route_to` 等字段**不进�
 ```json
 "target": {"status": "matched_multi", "canonical_name": "正德＋嘉靖",
   "targets": [
-    {"part": "正", "entity_id": "hixi1ubq0obp", "canonical_name": "正德", "href": "book-index://Entity/hixi1ubq0obp"},
-    {"part": "嘉", "entity_id": "hixi1ubq0obq", "canonical_name": "嘉靖", "href": "book-index://Entity/hixi1ubq0obq"}]}
+    {"part": "正", "entity_id": "hixi1ubq0obp", "canonical_name": "正德"},
+    {"part": "嘉", "entity_id": "hixi1ubq0obq", "canonical_name": "嘉靖"}]}
 ```
 
-- `targets[]` 每项 `entity_id`、`canonical_name`、`href` 必带（同 `matched`，href 末段等于 `entity_id`），按文中先后排；可选 `part`（对应 span 文本里的哪一段字）、`level`。顶层 `canonical_name` 为各项规范名用「＋」连接，只作显示。
+- `targets[]` 每项 `entity_id`、`canonical_name` 必带、不写 `href`（同 `matched`），按文中先后排；可选 `part`（对应 span 文本里的哪一段字）、`level`。顶层 `canonical_name` 为各项规范名用「＋」连接，只作显示。
 - 与 `group`／`decomposition` 的分工：上下级拆分（官署＋官职、州＋县）用 §五的相邻 span；并列的独立条目（合称）用 `matched_multi`；同一个 span 不并存两套。
 - 不认识 `matched_multi` 的旧读取方当作未链接（只画线），不会错链到第一项。
 - `part` 只是标注信息：每项都写时，按序拼起来必须等于 span 文本（正＋嘉＝正嘉）；有的写有的不写（或二程、六朝按字拆不开）时都合法。
@@ -224,7 +223,7 @@ T 匹配流程内部用的 `coarse`、`reclass`、`route_to` 等字段**不进�
 - 过 schema；`volume`、`book_id` 与同章 char 一致；`id` 唯一。
 - 每条 `anchor.start`、`anchor.end` 在 char 里存在，`text` 等于其间各格的字（F-OV-02 在 `text_version` 落后时逐条核）。
 - `span`（有的话）与 `anchor` 换算一致。
-- 各 `status` 的必带、不得带字段（§四·1）；matched 的 `href` 末段等于 `entity_id`；matched_multi 的 `targets` ≥2 项、每项 `href` 末段等于 `entity_id`、顶层不带 `entity_id`／`href`；每项都写 `part` 时按序拼起来等于 span 文本，只写了部分项的 `part` 须是 span 文本里的片段。
+- 各 `status` 的必带、不得带字段（§四·1）；只有 `external` 带 `href`；matched_multi 的 `targets` ≥2 项、每项带 `entity_id`、顶层不带 `entity_id`／`href`；每项都写 `part` 时按序拼起来等于 span 文本，只写了部分项的 `part` 须是 span 文本里的片段。
 - span 不重叠；`group` 满足 §五 规则。
 - 每个 `work` 实体都有同起止的一对《》。
 - `version` 与 index.json `entity_version` 相等，`text_version` 不超前，major 不高于文本线（F-OV-01、F-OV-03）。
@@ -240,3 +239,13 @@ T 匹配流程内部用的 `coarse`、`reclass`、`route_to` 等字段**不进�
 | `id`、`target`、`volume` | 选填 | 必填 |
 
 现有 v0.1 文件只要把 `$schema` 改成 v0.2 的 URL 即可通过（现有数据已按 v0.2 写）。
+
+## 十一、2026-11 停用 `href`（站内）与 `stats`
+
+不升格式版本（只放宽 schema：`href` 不再必带；`stats` 标停用），book-text 存量一次迁完，校验器起拦新写的站内 `href` 与 `stats`。
+
+| 项 | 之前 | 之后 |
+|---|---|---|
+| 站内 `target.href`、`targets[].href` | 必带，`book-index://<类>/<entity_id>` | 不写；读取方由 `entity_id` 拼，类型段由 id 的类型位解出。原 href 与 entity_id 不一致的（并条后没跟着改指），以 entity_id 为准 |
+| `external` 的 `href` | 外部 URL | 不变 |
+| 顶层 `stats` | 选填，只供人看 | 不写；要看统计跑脚本 |

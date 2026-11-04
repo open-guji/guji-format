@@ -135,7 +135,7 @@ book-text/
 | `source` | object | 是 | 来源记录，用于追溯 | 见下表 |
 | `work_id` | string | Work 层必填 | 所属 Work id | |
 | `book_id` | string | Book 层必填 | 所属 Book id | |
-| `fetched_at` 或 `scraped_at` | string（日期） | 二选一必填 | 抓取日期 | `"2026-09-27"` |
+| `fetched_at` | string（日期） | 是 | 抓取日期（原 `scraped_at` 2026-11 并入此键） | `"2026-09-27"` |
 | `text_quality` | object | 是 | `{"grade": <quality 取值>}` | `{"grade": "source"}` |
 | `edition_note` | string | 否 | 版本说明：与 book-index 哪个 Book 对应、处理了什么 | |
 | `guji_markdown` | string | 否 | md 按哪一版 guji-markdown 写 | `"0.2.0"` |
@@ -269,10 +269,16 @@ book-text/
 |---|---|---|---|
 | `title` | 是 | 章标题 | `"經部七·孝經類"` |
 | `sections` | 是 | 条目列表，见下 | |
-| `page_title`、`source_url`、`source_juan` | 否 | 来源页面名、地址、来源卷号 | |
-| `work_id`、`related_works` | 否 | 本章对应的 Work、相关作品 `[{id, title, relation}]` | |
-| `part`、`bian`、`lei`、`chapter`、`lue`、`lue_xu`、`total`、`total_notes`、`zhong_count`、`volume`、`page` | 否 | 考证、艺文志类的结构信息：部、编、类、章、略、略序、小计、种数、册、页 | |
-| `ai_note`、`updated_at`、`schema_version` | 否 | 整理说明、更新日期、结构版本 | |
+| `meta` | 否 | 本章其余元数据，见下 | |
+
+顶层只许这三个键（2026-11 起；原来散在顶层的键整体收进 `meta`，键名不变）。`meta` 里常见的键：
+
+| 字段 | 含义 |
+|---|---|
+| `page_title`、`source_url`、`source_juan` | 来源页面名、地址、来源卷号 |
+| `work_id`、`related_works` | 本章对应的 Work、相关作品 `[{id, title, relation}]` |
+| `part`、`bian`、`lei`、`chapter`、`lue`、`lue_xu`、`total`、`total_notes`、`zhong_count`、`volume`、`page` | 考证、艺文志类的结构信息：部、编、类、章、略、略序、小计、种数、册、页 |
+| `ai_note`、`updated_at`、`schema_version` | 整理说明、更新日期、结构版本 |
 
 **`sections[]` 必有四键**（F-CE-06；`content` 可为空串，但键不能缺）：
 
@@ -283,19 +289,19 @@ book-text/
 | `type` | string | 条目类型 | `book` 书目条目／`verification` 考证条目／`prose` 散文篇／`preface` 序／`category` 类目标题／`tally` 小计行／`reconstruction` 辑佚重建条目／`comment` 按语／`poem` 诗／`page_header` 页眉 |
 | `content` | string | 条目正文 | 可为空串 |
 
-`type: book` 的条目必须有 `work_id` 键（值可为 `null`）。
+`type: book` 的条目必须有 `work_ids` 键（值可为空数组 `[]`，表示核过、明确未链）。
 
 **出现率 ≥1% 的其他字段：**
 
 | 字段 | 含义 |
 |---|---|
-| `work_id`、`work_ids` | 该条目链到的 Work（一个或多个） |
+| `work_ids` | 该条目链到的 Work，数组（一个或多个；`[]`＝明确未链）。2026-11 起不再写单值 `work_id` |
 | `book_title`、`n_juan`、`author`、`author_info`、`author_type`、`dynasty`、`edition`、`juan` | 书名、卷数、作者、作者原文说明、著作方式（撰、注…）、朝代、版本、所在卷 |
 | `summary`、`note`、`ai_note` | 提要、整理注、AI 整理说明 |
 | `page`、`metadata` | 来源页码、来源元数据（档案类） |
 | `target_bid` | 链到的 Book id |
 | `content_from`、`link_basis` | 内容出处、链接依据 |
-| `_title_only`、`_author`、`_author_src`、`_work_id_src`、`_no_author` 等 | **下划线前缀的证据字段**：整理过程留下的解析证据，校验器不计违规，**不得直接删**（改版时可迁为正式字段） |
+| `evidence` | **证据字段**：整理过程留下的解析证据（原下划线前缀的 `_title_only`、`_author`、`_author_src`、`_work_id_src`、`_no_author` 等，2026-11 收进这里，键名去掉前导下划线，如 `evidence.title_only`）。不得直接删；section 顶层不再写下划线前缀键 |
 
 其余长尾字段允许，不逐个解释；清单与频次见吻合度报告附录。
 
