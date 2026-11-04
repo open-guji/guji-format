@@ -30,7 +30,6 @@
     "base_edition": "original",
     "description": "基于 original 底本自动生成独立外挂标点与分段。"
   },
-  "stats": {"total_annotations": 3688, "points": 3581, "paragraph_breaks": 107},
   "punctuations": [
     {"mark": "\n\n", "kind": "break", "pos": "after",  "anchor": "3:1:10", "char_offset": 9,  "pre_char": "四", "source": "rule:reflow"},
     {"mark": "《",   "kind": "point", "pos": "before", "anchor": "3:4:-1", "char_offset": 16, "pre_char": "讀", "source": "glm:glm-4.5-flash"},
@@ -53,7 +52,7 @@
 | `book_id` | string | 是 | 所属条目 id | 与同章 char 一致 | `"96mid1ogzk"` |
 | `volume` | integer ≥1 | 是 | 册号 | 与同章 char 一致，等于 index.json 该章 `n` | `2` |
 | `metadata` | object | 否 | 说明信息 | 见 3.2 | |
-| `stats` | object | 否 | 统计，**只供人看**，不作校验依据 | 键名不限，值是整数；常用 `total_annotations`、`points`、`paragraph_breaks`、`headings`、`periods`、`commas`、`quotations`、`book_titles` | |
+| `stats` | object | 否 | **已停用（2026-11）**：统计不写进文件，要看跑脚本；旧文件里有也不作校验依据 | | |
 | `punctuations` | array | 是 | 标点条目 | 见 3.3；数组顺序不限，消费方按锚点排序 | |
 
 ### 3.2 `metadata`

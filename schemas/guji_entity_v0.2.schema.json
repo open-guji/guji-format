@@ -104,7 +104,7 @@
       "additionalProperties": {
         "type": "integer"
       },
-      "description": "统计，只供人看，不作校验依据"
+      "description": "已停用（2026-11）：统计不写进文件，要看跑脚本；旧文件里有也不作校验依据"
     },
     "entities": {
       "type": "array",
@@ -203,7 +203,7 @@
               },
               "href": {
                 "type": "string",
-                "description": "matched：book-index://<Work|Book|Entity>/<entity_id>；external：外部 URL"
+                "description": "只 external 用（外部 URL）。站内条目不写 href：链接由 entity_id 推出，类型段由 id 的类型位解出（2026-11 起；spec/05 §五）"
               },
               "candidates": {
                 "type": "array",
@@ -253,8 +253,7 @@
                   "type": "object",
                   "required": [
                     "entity_id",
-                    "canonical_name",
-                    "href"
+                    "canonical_name"
                   ],
                   "properties": {
                     "entity_id": {
@@ -264,7 +263,8 @@
                       "type": "string"
                     },
                     "href": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "已停用：站内链接由 entity_id 推出"
                     },
                     "part": {
                       "type": "string",
@@ -294,8 +294,7 @@
                 "then": {
                   "required": [
                     "entity_id",
-                    "canonical_name",
-                    "href"
+                    "canonical_name"
                   ],
                   "not": {
                     "required": [

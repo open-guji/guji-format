@@ -212,10 +212,12 @@
       "type": "string"
     },
     "fetched_at": {
-      "type": "string"
+      "type": "string",
+      "description": "抓取／入库日期"
     },
     "scraped_at": {
-      "type": "string"
+      "type": "string",
+      "description": "已并入 fetched_at（2026-11），新数据只写 fetched_at"
     },
     "type": {
       "type": "string",

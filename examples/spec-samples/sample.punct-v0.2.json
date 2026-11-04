@@ -10,11 +10,6 @@
     "base_edition": "original",
     "description": "卷二开头：卷名、副题、類名、首篇书名行，带标题符（v0.2 样例）"
   },
-  "stats": {
-    "total_annotations": 10,
-    "headings": 4,
-    "paragraph_breaks": 4
-  },
   "punctuations": [
     {
       "mark": "#",
