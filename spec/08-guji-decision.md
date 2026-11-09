@@ -1,5 +1,7 @@
 # guji-decision v0.1 规范：候选字层（`NNN.decision.json`）
 
+> **已停用（2026-11-09 Sheldon 定）**：book-text 不再存 `NNN.decision.json`，index.json 不再声明 `decision_file`（book-text 校验 F-OV-05 报错，book-text#427）。候选字、待审原因、人裁都在中心库待审单／网站 KV。本规范留作历史。
+
 > 状态：**正式**（v0.1，2026-10-09 定稿；**v0.2 2026-10-17 增可选 `reason`／`route`／`route_ref`**，GUJI-558 Eliot 提出，见 §3.4；overview#497；由 overview `项目进展/古籍文本/整体设计/2026-10-decision.json规范草案.md`（文本总管 10-06 应网站 #444 起草）写成；§五 三点用户 10-09 已定）。
 > 格式标识：`https://open-guji.org/schema/decision/v0.2.json`（v0.1 `…/decision/v0.1.json` 的文件原样仍合法，不必迁移）
 > Schema：[`schemas/guji_decision_v0.2.schema.json`](../schemas/guji_decision_v0.2.schema.json)（v0.1：[`guji_decision_v0.1.schema.json`](../schemas/guji_decision_v0.1.schema.json)）

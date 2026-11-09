@@ -1,7 +1,7 @@
 # guji-char v0.4 规范：定字文本（`NNN.char.json`）
 
 > 状态：正式（v0.1，2026-10-06 用户定；2026-10-09 补到字段级，overview#497；**v0.2 2026-10-20 增格字段 `guess_c`：阙文格带推测字**，GUJI-717 用户定，见 §4.6；**v0.3 2026-10-23 增图片格 `fig` 与图列 `kind: figure`**，GUJI-737 Sheldon 评审通过，见 §4.7；**v0.4 2026-11-03 增格字段 `pending_reason`：待审格记为什么待审，`lacuna` 只留给审定的阙文**，Sheldon 定，见 §4.8）
-> 格式标识：`https://open-guji.org/schema/char/v0.4.json`（v0.1–v0.3 的文件原样仍合法，不必迁移；用了 `guess_c` 至少写 v0.2，用了 `fig` 或图列至少写 v0.3，用了 `pending_reason` 就要写 v0.4）
+> 格式标识：`https://open-guji.org/schema/char/v0.4.json`（v0.1–v0.3 的文件原样仍合法，不必迁移；用了 `guess_c` 至少写 v0.2，用了 `fig` 或图列至少写 v0.3，用了 `pending_reason` 就要写 v0.4；**v0.4 与 `pending_reason` 2026-11-09 起停用，book-text 不再写，见 §4.8**）
 > Schema：[`schemas/guji_char_v0.4.schema.json`](../schemas/guji_char_v0.4.schema.json)（v0.3：[`guji_char_v0.3.schema.json`](../schemas/guji_char_v0.3.schema.json)；v0.2：[`guji_char_v0.2.schema.json`](../schemas/guji_char_v0.2.schema.json)；v0.1：[`guji_char_v0.1.schema.json`](../schemas/guji_char_v0.1.schema.json)）
 > 适用：book-text `original` 每章一份，存 main，**文本的唯一真源**。总表见 [00](./00-总览.md)。
 
@@ -197,7 +197,9 @@
 
 不进 schema、由 book-text F-OV-13 核的：`fig` 在同章 fig.json 里有、`kind` 对得上（格 → `inline`，列 → `block`）、框与 cord 一致，见 [09 §七](./09-guji-fig.md)。
 
-### 4.8 待审格（`pending_reason`，v0.4）
+### 4.8 待审格（`pending_reason`，v0.4，**已停用**）
+
+> **已停用（2026-11-09 Sheldon 定）**：book-text 只录首选字，不录待审信息。待审格 `c` 写首选字（与定字看起来一样），不再写 `pending_reason`，`$schema` 不用 v0.4；`□` 只给真阙文（`lacuna: true`）。待审原因、候选、人裁只在中心库待审单／网站 KV。book-text 校验 F-OV-16 禁止 `pending_reason` 与 v0.4（book-text#427），导出见 guji-manager v0.4.31 `apply_pending`。本节留作历史。
 
 **`lacuna` 只表示审定的阙文**（Sheldon 2026-11-03 定）。v0.3 以前，入库时机器没定下来、还在待审单上的格也写成 `□` ＋ `lacuna: true`，和审过、确认看不清的阙文分不开；机器给了字、但仍在待审的格，文本里也看不出来。v0.4 起：
 
