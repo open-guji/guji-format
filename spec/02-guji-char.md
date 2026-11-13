@@ -1,8 +1,8 @@
-# guji-char v0.4 规范：定字文本（`NNN.char.json`）
+# guji-char v0.5 规范：定字文本（`NNN.char.json`）
 
-> 状态：正式（v0.1，2026-10-06 用户定；2026-10-09 补到字段级，overview#497；**v0.2 2026-10-20 增格字段 `guess_c`：阙文格带推测字**，GUJI-717 用户定，见 §4.6；**v0.3 2026-10-23 增图片格 `fig` 与图列 `kind: figure`**，GUJI-737 Sheldon 评审通过，见 §4.7；**v0.4 2026-11-03 增格字段 `pending_reason`：待审格记为什么待审，`lacuna` 只留给审定的阙文**，Sheldon 定，见 §4.8）
-> 格式标识：`https://open-guji.org/schema/char/v0.4.json`（v0.1–v0.3 的文件原样仍合法，不必迁移；用了 `guess_c` 至少写 v0.2，用了 `fig` 或图列至少写 v0.3，用了 `pending_reason` 就要写 v0.4；**v0.4 与 `pending_reason` 2026-11-09 起停用，book-text 不再写，见 §4.8**）
-> Schema：[`schemas/guji_char_v0.4.schema.json`](../schemas/guji_char_v0.4.schema.json)（v0.3：[`guji_char_v0.3.schema.json`](../schemas/guji_char_v0.3.schema.json)；v0.2：[`guji_char_v0.2.schema.json`](../schemas/guji_char_v0.2.schema.json)；v0.1：[`guji_char_v0.1.schema.json`](../schemas/guji_char_v0.1.schema.json)）
+> 状态：正式（v0.1，2026-10-06 用户定；2026-10-09 补到字段级，overview#497；**v0.2 2026-10-20 增格字段 `guess_c`：阙文格带推测字**，GUJI-717 用户定，见 §4.6；**v0.3 2026-10-23 增图片格 `fig` 与图列 `kind: figure`**，GUJI-737 Sheldon 评审通过，见 §4.7；**v0.4 2026-11-03 增格字段 `pending_reason`：待审格记为什么待审，`lacuna` 只留给审定的阙文**，Sheldon 定，见 §4.8；**v0.5 2026-11-13 增格字段 `unk`：审定无法识别的字（图上有字、认不出、Unicode 没有对应字），网页暂显示「？」**，Sheldon 定，见 §4.9）
+> 格式标识：`https://open-guji.org/schema/char/v0.5.json`（v0.1–v0.4 的文件原样仍合法，不必迁移；用了 `guess_c` 至少写 v0.2，用了 `fig` 或图列至少写 v0.3，用了 `pending_reason` 就要写 v0.4；用了 `unk` 就要写 v0.5；**v0.4 与 `pending_reason` 2026-11-09 起停用，book-text 不再写，见 §4.8**）
+> Schema：[`schemas/guji_char_v0.5.schema.json`](../schemas/guji_char_v0.5.schema.json)（v0.4：[`guji_char_v0.4.schema.json`](../schemas/guji_char_v0.4.schema.json)；v0.3：[`guji_char_v0.3.schema.json`](../schemas/guji_char_v0.3.schema.json)；v0.2：[`guji_char_v0.2.schema.json`](../schemas/guji_char_v0.2.schema.json)；v0.1：[`guji_char_v0.1.schema.json`](../schemas/guji_char_v0.1.schema.json)）
 > 适用：book-text `original` 每章一份，存 main，**文本的唯一真源**。总表见 [00](./00-总览.md)。
 
 ---
@@ -111,6 +111,7 @@
 | `zi` | string | 否 | 组字：Unicode 没收的字的原形，写 IDS 串或描述文字；`c` 是近似字 | 如 `"⿰木孚"` | |
 | `pending_reason` | string | 否（v0.4 起） | 待审格：这格还没人审定，值是**为什么待审**；`c` 是机器暂定的字，机器没给字就写 `□`，见 §4.8 | open-guji-cv `PendingReason` 的英文名（`^[a-z][a-z0-9_]*$`），推不出写 `unknown`；与 `lacuna`、`guess_c`、`fig` 互斥 | `"hard_pair"` |
 | `fig` | string | 否（v0.3 起） | 图片格：这格是图形，不是字；值是同章 [fig.json](./09-guji-fig.md) 里的图 id。`c` 写 `□`，见 §4.7 | 不能和 `lacuna`、`guess`、`guess_c`、`zi` 同时出现 | `"f148-2-14"` |
+| `unk` | string | 否（v0.5 起） | 无法识别字：图上有字，人审定认不出、Unicode 也没有对应字；值是部件描述或 IDS。`c` 写 `□`，见 §4.9 | 非空，不含空白和花括号；不能和 `lacuna`、`guess`、`guess_c`、`zi`、`fig`、`pending_reason` 同时出现 | `"左王右旦"` |
 
 格对象不许有别的字段（schema `additionalProperties: false`）。
 
@@ -223,6 +224,31 @@
 
 约束（schema 强制）：`pending_reason` 匹配 `^[a-z][a-z0-9_]*$`；不能和 `lacuna`、`guess_c`、`fig` 同时出现；用了它的文件 `$schema` 写 v0.4。
 
+### 4.9 无法识别字（`unk`，v0.5）
+
+**图上明明有字，审的人认不出来，Unicode 里也找不到对应的字**（例：全唐文 007:77:9:15，左「王」右「旦」，查不到任何码位）。这不是阙文（字在，只是认不出）、不是图形（它是个字，不是插图）、不是待审（人已经审定了）。Sheldon 2026-11-13 定：给它单设一类终态格，现阶段网页显示「？」，将来造字或收进私用区后换成对应字符。
+
+```jsonc
+{"a": "77:9:15", "c": "□", "unk": "左王右旦"}
+```
+
+- `unk` 的值是**部件描述或 IDS**：人能看出来多少写多少（`左王右旦`、`⿰王旦`、`上艹下某`）；一点也描述不出，审定人也要写一个说明词（如 `无法识别`），不留空。它是将来选字、造字的线索，不进检索和标点。
+- `c` 写 `□`，理由同 `fig`、`guess_c`：不认识 `unk` 的旧工具把它当刻本方框，不出错；punct、entity、decision 的校验字照常取 `c`。
+
+| | 无法识别字 `unk` | 阙文 `lacuna` | 图片格 `fig` | 组字 `zi` |
+|---|---|---|---|---|
+| 图上 | 有字，认不出，无 Unicode | 原有字，看不清或缺失 | 一个图形，不是字 | 有字，Unicode 没收，但有近似字 |
+| `c` | `□` | `□` | `□` | 近似字 |
+| 标记 | `unk: "描述"` | `lacuna: true` | `fig` | `zi` |
+| norm | 不许有条目 | 可以没有 | 不许有条目 | 可以有 |
+| 阅读器 | 显示「？」（虚线框同阙文）；悬停「无法识别字：描述」 | 虚线框 □ | 显示图 | 近似字 |
+| 全文检索 | 跳过 | 跳过 | 跳过 | 收近似字 |
+| lines.md、rich.md | `[[]]`（单行小注里 `□`，同阙文，描述不进分行稿） | `[[]]` | `:tu[说明]{id=…}` | `:zi[…]` |
+
+**将来换成私用区字符或别的方案**：造字落定后，该格改成 `c` 写那个字符（或最近似的已收字）、`zi` 记原形（描述 / IDS），**去掉 `unk`**；那时它就是一个普通的组字格。所以 `unk` 是过渡状态，不是永久类别；改动走普通的 0.x 小改（人裁事件重放），不影响格位 key。
+
+约束（schema 强制）：`unk` 非空、不含空白和花括号；`c` 必须是 `□`；与 `lacuna`、`guess`、`guess_c`、`zi`、`fig`、`pending_reason` 互斥；用了它的文件 `$schema` 写 v0.5。
+
 ## 五、与其他文件的关系
 
 | 文件 | 和 char 的关系 |
@@ -243,6 +269,13 @@
 - char → lines.md 必须能逐字节还原（`convert_original_char.py` 入库时核）。
 
 ## 七、上一版 → 本版的变化
+
+### v0.4 → v0.5（2026-11-13，Sheldon 定）
+
+- 格对象新增可选键 `unk`（无法识别字），`c` 必须是 `□`，与 `lacuna`、`guess`、`guess_c`、`zi`、`fig`、`pending_reason` 互斥（§4.4、§4.9）。
+- 其余字段、格位 key、读序都不变；v0.1–v0.4 文件原样是合法的 v0.5 文件，不必迁移。
+- 读取方：v0.1–v0.5 的 `$schema` 都要认；不认 `unk` 的旧工具把它当刻本方框 □，不出错。
+- 注：v0.4 的 `pending_reason` 已停用（§4.8），v0.5 的 schema 仍保留该键，只为认得旧文件。
 
 ### v0.3 → v0.4（2026-11-03，Sheldon 定）
 
