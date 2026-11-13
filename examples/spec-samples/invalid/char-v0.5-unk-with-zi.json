@@ -1,0 +1,24 @@
+{
+  "$schema": "https://open-guji.org/schema/char/v0.5.json",
+  "version": "0.5.4",
+  "book_id": "995ejelvk0",
+  "volume": 7,
+  "pages": [
+    {
+      "page": 77,
+      "columns": [
+        {
+          "col": 9,
+          "cells": [
+            {
+              "a": "77:9:15",
+              "c": "□",
+              "unk": "左王右旦",
+              "zi": "⿰王旦"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
