@@ -2,6 +2,7 @@
 
 > 状态：正式（v0.1 2026-10-09 补到字段级，overview#497；**v0.2 2026-10-19 增标题符 `kind: heading`（分段符仍只锚段末字之后），删去保留值 `range`**，GUJI-240 用户定，见 §4.2）
 > 格式标识：`https://open-guji.org/schema/punct/v0.2.json`（v0.1 `…/punct/v0.1.json` 的文件原样仍合法，不必迁移；用了标题符就要写 v0.2）
+> **v0.3（11-23 格式瘦身）**：增顶层 `default_source`（[00 §4.6](./00-总览.md)）；不再写字下标缓存（`char_offset`，[00 §4.2](./00-总览.md)）；落盘每条一行（[00 §4.5](./00-总览.md)）。Schema：[`schemas/guji_punct_v0.3.schema.json`](../schemas/guji_punct_v0.3.schema.json)。v0.2 文件照读，迁移由脚本一次做完。
 > Schema：[`schemas/guji_punct_v0.2.schema.json`](../schemas/guji_punct_v0.2.schema.json)（v0.1：[`guji_punct_v0.1.schema.json`](../schemas/guji_punct_v0.1.schema.json)）
 > 适用：**只用于 book-text 的 `original`**，每章一份，存 main。总表见 [00](./00-总览.md)。
 
@@ -45,13 +46,14 @@
 
 | 字段 | 类型 | 必填 | 含义 | 取值 | 例 |
 |---|---|---|---|---|---|
-| `$schema` | string | 是 | 格式版本 | `https://open-guji.org/schema/punct/v0.2.json`（或 v0.1） | |
+| `$schema` | string | 是 | 格式版本 | `https://open-guji.org/schema/punct/v0.3.json`（或 v0.2、v0.1） | |
 | `version` | string | 是 | **标点线内容版本**（不是格式版本）；index.json 该章 `punct_version` 是它的镜像 | `MAJOR.MINOR.PATCH`，major 0–3；见 §五 | `"1.1.0"` |
 | `text_version` | string | 是 | 本层是对着哪一版文本做的＝当时 char 的 `version` | 不得超前于当前 char 的 `version` | `"1.0.0"` |
 | `review` | object | major ≥2 时必填（schema 强制） | 验收记录 | `date`、`signed_by`、`sample`，三项都不许空 | |
 | `book_id` | string | 是 | 所属条目 id | 与同章 char 一致 | `"96mid1ogzk"` |
 | `volume` | integer ≥1 | 是 | 册号 | 与同章 char 一致，等于 index.json 该章 `n` | `2` |
 | `metadata` | object | 否 | 说明信息 | 见 3.2 | |
+| `default_source` | string | 否（v0.3） | 条目缺省产出方 | 写法同条目 `source`；条目不写 `source` 时取它，见 [00 §4.6](./00-总览.md) | `"glm:glm-4.5-flash"` |
 | `stats` | object | 否 | **已停用（2026-11）**：统计不写进文件，要看跑脚本；旧文件里有也不作校验依据 | | |
 | `punctuations` | array | 是 | 标点条目 | 见 3.3；数组顺序不限，消费方按锚点排序 | |
 
@@ -75,10 +77,10 @@
 | `label` | string | 否，只用于 `heading` | 目录里显示的名字；缺省用标题原文（v0.2） | 非空 | `"卷二　經部二"` |
 | `toc` | boolean | 否，只用于 `heading`，缺省 `true` | `false`＝正文排成标题但不进目录（副题行）（v0.2） | | `false` |
 | `anchor` | string | original 入库**必填** | 锚点格位 key | `<页>:<列>:<格>[子列]`，必须在同章 char 里存在（见 [02 §二](./02-guji-char.md)） | `"3:4:-1"` |
-| `char_offset` | integer ≥0 | 否 | 锚点格的字下标（缓存） | 见 [00 §四·2](./00-总览.md)：同章 char 读序的 0 起下标 | `16` |
+| `char_offset` | integer ≥0 | 否（**v0.3 停写**） | 锚点格的字下标（缓存）；要用的读端调 `offset_of` 现算 | 见 [00 §四·2](./00-总览.md)：同章 char 读序的 0 起下标 | `16` |
 | `pre_char` | string | original 入库**必填**；**标题符不写**（v0.2，§4.2） | **校验字**：锚点那一格上的字（`after`、`before` 都核这一格） | 必须等于 char 该格的 `c` | `"讀"` |
 | `confidence` | number 0–1 | 否 | 置信度 | | `0.95` |
-| `source` | string | 否 | 产出方 | `<类>:<名>`：`glm:<模型>`、`qwen:<模型>`、`llm:<模型>` 大模型；`claude:manual` Claude 道人工补；`human:<人>` 人工；`rule:<规则名>` 规则（如 `rule:reflow` 分段）。不设枚举 | `"rule:reflow"` |
+| `source` | string | 否 | 产出方；与顶层 `default_source` 相同时不写 | `<类>:<名>`：`glm:<模型>`、`qwen:<模型>`、`llm:<模型>` 大模型；`claude:manual` Claude 道人工补；`human:<人>` 人工；`rule:<规则名>` 规则（如 `rule:reflow` 分段）。不设枚举 | `"rule:reflow"` |
 | `id` | string | 否 | 条目编号 | 文件内唯一；现有数据不写 | `"p001"` |
 
 `anchor` 的对象写法 `{page, line, slot, lane?, volume?}` 只为兼容旧数据保留，original 入库一律写字符串。

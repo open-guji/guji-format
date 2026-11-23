@@ -2,6 +2,7 @@
 
 > 状态：正式（v0.2，2026-10-09 定稿，overview#497；取代 v0.1）。
 > 格式标识：`https://open-guji.org/schema/entity/v0.2.json`
+> **v0.3（11-23 格式瘦身）**：增顶层 `default_source`（[00 §4.6](./00-总览.md)）；不再写字下标缓存（`span`，[00 §4.2](./00-总览.md)）；落盘每条一行（[00 §4.5](./00-总览.md)）。Schema：[`schemas/guji_entity_v0.3.schema.json`](../schemas/guji_entity_v0.3.schema.json)。v0.2 文件照读，迁移由脚本一次做完。
 > Schema：[`schemas/guji_entity_v0.2.schema.json`](../schemas/guji_entity_v0.2.schema.json)（v0.1 留档：[`guji_entity_v0.1.schema.json`](../schemas/guji_entity_v0.1.schema.json)）
 > 适用：**只用于 book-text 的 `original`**，每章一份，存 main。总表见 [00](./00-总览.md)。
 
@@ -70,13 +71,14 @@
 
 | 字段 | 类型 | 必填 | 含义 | 取值 | 例 |
 |---|---|---|---|---|---|
-| `$schema` | string | 是 | 格式版本 | `https://open-guji.org/schema/entity/v0.2.json` | |
+| `$schema` | string | 是 | 格式版本 | `https://open-guji.org/schema/entity/v0.3.json`（或 v0.2） | |
 | `version` | string | 是 | **实体线内容版本**；index.json 该章 `entity_version` 是它的镜像 | `MAJOR.MINOR.PATCH`，major 0–3；见 §八 | `"1.4.0"` |
 | `text_version` | string | 是 | 本层对着哪一版文本做的＝当时 char 的 `version` | 不得超前于当前 char | `"1.0.0"` |
 | `review` | object | major ≥2 时必填（schema 强制） | 验收记录 | `date`、`signed_by`、`sample`，三项都不许空 | |
 | `book_id` | string | 是 | 所属条目 id | 与同章 char 一致 | |
 | `volume` | integer ≥1 | 是 | 册号 | 与同章 char 一致 | `2` |
 | `metadata` | object | 否 | 说明 | `title`、`creator`、`created_at`（ISO 8601）、`base_edition`（固定 `original`） | |
+| `default_source` | string | 否（v0.3） | 条目缺省产出方 | 写法同条目 `source`；条目不写 `source` 时取它，见 [00 §4.6](./00-总览.md) | `"glm:glm-4.5-flash"` |
 | `stats` | object | 否 | **已停用（2026-11）**：统计不写进文件，要看跑脚本；旧文件里有也不作校验依据 | | |
 | `entities` | array | 是 | 实体条目 | 见 3.2；数组顺序不限 | |
 
@@ -88,9 +90,9 @@
 | `type` | string | 是 | 实体类型 | 白名单见 §三·3 | `"office"` |
 | `text` | string | 是 | **校验字**：底本原文 | 必须等于 char 里 `anchor.start`..`anchor.end` 各格的 `c` 依读序拼接 | `"大理寺"` |
 | `anchor` | object | 是 | 起止格位（含两端） | `start`、`end` 都是格位 key（见 [02 §二](./02-guji-char.md)）；`end` 在读序上不早于 `start`；可以跨列、跨夹注子列 | `{"start": "9:9:13a", "end": "9:9:5b"}` |
-| `span` | object | 否 | 字下标缓存，左闭右开 | `start_offset`＝`anchor.start` 的字下标，`end_offset`＝`anchor.end` 的字下标＋1（见 [00 §四·2](./00-总览.md)）；`end_offset − start_offset` 等于 `text` 的字数 | `{"start_offset": 1124, "end_offset": 1126}` |
+| `span` | object | 否（**v0.3 停写**） | 字下标缓存，左闭右开；要用的读端调 `offset_of` 现算 | `start_offset`＝`anchor.start` 的字下标，`end_offset`＝`anchor.end` 的字下标＋1（见 [00 §四·2](./00-总览.md)）；`end_offset − start_offset` 等于 `text` 的字数 | `{"start_offset": 1124, "end_offset": 1126}` |
 | `target` | object | 是 | 链接 book-index 的结果 | 见 §四 | |
-| `source` | string | 否 | 产出方 | `<类>:<名>`，同 punct（`glm:glm-4.5-flash`、`claude:manual`、`human:<人>`…） | `"glm:glm-4.5-flash"` |
+| `source` | string | 否 | 产出方；与顶层 `default_source` 相同时不写 | `<类>:<名>`，同 punct（`glm:glm-4.5-flash`、`claude:manual`、`human:<人>`…） | `"glm:glm-4.5-flash"` |
 | `group` | object | 否 | 复合专名的整串信息 | 见 §五 | |
 
 ### 3.3 `type` 白名单
