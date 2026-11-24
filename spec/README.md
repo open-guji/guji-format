@@ -10,11 +10,11 @@
 |---|---|---|---|
 | [00 总览](./00-总览.md) | 全部文件一张表、派生关系、依赖表、坐标与版本线 | — | — |
 | [01 guji-cord](./01-guji-cord.md) | `NNN.cord.json` 每格像素框 | 0.2 | [`guji_cord_v0.2`](../schemas/guji_cord_v0.2.schema.json) |
-| [02 guji-char](./02-guji-char.md) | `NNN.char.json` 每格的字（文本唯一真源）；格位 key 定义 | 0.5 | [`guji_char_v0.5`](../schemas/guji_char_v0.5.schema.json) |
+| [02 guji-char](./02-guji-char.md) | `NNN.char.json` 每格的字（文本唯一真源）；格位 key 定义 | 0.6 | [`guji_char_v0.6`](../schemas/guji_char_v0.6.schema.json) |
 | [03 guji-markdown](./03-guji-markdown.md) | 章文件 `NNN.md` 记法；`lines.md`、`rich.md` 生成规则 | 0.2 | — |
-| [04 guji-punct](./04-guji-punct.md) | `NNN.punct.json` 标点、分段、书名号、标题符 | 0.2 | [`guji_punct_v0.2`](../schemas/guji_punct_v0.2.schema.json) |
-| [05 guji-entity](./05-guji-entity.md) | `NNN.entity.json` 专名与专名号 | 0.2 | [`guji_entity_v0.2`](../schemas/guji_entity_v0.2.schema.json) |
-| [06 guji-norm](./06-guji-norm.md) | `NNN.norm.json` 异体→通行字 | 0.2 | [`guji_norm_v0.2`](../schemas/guji_norm_v0.2.schema.json) |
+| [04 guji-punct](./04-guji-punct.md) | `NNN.punct.json` 标点、分段、书名号、标题符 | 0.4 | [`guji_punct_v0.4`](../schemas/guji_punct_v0.4.schema.json) |
+| [05 guji-entity](./05-guji-entity.md) | `NNN.entity.json` 专名与专名号 | 0.4 | [`guji_entity_v0.4`](../schemas/guji_entity_v0.4.schema.json) |
+| [06 guji-norm](./06-guji-norm.md) | `NNN.norm.json` 异体→通行字 | 0.3 | [`guji_norm_v0.3`](../schemas/guji_norm_v0.3.schema.json) |
 | [07 book-text 条目布局](./07-book-text-条目布局.md) | 条目目录、`manifest.json`、`index.json`、章文件、辑佚、汇总索引 | 1 | [`book_text_manifest_v1`](../schemas/book_text_manifest_v1.schema.json)、[`book_text_index_v1`](../schemas/book_text_index_v1.schema.json) |
 | [08 guji-decision](./08-guji-decision.md) | `NNN.decision.json` 候选字（**2026-11-09 停用**，候选移中心库待审单／KV） | 0.2 | [`guji_decision_v0.2`](../schemas/guji_decision_v0.2.schema.json) |
 | [09 guji-fig](./09-guji-fig.md) | `NNN.fig.json` 图片格与插图块的图 | 0.1 | [`guji_fig_v0.1`](../schemas/guji_fig_v0.1.schema.json) |
