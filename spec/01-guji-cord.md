@@ -32,7 +32,7 @@
                            "snapshot": "guji-workspace snap/96mid1ogzk/vol03"}},
       "regions": [{"id": "r1", "kind": "body", "box": [343, 335, 1692, 2482], "rules": [[[2059, 327], [2011, 2804]]]}],
       "columns": [{"col": 1, "kind": "body", "box": [1815, 335, 220, 2482]}],
-      "cells":   [{"a": "3:1:1", "box": [1862, 332, 163, 128], "id": "g2c2vyyhsr3"}],
+      "cells":   [{"a": "3:1:1", "box": [1862, 332, 163, 128]}],
       "marks":   [{"kind": "blank", "id": "mybdqf2vsyn", "col": 1, "slot": 14, "box": [1816, 1999, 197, 98]},
                   {"kind": "excluded", "id": "modw2um5ue5", "col": 1, "slot": 9, "box": [1827, 1379, 194, 159], "note": "排除名单·非字（墨污/切坏）"}]
     }
@@ -89,7 +89,7 @@ cord 收**全部**列框，包括没有字的列；char 只收有字的列和显
 |---|---|---|---|---|---|
 | `a` | string | 是 | 格位 key | 必须在同章 char 里存在；正则 `^\d+:\d+:-?[1-9]\d*[ab]?$` | `"3:4:6a"` |
 | `box` | box | 是 | 该格的像素框 | | `[1862, 332, 163, 128]` |
-| `id` | string | 否（**停用**，2026-11-24） | 稳定框 id。两次切分同一格约 6% 对不上、手补格没有，已由 char 的字格永久编号 `u` 取代（[02 §4.10](./02-guji-char.md)）；切到以 `u` 为准后停写，读端都不用后从规范删 | cv 生成的 base36 短串，11 位左右 | `"g2c2vyyhsr3"` |
+| ~~`id`~~ | — | **已删**（v0.2，2026-11-25 起不许有） | 原稳定框 id。两次切分同一格约 6% 对不上、手补格没有，已由 char 的字格永久编号 `u` 取代（[02 §4.10](./02-guji-char.md)）；cord 的格对 char 一律按 `a`，跨切分的身份看 char 的 `u` | — | — |
 
 不得有 `c`／`char`／`text`。
 
@@ -99,7 +99,7 @@ cord 收**全部**列框，包括没有字的列；char 只收有字的列和显
 |---|---|---|---|---|
 | `kind` | string | 是 | 类别 | `blank` 版式留白格（挪抬、低格留出的空格）／`seal` 印章／`excluded` 切出来但不是字（墨污、切坏）／`figure` 插图块（v0.2；图片格的框不在这里，照旧在 `cells[]`） |
 | `box` | box | 是 | 像素框 | |
-| `id` | string | 否 | 稳定框 id | 同 3.5 |
+| `id` | string | 否 | 标记框 id | cv 生成的 base36 短串 |
 | `col` | integer | 否 | 所在列 | `blank`、`excluded` 有 |
 | `slot` | integer | 否 | 列内几何格序 | 与格位 key 的「格」同一数法 |
 | `occludes` | array of string | 否 | 印章压住的格位 key | 只 `seal` 用 |
@@ -113,7 +113,7 @@ cord 收**全部**列框，包括没有字的列；char 只收有字的列和显
 
 - cord 每个 `cells[].a` 都在同章 char 里有；char 里的格可以暂时没有框（还没切到）。
 - 页号、列号与 char 一致；`volume`、`book_id` 与 char 一致。
-- 同一页内 `a` 不重复；`id` 在全章不重复。
+- 同一页内 `a` 不重复；`cells` 不许有 `id`（2026-11-25 起）；`marks` 的 `id` 在全章不重复。
 - `marks.figure` 的 `fig`、`col`、`span`、`box` 与 char 图列、fig.json 对得上（book-text F-OV-13，见 [09 §七](./09-guji-fig.md)）。
 - 改动 cord 不升任何版本线；cord 格位变了，说明 char 的格位也变了，按 [00 §三](./00-总览.md) 走 char 那一行。
 

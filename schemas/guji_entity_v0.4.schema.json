@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://open-guji.org/schema/entity/v0.4.json",
   "title": "GujiEntity",
-  "description": "外挂专名层 (guji-entity v0.4)，只用于 book-text original；见 spec/05-guji-entity.md；v0.3 增顶层 default_source、停写字下标缓存（00 §4.2、§4.6）；v0.4 增 u_start／u_end：起止格的字格永久编号（双写期与 anchor 并存且须指同一格），v0.2–v0.3 文件原样合法",
+  "description": "外挂专名层 (guji-entity v0.4)，只用于 book-text original；见 spec/05-guji-entity.md；v0.3 增顶层 default_source、停写字下标缓存（00 §4.2、§4.6）；v0.4 增 u_start／u_end：起止格的字格永久编号（11-25 起必填；anchor 仍并存供人读，须指同一格，以 u 为准），v0.2–v0.3 文件原样合法",
   "type": "object",
   "required": [
     "$schema",
@@ -120,7 +120,9 @@
           "type",
           "text",
           "anchor",
-          "target"
+          "target",
+          "u_start",
+          "u_end"
         ],
         "properties": {
           "id": {

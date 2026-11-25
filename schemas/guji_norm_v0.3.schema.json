@@ -31,7 +31,8 @@
         "required": [
           "a",
           "c",
-          "t"
+          "t",
+          "u"
         ],
         "properties": {
           "a": {
