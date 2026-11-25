@@ -90,6 +90,7 @@
 | `type` | string | 是 | 实体类型 | 白名单见 §三·3 | `"office"` |
 | `text` | string | 是 | **校验字**：底本原文 | 必须等于 char 里 `anchor.start`..`anchor.end` 各格的 `c` 依读序拼接 | `"大理寺"` |
 | `anchor` | object | 是 | 起止格位（含两端） | `start`、`end` 都是格位 key（见 [02 §二](./02-guji-char.md)）；`end` 在读序上不早于 `start`；可以跨列、跨夹注子列 | `{"start": "9:9:13a", "end": "9:9:5b"}` |
+| `u_start`、`u_end` | integer ≥1 | 否（v0.4 起，二者同在）；char 有 `u` 时必写 | 起止格的字格永久编号（[02 §4.10](./02-guji-char.md)）。双写期与 `anchor` 并存、须指同一对格；切换后以它为准 | 在同章 char 里存在；读序上 `u_end` 的格不早于 `u_start` 的格 | `1124`、`1126` |
 | `span` | object | 否（**v0.3 停写**） | 字下标缓存，左闭右开；要用的读端调 `offset_of` 现算 | `start_offset`＝`anchor.start` 的字下标，`end_offset`＝`anchor.end` 的字下标＋1（见 [00 §四·2](./00-总览.md)）；`end_offset − start_offset` 等于 `text` 的字数 | `{"start_offset": 1124, "end_offset": 1126}` |
 | `target` | object | 是 | 链接 book-index 的结果 | 见 §四 | |
 | `source` | string | 否 | 产出方；与顶层 `default_source` 相同时不写 | `<类>:<名>`，同 punct（`glm:glm-4.5-flash`、`claude:manual`、`human:<人>`…） | `"glm:glm-4.5-flash"` |

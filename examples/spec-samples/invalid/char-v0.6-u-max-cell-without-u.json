@@ -1,0 +1,47 @@
+{
+  "$schema": "https://open-guji.org/schema/char/v0.6.json",
+  "version": "0.5.4",
+  "book_id": "995ejelvk0",
+  "volume": 7,
+  "u_max": 5,
+  "u_retired": [
+    {
+      "u": 5,
+      "gone": true
+    }
+  ],
+  "pages": [
+    {
+      "page": 77,
+      "columns": [
+        {
+          "col": 9,
+          "cells": [
+            {
+              "a": "77:9:14",
+              "c": "欽"
+            },
+            {
+              "a": "77:9:15",
+              "u": 2,
+              "c": "□",
+              "unk": "左王右旦"
+            },
+            {
+              "a": "77:9:16",
+              "u": 3,
+              "c": "□",
+              "lacuna": true,
+              "guess_c": "一"
+            },
+            {
+              "a": "77:9:17",
+              "u": 4,
+              "c": "定"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

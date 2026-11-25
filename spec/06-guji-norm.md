@@ -31,7 +31,8 @@
 
 | 字段 | 类型 | 必填 | 含义 | 取值 | 例 |
 |---|---|---|---|---|---|
-| `schema` | string | 是 | 格式版本 | 固定 `"guji-norm/0.2"`（注意：本格式用 `schema`，不是 `$schema`，见 §五） | |
+| `schema` | string | v0.2 必填 | 格式版本 | 固定 `"guji-norm/0.2"`（v0.2 用 `schema`，不是 `$schema`） | |
+| `$schema` | string | v0.3 必填 | 格式版本 | `https://open-guji.org/schema/norm/v0.3.json`（v0.3 起统一用 `$schema`，并可在条目上写 `u`） | |
 | `book_id` | string | 是 | 所属条目 id | 与同章 char 一致 | |
 | `volume` | integer ≥1 | 是 | 册号 | 与同章 char 一致 | `3` |
 | `table` | string 或 null | 否 | 所用异体对照表的名称或版本 | 没有对照表写 `null` | `null` |
@@ -42,6 +43,7 @@
 | 字段 | 类型 | 必填 | 含义 | 取值 | 例 |
 |---|---|---|---|---|---|
 | `a` | string | 是 | 格位 key | 必须在同章 char 里存在 | `"3:4:12"` |
+| `u` | integer ≥1 | 否（v0.3 起）；char 有 `u` 时必写 | 该格的字格永久编号（[02 §4.10](./02-guji-char.md)），双写期与 `a` 须指同一格 | 在同章 char 里存在 | `1234` |
 | `c` | string | 是 | 原字（**校验字**） | 必须等于 char 该格的 `c` | `"𢰅"` |
 | `t` | string | 是 | 通行字 | 不等于 `c` | `"撰"` |
 | `by` | string | 否 | 来源 | `table` 对照表／`human` 人工／`cv` cv 导出 | `"table"` |
