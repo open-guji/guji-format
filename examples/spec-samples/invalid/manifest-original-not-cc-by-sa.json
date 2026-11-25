@@ -1,0 +1,18 @@
+{
+  "id": "96mid1ogzk",
+  "versions": [
+    {
+      "key": "default",
+      "kind": "self_collated",
+      "label": "維基文庫",
+      "source": "original",
+      "source_name": "維基文庫",
+      "source_url": "https://zh.wikisource.org/wiki/x",
+      "license": "CC0 1.0",
+      "quality": "source",
+      "chapters_total": 1,
+      "is_original": true
+    }
+  ],
+  "_note": "自做版本（is_original）必须 CC BY-SA 4.0；CC0 1.0 已不再使用（2026-11-17）"
+}

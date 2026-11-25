@@ -89,7 +89,7 @@ format: 專名本
 text_version: 1.2.0
 punct_version: 1.1.2
 entity_version: 1.5.4
-license: CC0 1.0
+license: CC BY-SA 4.0
 ---
 ### 《[爾雅註疏](book-index://Work/d59f2ht89lhc)》十卷<内府藏本>
 ```

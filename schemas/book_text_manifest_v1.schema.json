@@ -54,11 +54,10 @@
         },
         "license": {
           "type": "string",
-          "description": "CC0 1.0／CC BY-SA 4.0／CC BY-NC-SA 4.0／「来自网络，版权未知」／其他明确的上游 CC 授权（CC 官方简称＋空格＋版本号）；is_original 的版本必须 CC0 1.0（用户 10-08 定）",
+          "description": "CC BY-SA 4.0／CC BY-NC-SA 4.0／「来自网络，版权未知」／其他明确的上游 CC 授权（CC 官方简称＋空格＋版本号）；本项目自做的版本（is_original 或 kind=self_collated）必须 CC BY-SA 4.0（2026-11-17 Sheldon 定，取代 10-08 的 CC0 1.0）；CC0 1.0 不再使用",
           "anyOf": [
             {
               "enum": [
-                "CC0 1.0",
                 "来自网络，版权未知"
               ]
             },
@@ -122,7 +121,26 @@
           "then": {
             "properties": {
               "license": {
-                "const": "CC0 1.0"
+                "const": "CC BY-SA 4.0"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "self_collated"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "license": {
+                "const": "CC BY-SA 4.0"
               }
             }
           }
