@@ -89,7 +89,7 @@ fig.json 记每张图的来源、说明与文件；char 只记「哪一格／哪
 - **裁图**（`source: crop`）：cv 导出时从 R2 页图全分辨率（cord 该页 `image.sha256`）按 `box` 外扩 2 像素裁出。图片格存 PNG；插图块存 WebP（有损 q90）。不做去底、二值化，保持书影原貌，读者端按主题调色。
 - **重绘**（`source: redraw`）：SVG。只许图形元素（`path`、`circle`、`rect`、`line`、`polyline`、`polygon`、`ellipse`、`g`），不许 `script`、`foreignObject`、`image`、外链；颜色写 `currentColor`，跟正文同色。
 - 单个文件 ≤ 1 MB；超过的插图块先降到长边 2000 像素。
-- 授权：随条目 `original` 版本（CC0）。书影是公有领域，裁图同；重绘图入库即以 CC0 发布。
+- 授权：随条目 `original` 版本（CC BY-SA 4.0，2026-11-17 起；原 CC0 作废）。书影是公有领域，裁图同；重绘图入库随 original 以 CC BY-SA 4.0 发布。
 
 ## 五、版本
 

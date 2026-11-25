@@ -10,9 +10,8 @@
       "source_url": "https://zh.wikisource.org/wiki/x",
       "license": "CC BY 4.0",
       "quality": "source",
-      "chapters_total": 1,
-      "is_original": true
+      "chapters_total": 1
     }
   ],
-  "_note": "is_original 的版本必须 CC0 1.0"
+  "_note": "kind=self_collated 的版本也必须 CC BY-SA 4.0"
 }

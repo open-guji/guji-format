@@ -97,7 +97,27 @@
             "type": "integer"
           },
           "juan": {
-            "type": "string"
+            "description": "卷号：转录本写字符串（如 \"07\"）；original（自做书）每册一条，写本册所含卷的首末 [首卷, 末卷]（整数，首 ≤ 末）",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                ],
+                "minItems": 2,
+                "maxItems": 2
+              }
+            ]
           },
           "volume": {
             "type": "integer"
