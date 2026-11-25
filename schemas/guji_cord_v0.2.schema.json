@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://open-guji.org/schema/cord/v0.2.json",
   "title": "GujiCord",
-  "description": "字框坐标 (guji-cord v0.2)，book-text original 每章一份；只记几何，不记字，按格位 key 对到 char。v0.2 增 marks kind figure（插图块），v0.1 文件原样合法",
+  "description": "字框坐标 (guji-cord v0.2)，book-text original 每章一份；只记几何，不记字，按格位 key 对到 char。v0.2 增 marks kind figure（插图块），v0.1 文件原样合法；11-25 起 cells 不再许有 id（已由 char 的字格永久编号 u 取代），marks 的 id 不变",
   "type": "object",
   "required": [
     "$schema",
@@ -138,9 +138,6 @@
                 },
                 "box": {
                   "$ref": "#/$defs/box"
-                },
-                "id": {
-                  "type": "string"
                 }
               },
               "not": {
@@ -158,6 +155,11 @@
                   {
                     "required": [
                       "text"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "id"
                     ]
                   }
                 ]

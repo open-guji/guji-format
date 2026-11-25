@@ -2,14 +2,15 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://open-guji.org/schema/char/v0.6.json",
   "title": "GujiChar",
-  "description": "定字文本 (guji-char v0.6)，book-text original 每章一份，文本唯一真源；不带坐标、不带候选。v0.5 增格字段 unk（审定无法识别的字：图上有字、认不出且无 Unicode，网页暂显示「？」），v0.1–v0.4 文件原样合法；v0.6 增字格永久编号：格字段 u、顶层 u_max／u_retired（写了 u_max 则每格必带 u），v0.1–v0.5 文件原样合法",
+  "description": "定字文本 (guji-char v0.6)，book-text original 每章一份，文本唯一真源；不带坐标、不带候选。v0.5 增格字段 unk（审定无法识别的字：图上有字、认不出且无 Unicode，网页暂显示「？」），v0.1–v0.4 文件原样合法；v0.6 增字格永久编号：格字段 u、顶层 u_max／u_retired（11-25 起 u_max 必填、每格必带 u），v0.1–v0.5 文件原样合法（只照旧 $schema 校验）",
   "type": "object",
   "required": [
     "$schema",
     "version",
     "book_id",
     "volume",
-    "pages"
+    "pages",
+    "u_max"
   ],
   "properties": {
     "$schema": {

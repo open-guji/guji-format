@@ -1,6 +1,6 @@
 # guji-char v0.6 规范：定字文本（`NNN.char.json`）
 
-> 状态：正式（v0.1，2026-10-06 用户定；2026-10-09 补到字段级，overview#497；**v0.2 2026-10-20 增格字段 `guess_c`：阙文格带推测字**，GUJI-717 用户定，见 §4.6；**v0.3 2026-10-23 增图片格 `fig` 与图列 `kind: figure`**，GUJI-737 Sheldon 评审通过，见 §4.7；**v0.4 2026-11-03 增格字段 `pending_reason`：待审格记为什么待审，`lacuna` 只留给审定的阙文**，Sheldon 定，见 §4.8；**v0.5 2026-11-13 增格字段 `unk`：审定无法识别的字（图上有字、认不出、Unicode 没有对应字），网页暂显示「？」**，Sheldon 定，见 §4.9；**v0.6 2026-11-24 增字格永久编号 `u`（格字段）与 `u_max`、`u_retired`（顶层）**，Sheldon 定，见 §4.10）
+> 状态：正式（v0.1，2026-10-06 用户定；2026-10-09 补到字段级，overview#497；**v0.2 2026-10-20 增格字段 `guess_c`：阙文格带推测字**，GUJI-717 用户定，见 §4.6；**v0.3 2026-10-23 增图片格 `fig` 与图列 `kind: figure`**，GUJI-737 Sheldon 评审通过，见 §4.7；**v0.4 2026-11-03 增格字段 `pending_reason`：待审格记为什么待审，`lacuna` 只留给审定的阙文**，Sheldon 定，见 §4.8；**v0.5 2026-11-13 增格字段 `unk`：审定无法识别的字（图上有字、认不出、Unicode 没有对应字），网页暂显示「？」**，Sheldon 定，见 §4.9；**v0.6 2026-11-24 增字格永久编号 `u`（格字段）与 `u_max`、`u_retired`（顶层）**，Sheldon 定，见 §4.10；**2026-11-25 切换到以 `u` 为准：v0.6 起 `u_max` 必填、每格必带 `u`**，Sheldon 定）
 > 格式标识：`https://open-guji.org/schema/char/v0.6.json`（v0.1–v0.5 的文件原样仍合法，不必迁移；用了 `guess_c` 至少写 v0.2，用了 `fig` 或图列至少写 v0.3，用了 `pending_reason` 就要写 v0.4；用了 `unk` 就要写 v0.5；用了 `u` 就要写 v0.6；**v0.4 与 `pending_reason` 2026-11-09 起停用，book-text 不再写，见 §4.8**）
 > Schema：[`schemas/guji_char_v0.6.schema.json`](../schemas/guji_char_v0.6.schema.json)（v0.5：[`guji_char_v0.5.schema.json`](../schemas/guji_char_v0.5.schema.json)；v0.4：[`guji_char_v0.4.schema.json`](../schemas/guji_char_v0.4.schema.json)；v0.3：[`guji_char_v0.3.schema.json`](../schemas/guji_char_v0.3.schema.json)；v0.2：[`guji_char_v0.2.schema.json`](../schemas/guji_char_v0.2.schema.json)；v0.1：[`guji_char_v0.1.schema.json`](../schemas/guji_char_v0.1.schema.json)）
 > 适用：book-text `original` 每章一份，存 main，**文本的唯一真源**。总表见 [00](./00-总览.md)。
@@ -74,7 +74,7 @@
 | `review` | object | major ≥2 时必填（schema 强制） | 文本线验收记录 | `date`（日期串）、`signed_by`（签核人）、`sample`（抽检数据：一句话或对象），三项都不许空 | |
 | `book_id` | string | 是 | 所属条目 id | 等于条目目录名 | `"96mid1ogzk"` |
 | `volume` | integer ≥1 | 是 | 册号 | 等于 index.json 该章 `n`、文件名 `NNN` 的数值 | `2` |
-| `u_max` | integer ≥0 | 否（v0.6 起）；写了它每格必带 `u` | 本册发过的最大字格编号；新格取 `u_max+1` | 只增不减 | `26431` |
+| `u_max` | integer ≥0 | v0.6 必填（2026-11-25 起）；每格必带 `u` | 本册发过的最大字格编号；新格取 `u_max+1` | 只增不减 | `26431` |
 | `u_retired` | array | 否（v0.6 起），有它必有 `u_max` | 作废的字格编号，永不复用；稀疏 | 每项 `{u, into}`（并进了哪个 u）或 `{u, gone: true}`（字格删了），二者择一；见 §4.10 | `[{"u": 57, "into": 56}]` |
 | `pages` | array | 是 | 本册**每一张扫描图**一项，按 `page` 升序；没有字的页也要有（`columns: []`） | 见 4.2 | |
 
@@ -115,7 +115,7 @@
 | `fig` | string | 否（v0.3 起） | 图片格：这格是图形，不是字；值是同章 [fig.json](./09-guji-fig.md) 里的图 id。`c` 写 `□`，见 §4.7 | 不能和 `lacuna`、`guess`、`guess_c`、`zi` 同时出现 | `"f148-2-14"` |
 | `unk` | string | 否（v0.5 起） | 无法识别字：图上有字，人审定认不出、Unicode 也没有对应字；值是部件描述或 IDS。`c` 写 `□`，见 §4.9 | 非空，不含空白和花括号；不能和 `lacuna`、`guess`、`guess_c`、`zi`、`fig`、`pending_reason` 同时出现 | `"左王右旦"` |
 
-| `u` | integer ≥1 | 否（v0.6 起）；顶层有 `u_max` 时必填 | **字格永久编号**：册内唯一，发了永不改、永不复用；标点、专名、异体都挂它，见 §4.10 | 不超过 `u_max`，不在 `u_retired` 里 | `1234` |
+| `u` | integer ≥1 | v0.6 必填（2026-11-25 起） | **字格永久编号**：册内唯一，发了永不改、永不复用；标点、专名、异体都挂它，见 §4.10 | 不超过 `u_max`，不在 `u_retired` 里 | `1234` |
 
 格对象不许有别的字段（schema `additionalProperties: false`）。
 
@@ -269,14 +269,14 @@
 | 重切后两格并一格 | 留较小的 u，另一个记进 `u_retired`（`into` 指向留下的 u） |
 
 - **读序与 `u` 无关**：读序仍是 `cells` 数组顺序；`u` 不表示先后，不要按 `u` 排序。
-- **`a` 照旧**：格位 key 用于显示、对 cord 的框；不再当标记的定位依据（双写期两者并存，见 04、05、06）。
+- **`a` 照旧**：格位 key 用于显示、对 cord 的框；不再当标记的定位依据；伴生层仍带格位 key 供人读，与 `u` 冲突时以 `u` 为准（见 04、05、06）。
 - **复原**：中心库清掉以后，cord 的框加 char 的 `u` 就是「上一份切分 → u」，重切时据此继承。
 
 ## 五、与其他文件的关系
 
 | 文件 | 和 char 的关系 |
 |---|---|
-| cord | 按 `a` 对上每格的像素框；cord 不存字，也不存 `u`（cord 的 `id` 停用，见 01） |
+| cord | 按 `a` 对上每格的像素框；cord 不存字，也不存 `u`（cord 的 `id` 已删，见 01） |
 | punct | 锚点是 char 的格位 key，校验字 `pre_char` 取 char 该格的 `c` |
 | entity | 锚点 `anchor.start`..`anchor.end` 是 char 的格位 key，校验字 `text` 是这段格的 `c` 依读序拼起来 |
 | norm、decision | 按格位记（norm 用 `a`，decision 用 `cell`）；校验字（norm 的 `c`、decision 的 `current`）等于 char 该格的 `c` |
@@ -299,6 +299,7 @@
 - 格对象新增可选键 `u`（字格永久编号）；顶层新增 `u_max`、`u_retired`。写了 `u_max` 的文件每格必须带 `u`（§4.1、§4.4、§4.10）。
 - 其余字段、格位 key、读序都不变；v0.1–v0.5 文件原样合法，不必迁移。
 - 读取方：v0.1–v0.6 的 `$schema` 都要认；不认 `u` 的旧工具照常按 `a` 用，不出错。
+- 2026-11-25 收紧（Sheldon 定「尽快完成转换」，不再双写观察）：v0.6 文件 `u_max` 必填、每格必带 `u`。v0.6 发布一天、book-text 已全库迁完，没有不带 `u` 的 v0.6 文件；不升版本号。
 
 ### v0.4 → v0.5（2026-11-13，Sheldon 定）
 

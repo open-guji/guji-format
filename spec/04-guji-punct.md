@@ -77,7 +77,7 @@
 | `label` | string | 否，只用于 `heading` | 目录里显示的名字；缺省用标题原文（v0.2） | 非空 | `"卷二　經部二"` |
 | `toc` | boolean | 否，只用于 `heading`，缺省 `true` | `false`＝正文排成标题但不进目录（副题行）（v0.2） | | `false` |
 | `anchor` | string | original 入库**必填** | 锚点格位 key | `<页>:<列>:<格>[子列]`，必须在同章 char 里存在（见 [02 §二](./02-guji-char.md)） | `"3:4:-1"` |
-| `u` | integer ≥1 | 否（v0.4 起）；char 有 `u` 时必写 | 锚点格的字格永久编号（[02 §4.10](./02-guji-char.md)）。双写期与 `anchor` 并存，两者须指同一格；切换后以 `u` 为准，`anchor` 由读端现算 | 在同章 char 里存在 | `1234` |
+| `u` | integer ≥1 | v0.4 必填（2026-11-25 起） | 锚点格的字格永久编号（[02 §4.10](./02-guji-char.md)），**以它为准**；`anchor` 仍写着供人读，须指同一格，冲突时按 `u` 修 `anchor` | 在同章 char 里存在 | `1234` |
 | `char_offset` | integer ≥0 | 否（**v0.3 停写**） | 锚点格的字下标（缓存）；要用的读端调 `offset_of` 现算 | 见 [00 §四·2](./00-总览.md)：同章 char 读序的 0 起下标 | `16` |
 | `pre_char` | string | original 入库**必填**；**标题符不写**（v0.2，§4.2） | **校验字**：锚点那一格上的字（`after`、`before` 都核这一格） | 必须等于 char 该格的 `c` | `"讀"` |
 | `confidence` | number 0–1 | 否 | 置信度 | | `0.95` |
