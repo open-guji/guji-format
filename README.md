@@ -107,6 +107,9 @@ guji-markdown/
   manifest、index、章文件）都在 `spec/` 定义，从 [`spec/00-总览.md`](./spec/00-总览.md) 读起。
   char、punct、entity 顶层的 `version` 是 book-text `original` 的**内容版本号**（文本、标点、实体三线独立，
   major＝质量等级），规则见 00 §四·3 与 04、05 的「版本号」一节。
+* **字格永久编号 `u`**：char 每格带一个册内唯一、永不改、永不复用的 `u`（顶层 `u_max`、`u_retired`）；
+  标点、专名、异体都挂 `u`，格位 key 只供人读、冲突时以 `u` 为准；要长期指一个字就记「书 ID＋册＋u」。
+  怎么用见 [`spec/00-总览.md` §4.7](./spec/00-总览.md#47-字格永久编号-u-怎么用2026-11-26-汇总)。
 
 ## 快速开始
 
